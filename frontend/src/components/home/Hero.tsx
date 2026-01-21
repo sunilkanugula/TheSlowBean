@@ -12,15 +12,15 @@ export default function Hero() {
     <section className="relative min-h-[80vh] overflow-hidden flex items-center">
       
       {/* Background Video */}
-      <video
- className="absolute inset-0 w-full h-full object-cover scale-[0.9] motion-safe:animate-[zoom_20s_linear_infinite]"
-
+     <video
+  className="absolute inset-0 w-full h-full object-cover scale-[0.9]"
   src={heroVideo}
   autoPlay
   loop
   muted
   playsInline
 />
+
 
 
       {/* Overlay */}
