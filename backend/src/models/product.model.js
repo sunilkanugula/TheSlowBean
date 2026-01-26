@@ -5,28 +5,53 @@ export const ProductModel = {
     return prisma.product.create({ data });
   },
 
-  findAll: () => {
+  // 🔥 UPDATED: supports search
+  findAll: (search) => {
     return prisma.product.findMany({
-      orderBy: { createdAt: "desc" }
+      where: search
+        ? {
+            OR: [
+              {
+                title: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+              },
+              {
+                category: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+              },
+              {
+                subCategory: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+              },
+            ],
+          }
+        : undefined,
+      orderBy: { createdAt: "desc" },
     });
   },
 
   findById: (id) => {
     return prisma.product.findUnique({
-      where: { id }
+      where: { id },
     });
   },
 
   update: (id, data) => {
     return prisma.product.update({
       where: { id },
-      data
+      data,
     });
   },
 
   delete: (id) => {
     return prisma.product.delete({
-      where: { id }
+      where: { id },
     });
-  }
+  },
 };

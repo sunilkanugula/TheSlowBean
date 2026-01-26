@@ -41,5 +41,41 @@ export const UserModel = {
     return prisma.user.delete({
       where: { id }
     });
+  },
+
+  /* ================= OTP METHODS ================= */
+
+  updateOTP: (email, otpCode, otpExpires) => {
+    return prisma.user.update({
+      where: { email },
+      data: {
+        otpCode,
+        otpExpires
+      }
+    });
+  },
+
+  verifyUser: (email) => {
+    return prisma.user.update({
+      where: { email },
+      data: {
+        isVerified: true,
+        otpCode: null,
+        otpExpires: null
+      }
+    });
+  },
+
+  /* ================= PASSWORD METHODS ================= */
+
+  updatePassword: (id, password) => {
+    return prisma.user.update({
+      where: { id },
+      data: {
+        password,
+        otpCode: null,
+        otpExpires: null
+      }
+    });
   }
 };

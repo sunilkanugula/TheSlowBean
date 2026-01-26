@@ -1,6 +1,24 @@
+import jwt from "jsonwebtoken";
+
 export const ownerOnly = (req, res, next) => {
-  if (req.user.role !== "OWNER") {
-    return res.status(403).json({ message: "Owner access only" });
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader) {
+    return res.status(401).json({ message: "No token provided" });
   }
-  next();
+
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (decoded.role !== "ADMIN") {
+      return res.status(403).json({ message: "Admin access only" });
+    }
+
+    req.user = decoded; // ✅ REQUIRED
+    next();
+  } catch {
+    return res.status(401).json({ message: "Invalid token" });
+  }
 };

@@ -17,7 +17,11 @@ export default function Login() {
 
       const res = await api.post("/auth/login", { email, password });
       localStorage.setItem("token", res.data.token);
+      const payload = JSON.parse(
+  atob(res.data.token.split(".")[1])
+);
 
+localStorage.setItem("role", payload.role);
       // Redirect to home page
       navigate("/");
     } catch (err: any) {
