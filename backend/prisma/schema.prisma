@@ -8,20 +8,26 @@ datasource db {
 }
 
 model User {
-  id        Int        @id @default(autoincrement())
-  name      String
-  email     String     @unique
-  password  String
-  role      String     @default("USER")
-  createdAt DateTime   @default(now())
-  isVerified   Boolean  @default(false)
-  otpCode      String?  
-  otpExpires   DateTime?
+  id              Int      @id @default(autoincrement())
+  name            String
+  email           String   @unique
+  password        String
+  role            String   @default("USER")
+  createdAt       DateTime @default(now())
 
-  wishlist  Wishlist[]
-  cart      Cart?
-  orders    Order[]
+  emailVerified   Boolean  @default(false)
+  emailOtpHash    String?
+  emailOtpExpires DateTime?
+
+  resetOtpHash    String?
+  resetOtpExpires DateTime?
+  resetVerified   Boolean  @default(false)
+
+  wishlist        Wishlist[]
+  cart            Cart?
+  orders          Order[]
 }
+
 
 model Product {
   id            Int      @id @default(autoincrement())

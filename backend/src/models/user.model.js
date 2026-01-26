@@ -1,20 +1,18 @@
 import prisma from "../utils/prisma.js";
 
 export const UserModel = {
+  /* ================= BASIC ================= */
+
   create: (data) => {
     return prisma.user.create({ data });
   },
 
   findByEmail: (email) => {
-    return prisma.user.findUnique({
-      where: { email }
-    });
+    return prisma.user.findUnique({ where: { email } });
   },
 
   findById: (id) => {
-    return prisma.user.findUnique({
-      where: { id }
-    });
+    return prisma.user.findUnique({ where: { id } });
   },
 
   findAll: () => {
@@ -38,44 +36,71 @@ export const UserModel = {
   },
 
   delete: (id) => {
-    return prisma.user.delete({
-      where: { id }
-    });
+    return prisma.user.delete({ where: { id } });
   },
 
-  /* ================= OTP METHODS ================= */
+  /* ================= EMAIL VERIFICATION ================= */
 
-  updateOTP: (email, otpCode, otpExpires) => {
+  verifyEmail: (email) => {
     return prisma.user.update({
       where: { email },
       data: {
-        otpCode,
-        otpExpires
+        emailVerified: true,
+        emailOtpHash: null,
+        emailOtpExpires: null
       }
     });
   },
 
-  verifyUser: (email) => {
+  updateEmailOTP: (email, hash, expires) => {
     return prisma.user.update({
       where: { email },
       data: {
-        isVerified: true,
-        otpCode: null,
-        otpExpires: null
+        emailOtpHash: hash,
+        emailOtpExpires: expires
       }
     });
   },
 
-  /* ================= PASSWORD METHODS ================= */
+  /* ================= FORGOT PASSWORD ================= */
+
+  setResetOTP: (email, hash, expires) => {
+    return prisma.user.update({
+      where: { email },
+      data: {
+        resetOtpHash: hash,
+        resetOtpExpires: expires,
+        resetVerified: false
+      }
+    });
+  },
+
+  markResetVerified: (email) => {
+    return prisma.user.update({
+      where: { email },
+      data: {
+        resetVerified: true
+      }
+    });
+  },
+
+  clearResetOTP: (email) => {
+    return prisma.user.update({
+      where: { email },
+      data: {
+        resetOtpHash: null,
+        resetOtpExpires: null,
+        resetVerified: false
+      }
+    });
+  },
+
+  /* ================= PASSWORD ================= */
 
   updatePassword: (id, password) => {
     return prisma.user.update({
       where: { id },
-      data: {
-        password,
-        otpCode: null,
-        otpExpires: null
-      }
+      data: { password }
     });
   }
 };

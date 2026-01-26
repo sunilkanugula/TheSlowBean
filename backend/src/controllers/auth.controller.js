@@ -4,7 +4,7 @@ import { generateToken } from "../utils/generateToken.js";
 import { generateOTP } from "../utils/generateOTP.js";
 import { sendEmail } from "../utils/sendEmail.js";
 
-/* REGISTER */
+/* ================= REGISTER ================= */
 export const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -18,135 +18,193 @@ export const register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const otp = generateOTP();
-    const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+    const otpHash = await bcrypt.hash(otp, 10);
 
     await UserModel.create({
       name,
       email,
       password: hashedPassword,
-      otpCode: otp,
-      otpExpires,
-      isVerified: false
+      emailOtpHash: otpHash,
+      emailOtpExpires: new Date(Date.now() + 10 * 60 * 1000),
+      emailVerified: false
     });
 
     await sendEmail(email, "Verify Account", `Your OTP is ${otp}`);
 
     res.status(201).json({ message: "OTP sent to email" });
   } catch (err) {
-  console.error("EMAIL ERROR:", err);
-  res.status(500).json({
-    message: "Server error",
-    error: err.message
-  });
-}
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
-/* VERIFY OTP */
-export const verifyOTP = async (req, res) => {
-  const { email, otp } = req.body;
+/* ================= VERIFY EMAIL OTP ================= */
+export const verifyEmailOTP = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
 
-  const user = await UserModel.findByEmail(email);
-  if (!user || user.otpCode !== otp)
-    return res.status(400).json({ message: "Invalid OTP" });
+    const user = await UserModel.findByEmail(email);
+    if (!user || !user.emailOtpHash)
+      return res.status(400).json({ message: "Invalid OTP" });
 
-  if (new Date() > user.otpExpires)
-    return res.status(400).json({ message: "OTP expired" });
+    if (new Date() > user.emailOtpExpires)
+      return res.status(400).json({ message: "OTP expired" });
 
-  await UserModel.verifyUser(email);
-  res.json({ message: "Account verified" });
+    const valid = await bcrypt.compare(otp, user.emailOtpHash);
+    if (!valid)
+      return res.status(400).json({ message: "Invalid OTP" });
+
+    await UserModel.verifyEmail(email);
+
+    res.json({ message: "Account verified" });
+  } catch {
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
-/* RESEND OTP */
-export const resendOTP = async (req, res) => {
-  const { email } = req.body;
-  const user = await UserModel.findByEmail(email);
+/* ================= RESEND EMAIL OTP ================= */
+export const resendEmailOTP = async (req, res) => {
+  try {
+    const { email } = req.body;
 
-  if (!user)
-    return res.status(404).json({ message: "User not found" });
+    const user = await UserModel.findByEmail(email);
+    if (!user)
+      return res.status(404).json({ message: "User not found" });
 
-  const otp = generateOTP();
-  const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+    const otp = generateOTP();
+    const otpHash = await bcrypt.hash(otp, 10);
 
-  await UserModel.updateOTP(email, otp, otpExpires);
-  await sendEmail(email, "Resend OTP", `Your OTP is ${otp}`);
+    await UserModel.updateEmailOTP(
+      email,
+      otpHash,
+      new Date(Date.now() + 10 * 60 * 1000)
+    );
 
-  res.json({ message: "OTP resent" });
+    await sendEmail(email, "Verify Account", `Your OTP is ${otp}`);
+
+    res.json({ message: "OTP resent" });
+  } catch {
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
-/* LOGIN */
+/* ================= LOGIN ================= */
 export const login = async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  const user = await UserModel.findByEmail(email);
-  if (!user)
-    return res.status(401).json({ message: "Invalid credentials" });
+    const user = await UserModel.findByEmail(email);
+    if (!user)
+      return res.status(401).json({ message: "Invalid credentials" });
 
-  if (!user.isVerified)
-    return res.status(403).json({ message: "Email not verified" });
+    if (!user.emailVerified)
+      return res.status(403).json({ message: "Email not verified" });
 
-  const valid = await bcrypt.compare(password, user.password);
-  if (!valid)
-    return res.status(401).json({ message: "Invalid credentials" });
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid)
+      return res.status(401).json({ message: "Invalid credentials" });
 
-  const token = generateToken(user);
+    const token = generateToken(user);
 
-  res.json({
-    token,
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role
-    }
-  });
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch {
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
-/* FORGOT PASSWORD */
+/* ================= FORGOT PASSWORD ================= */
 export const forgotPassword = async (req, res) => {
-  const { email } = req.body;
+  try {
+    const { email } = req.body;
 
-  const user = await UserModel.findByEmail(email);
-  if (!user)
-    return res.status(404).json({ message: "User not found" });
+    const user = await UserModel.findByEmail(email);
+    if (!user)
+      return res.status(404).json({ message: "User not found" });
 
-  const otp = generateOTP();
-  const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+    const otp = generateOTP();
+    const otpHash = await bcrypt.hash(otp, 10);
 
-  await UserModel.updateOTP(email, otp, otpExpires);
-  await sendEmail(email, "Reset Password OTP", `OTP: ${otp}`);
+    await UserModel.setResetOTP(
+      email,
+      otpHash,
+      new Date(Date.now() + 10 * 60 * 1000)
+    );
 
-  res.json({ message: "OTP sent" });
+    await sendEmail(email, "Reset Password OTP", `OTP: ${otp}`);
+
+    res.json({ message: "OTP sent" });
+  } catch {
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
-/* RESET PASSWORD */
+/* ================= VERIFY RESET OTP ================= */
+export const verifyResetOTP = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    const user = await UserModel.findByEmail(email);
+    if (!user || !user.resetOtpHash)
+      return res.status(400).json({ message: "Invalid OTP" });
+
+    if (new Date() > user.resetOtpExpires)
+      return res.status(400).json({ message: "OTP expired" });
+
+    const valid = await bcrypt.compare(otp, user.resetOtpHash);
+    if (!valid)
+      return res.status(400).json({ message: "Invalid OTP" });
+
+    await UserModel.markResetVerified(email);
+
+    res.json({ message: "OTP verified" });
+  } catch {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+/* ================= RESET PASSWORD ================= */
 export const resetPassword = async (req, res) => {
-  const { email, otp, newPassword } = req.body;
+  try {
+    const { email, newPassword } = req.body;
 
-  const user = await UserModel.findByEmail(email);
-  if (!user || user.otpCode !== otp)
-    return res.status(400).json({ message: "Invalid OTP" });
+    const user = await UserModel.findByEmail(email);
+    console.log(user)
+    if (!user || !user.resetVerified)
+      return res.status(403).json({ message: "OTP not verified" });
 
-  if (new Date() > user.otpExpires)
-    return res.status(400).json({ message: "OTP expired" });
+    const hashed = await bcrypt.hash(newPassword, 10);
+    await UserModel.updatePassword(user.id, hashed);
+    await UserModel.clearResetOTP(email);
 
-  const hashed = await bcrypt.hash(newPassword, 10);
-  await UserModel.updatePassword(user.id, hashed);
-
-  res.json({ message: "Password reset successful" });
+    res.json({ message: "Password reset successful" });
+  } catch {
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
-/* CHANGE PASSWORD */
+/* ================= CHANGE PASSWORD ================= */
 export const changePassword = async (req, res) => {
-  const { oldPassword, newPassword } = req.body;
+  try {
+    const { oldPassword, newPassword } = req.body;
 
-  const user = await UserModel.findById(req.user.id);
-  const match = await bcrypt.compare(oldPassword, user.password);
+    const user = await UserModel.findById(req.user.id);
+    const match = await bcrypt.compare(oldPassword, user.password);
 
-  if (!match)
-    return res.status(401).json({ message: "Wrong password" });
+    if (!match)
+      return res.status(401).json({ message: "Wrong password" });
 
-  const hashed = await bcrypt.hash(newPassword, 10);
-  await UserModel.updatePassword(user.id, hashed);
+    const hashed = await bcrypt.hash(newPassword, 10);
+    await UserModel.updatePassword(user.id, hashed);
 
-  res.json({ message: "Password changed" });
+    res.json({ message: "Password changed" });
+  } catch {
+    res.status(500).json({ message: "Server error" });
+  }
 };
