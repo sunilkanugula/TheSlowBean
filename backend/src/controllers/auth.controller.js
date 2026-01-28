@@ -8,7 +8,7 @@ import { sendEmail } from "../utils/sendEmail.js";
 export const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
-
+    console.log("Registering user:", name, email);
     if (!name || !email || !password)
       return res.status(400).json({ message: "All fields required" });
 
@@ -33,6 +33,7 @@ export const register = async (req, res) => {
 
     res.status(201).json({ message: "OTP sent to email" });
   } catch (err) {
+    console.error("REGISTER ERROR:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -111,7 +112,8 @@ export const login = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
-        role: user.role
+        role: user.role,
+        emailVerified: user.emailVerified
       }
     });
   } catch {
@@ -194,7 +196,7 @@ export const changePassword = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
 
-    const user = await UserModel.findById(req.user.id);
+    const user = await UserModel.findById(req.user.userId);
     const match = await bcrypt.compare(oldPassword, user.password);
 
     if (!match)
@@ -204,7 +206,9 @@ export const changePassword = async (req, res) => {
     await UserModel.updatePassword(user.id, hashed);
 
     res.json({ message: "Password changed" });
-  } catch {
-    res.status(500).json({ message: "Server error" });
-  }
+  } catch (err) {
+  console.error("CHANGE PASSWORD ERROR:", err);
+  res.status(500).json({ message: "Server error" });
+}
+
 };

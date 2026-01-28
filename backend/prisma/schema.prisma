@@ -6,31 +6,42 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
 
-model User {
-  id              Int      @id @default(autoincrement())
-  name            String
-  email           String   @unique
-  password        String
-  role            String   @default("USER")
-  createdAt       DateTime @default(now())
-
-  emailVerified   Boolean  @default(false)
-  emailOtpHash    String?
-  emailOtpExpires DateTime?
-
-  resetOtpHash    String?
-  resetOtpExpires DateTime?
-  resetVerified   Boolean  @default(false)
-
-  wishlist        Wishlist[]
-  cart            Cart?
-  orders          Order[]
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
 }
 
 
+model User {
+  id              Int        @id @default(autoincrement())
+  name            String
+  email           String     @unique
+  password        String
+  role            String     @default("USER")
+  createdAt       DateTime   @default(now())
+  emailOtpExpires DateTime?
+  emailOtpHash    String?
+  emailVerified   Boolean    @default(false)
+  resetOtpExpires DateTime?
+  resetOtpHash    String?
+  resetVerified   Boolean    @default(false)
+  cart            Cart?
+  orders          Order[]
+  wishlist        Wishlist[]
+}
+
 model Product {
-  id            Int      @id @default(autoincrement())
+  id            Int         @id @default(autoincrement())
   title         String
   description   String?
   category      String
@@ -40,11 +51,10 @@ model Product {
   stock         Int
   images        String[]
   createdById   Int
-  createdAt     DateTime @default(now())
-
-  wishlistedBy Wishlist[]
+  createdAt     DateTime    @default(now())
   cartItems     CartItem[]
   orderItems    OrderItem[]
+  wishlistedBy  Wishlist[]
 }
 
 model Wishlist {
@@ -52,9 +62,8 @@ model Wishlist {
   userId    Int
   productId Int
   createdAt DateTime @default(now())
-
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, productId])
 }
@@ -63,51 +72,41 @@ model Cart {
   id        Int        @id @default(autoincrement())
   userId    Int        @unique
   createdAt DateTime   @default(now())
-
-  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items CartItem[]
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
 }
 
 model CartItem {
-  id        Int      @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   cartId    Int
   productId Int
-  quantity  Int      @default(1)
-
-  cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int     @default(1)
+  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([cartId, productId])
 }
 
-
-
 model Order {
-  id               Int      @id @default(autoincrement())
+  id               Int         @id @default(autoincrement())
   userId           Int
   totalAmount      Float
-
-  status String @default("PENDING")
-  paymentCompleted Boolean  @default(false)
-
-  paymentType      String   // "COD" | "ONLINE"
+  paymentStatus PaymentStatus?
+  orderStatus   OrderStatus?
   paidAt           DateTime?
+  createdAt        DateTime    @default(now())
 
-  createdAt        DateTime @default(now())
-
-  user  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items OrderItem[]
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  address Json?   // ✅ MUST be optional
+  items   OrderItem[]
 }
 
-
-
 model OrderItem {
-  id        Int      @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   orderId   Int
   productId Int
   quantity  Int
   price     Float
-
-  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }

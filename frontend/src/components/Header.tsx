@@ -1,14 +1,34 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { ShoppingCart, Heart, LayoutDashboard, Package } from "lucide-react";
+import {
+  ShoppingCart,
+  ShoppingBag,
+  Heart,
+  LayoutDashboard,
+  Package,
+  Tag,
+  User,
+  LogOut,
+  LogIn,
+} from "lucide-react";
 
 export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
+
   const role = localStorage.getItem("role");
+  const token = localStorage.getItem("token");
 
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  /* ---------- LOGOUT ---------- */
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
 
   /* ---------- SYNC SEARCH FROM URL ---------- */
   useEffect(() => {
@@ -23,7 +43,6 @@ export default function Header() {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
     }, 300);
-
     return () => clearTimeout(timer);
   }, [search]);
 
@@ -39,14 +58,7 @@ export default function Header() {
         { replace: true }
       );
     }
-  }, [debouncedSearch, location.pathname]);
-
-  /* ---------- LOGOUT ---------- */
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-    navigate("/login");
-  };
+  }, [debouncedSearch, location.pathname, navigate]);
 
   return (
     <header className="bg-white border-b border-gray-200">
@@ -60,9 +72,14 @@ export default function Header() {
         <nav className="hidden md:flex gap-6 text-sm font-medium text-gray-600">
           <Link to="/">Home</Link>
           <Link to="/products">Products</Link>
-          <Link to="/orders">My Orders</Link>
 
-          {/* OWNER / ADMIN LINKS */}
+          {token && role === "USER" && (
+            <Link to="/orders" className="flex items-center gap-1">
+              <ShoppingBag size={16} />
+              My Orders
+            </Link>
+          )}
+
           {role === "ADMIN" && (
             <>
               <Link
@@ -83,8 +100,9 @@ export default function Header() {
 
               <Link
                 to="/owner/products"
-                className="text-blue-600 font-semibold"
+                className="flex items-center gap-1 text-blue-600 font-semibold"
               >
+                <Tag size={16} />
                 Products
               </Link>
             </>
@@ -102,31 +120,60 @@ export default function Header() {
             className="hidden sm:block border border-gray-300 rounded-lg px-3 py-1 text-sm"
           />
 
-          {/* ❤️ WISHLIST */}
-          <button
-            onClick={() => navigate("/wishlist")}
-            className="text-gray-700 hover:text-red-500"
-            title="My Wishlist"
-          >
-            <Heart size={22} />
-          </button>
+          {/* WHEN LOGGED IN */}
+          {token ? (
+            <>
+              <button
+                onClick={() => navigate("/wishlist")}
+                className="text-gray-700 hover:text-red-500"
+                title="Wishlist"
+              >
+                <Heart size={22} />
+              </button>
 
-          {/* 🛒 CART */}
-          <button
-            onClick={() => navigate("/cart")}
-            className="text-gray-700 hover:text-black"
-            title="My Cart"
-          >
-            <ShoppingCart size={22} />
-          </button>
+              <button
+                onClick={() => navigate("/cart")}
+                className="text-gray-700 hover:text-black"
+                title="Cart"
+              >
+                <ShoppingCart size={22} />
+              </button>
 
-          {/* LOGOUT */}
-          <button
-            onClick={logout}
-            className="text-sm text-white bg-blue-600 px-3 py-1.5 rounded-lg"
-          >
-            Logout
-          </button>
+              <button
+                onClick={() => navigate("/my-account")}
+                className="flex items-center gap-1 text-sm text-gray-700 hover:text-black"
+              >
+                <User size={20} />
+                <span className="hidden sm:inline">My Account</span>
+              </button>
+
+              <button
+                onClick={logout}
+                className="flex items-center gap-1 text-sm text-red-600 hover:text-red-700"
+              >
+                <LogOut size={20} />
+                <span className="hidden sm:inline">Logout</span>
+              </button>
+            </>
+          ) : (
+            /* WHEN LOGGED OUT */
+            <>
+              <button
+                onClick={() => navigate("/login")}
+                className="flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-black"
+              >
+                <LogIn size={20} />
+                <span className="hidden sm:inline">Login</span>
+              </button>
+
+              <button
+                onClick={() => navigate("/register")}
+                className="text-sm font-medium bg-black text-white px-4 py-1.5 rounded-lg hover:bg-gray-800"
+              >
+                Register
+              </button>
+            </>
+          )}
         </div>
       </div>
     </header>

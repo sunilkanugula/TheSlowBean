@@ -1,14 +1,15 @@
 import express from "express";
 import { protect } from "../middlewares/auth.middleware.js";
 import {
-  checkout,
-  getMyOrders,markPaymentCompleted
+  createRazorpayOrder,
+  verifyRazorpayPayment,
+  getMyOrders,
 } from "../controllers/order.controller.js";
 
 const router = express.Router();
 
-router.post("/checkout", protect, checkout);
+router.post("/razorpay/create", protect, createRazorpayOrder);
+router.post("/razorpay/verify", protect, verifyRazorpayPayment);
 router.get("/my", protect, getMyOrders);
-router.put("/:id/payment-success", protect, markPaymentCompleted);
 
 export default router;

@@ -20,9 +20,10 @@ export default function Login() {
 
       const res = await api.post("/auth/login", { email, password });
 
+      // ✅ STORE AUTH DATA (SOURCE OF TRUTH)
       localStorage.setItem("token", res.data.token);
-      const payload = JSON.parse(atob(res.data.token.split(".")[1]));
-      localStorage.setItem("role", payload.role);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      localStorage.setItem("role", res.data.user.role);
 
       navigate("/");
     } catch (err: any) {

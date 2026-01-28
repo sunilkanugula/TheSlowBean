@@ -22,6 +22,12 @@ import VerifyEmail from "./pages/VerifyEmail";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import VerifyResetOTP from "./pages/VerifyResetOTP";
+import MyAccount from "./pages/MyAccount";
+import ChangePassword from "./pages/ChangePassword";
+import Orders from "./pages/Orders";
+import Checkout from "./pages/Checkout";
+import OrderSuccess from "./pages/OrderSuccess";
+import OrderDetail from "./pages/OrderDetail";
 
 export default function App() {
   return (
@@ -33,7 +39,8 @@ export default function App() {
       <Route path="/forgot-password" element={<ForgotPassword/>} />
       <Route path="/verify-reset-otp" element={<VerifyResetOTP />} />
       <Route path="/reset-password" element={<ResetPassword />} />
-       
+      <Route path="/change-password" element={<ChangePassword />} />
+
       {/* ---------- USER ROUTES ---------- */}
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
@@ -41,7 +48,12 @@ export default function App() {
         <Route path="/products/:id" element={<ProductDetail />} />
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/cart" element={<Cart />} />
-        <Route path="/orders" element={<MyOrders />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/order-success/:id" element={<OrderSuccess />} />
+        <Route path="/orders" element={<Orders/>} />
+        <Route path="/orders/:id" element={<OrderDetail/>} />
+        <Route path="/my-account" element={<MyAccount />} />
+
       </Route>
 
       {/* ---------- OWNER / ADMIN ROUTES ---------- */}

@@ -4,7 +4,6 @@ import QuantityControl from "../components/QuantityControl";
 import { useNavigate } from "react-router-dom";
 
 const CART_API = "http://localhost:5000/api/cart";
-const ORDER_API = "http://localhost:5000/api/orders";
 
 type CartItem = {
   id: number;
@@ -21,107 +20,64 @@ type CartItem = {
 export default function Cart() {
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [checkoutLoading, setCheckoutLoading] = useState(false);
-  const [paymentType, setPaymentType] = useState<"ONLINE" | "COD">("COD");
 
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
   /* ---------- FETCH CART ---------- */
   useEffect(() => {
-    const fetchCart = async () => {
-      try {
-        const res = await axios.get(CART_API, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+    if (!token) {
+      navigate("/login");
+      return;
+    }
 
-        setItems(res.data?.items || []);
-      } catch {
-        setItems([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCart();
+    axios
+      .get(CART_API, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => setItems(res.data?.items || []))
+      .catch(() => setItems([]))
+      .finally(() => setLoading(false));
   }, []);
 
   /* ---------- UPDATE QUANTITY ---------- */
   const updateQuantity = async (productId: number, quantity: number) => {
     if (quantity < 1) return;
 
-    try {
-      await axios.put(
-        `${CART_API}/quantity`,
-        { productId, quantity },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+    await axios.put(
+      `${CART_API}/quantity`,
+      { productId, quantity },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-      setItems((prev) =>
-        prev.map((item) =>
-          item.product.id === productId
-            ? { ...item, quantity }
-            : item
-        )
-      );
-    } catch {
-      alert("Failed to update quantity");
-    }
+    setItems((prev) =>
+      prev.map((item) =>
+        item.product.id === productId
+          ? { ...item, quantity }
+          : item
+      )
+    );
   };
 
   /* ---------- REMOVE ITEM ---------- */
   const removeItem = async (productId: number) => {
     if (!confirm("Remove this item from cart?")) return;
 
-    try {
-      await axios.delete(`${CART_API}/${productId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    await axios.delete(`${CART_API}/${productId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-      setItems((prev) =>
-        prev.filter((item) => item.product.id !== productId)
-      );
-    } catch {
-      alert("Failed to remove item");
-    }
-  };
-
-  /* ---------- CHECKOUT ---------- */
-  const checkout = async () => {
-    if (items.length === 0) return;
-
-    try {
-      setCheckoutLoading(true);
-
-      await axios.post(
-        `${ORDER_API}/checkout`,
-        {
-          paymentType, // ✅ ONLINE or COD
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      alert("Order placed successfully");
-
-      setItems([]);
-      navigate("/orders");
-    } catch {
-      alert("Checkout failed");
-    } finally {
-      setCheckoutLoading(false);
-    }
+    setItems((prev) =>
+      prev.filter((item) => item.product.id !== productId)
+    );
   };
 
   /* ---------- TOTAL ---------- */
@@ -206,31 +162,6 @@ export default function Cart() {
         })}
       </div>
 
-      {/* PAYMENT TYPE */}
-      <div className="mt-6 space-y-2">
-        <h3 className="font-semibold">Payment Method</h3>
-
-        <label className="flex items-center gap-2">
-          <input
-            type="radio"
-            name="payment"
-            checked={paymentType === "COD"}
-            onChange={() => setPaymentType("COD")}
-          />
-          Cash on Delivery
-        </label>
-
-        <label className="flex items-center gap-2">
-          <input
-            type="radio"
-            name="payment"
-            checked={paymentType === "ONLINE"}
-            onChange={() => setPaymentType("ONLINE")}
-          />
-          Online Payment
-        </label>
-      </div>
-
       {/* TOTAL + CHECKOUT */}
       <div className="mt-6 border-t pt-4 space-y-4">
         <div className="flex justify-between items-center">
@@ -241,11 +172,10 @@ export default function Cart() {
         </div>
 
         <button
-          onClick={checkout}
-          disabled={checkoutLoading}
-          className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900 disabled:opacity-50"
+          onClick={() => navigate("/checkout")}
+          className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900"
         >
-          {checkoutLoading ? "Placing Order..." : "Proceed to Checkout"}
+          Proceed to Checkout
         </button>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const ORDER_API = "http://localhost:5000/api/orders";
 
@@ -17,8 +18,7 @@ type OrderItem = {
 type Order = {
   id: number;
   totalAmount: number;
-  status: string;
-  paymentType: "ONLINE" | "COD";
+  paymentType: "ONLINE";
   paymentCompleted: boolean;
   createdAt: string;
   items: OrderItem[];
@@ -29,26 +29,24 @@ export default function MyOrders() {
   const [loading, setLoading] = useState(true);
 
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
-  /* ---------- FETCH ORDERS ---------- */
+  /* ---------- AUTH CHECK ---------- */
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const res = await axios.get(`${ORDER_API}/my`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+    if (!token) {
+      navigate("/login");
+      return;
+    }
 
-        setOrders(res.data || []);
-      } catch {
-        setOrders([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOrders();
+    axios
+      .get(`${ORDER_API}/my`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => setOrders(res.data || []))
+      .catch(() => setOrders([]))
+      .finally(() => setLoading(false));
   }, []);
 
   /* ---------- UI STATES ---------- */
@@ -64,7 +62,9 @@ export default function MyOrders() {
     return (
       <div className="max-w-5xl mx-auto p-6">
         <h1 className="text-2xl font-bold mb-4">My Orders</h1>
-        <p className="text-gray-500">You have not placed any orders yet.</p>
+        <p className="text-gray-500">
+          You have not placed any orders yet.
+        </p>
       </div>
     );
   }
@@ -77,7 +77,8 @@ export default function MyOrders() {
       {orders.map((order) => (
         <div
           key={order.id}
-          className="border rounded-lg p-4 space-y-4"
+          onClick={() => navigate(`/orders/${order.id}`)}
+          className="border rounded-lg p-4 space-y-4 cursor-pointer hover:shadow transition"
         >
           {/* ORDER HEADER */}
           <div className="flex flex-wrap justify-between gap-4">
@@ -96,54 +97,44 @@ export default function MyOrders() {
               </p>
               <p className="text-sm">
                 Payment:{" "}
-                <span className="font-semibold">
-                  {order.paymentType}
-                </span>
+                <span className="font-semibold">ONLINE</span>
               </p>
               <p className="text-sm">
                 Status:{" "}
-                <span
-                  className={
-                    order.paymentCompleted
-                      ? "text-green-600 font-semibold"
-                      : "text-orange-500 font-semibold"
-                  }
-                >
-                  {order.paymentCompleted ? "Paid" : "Pending"}
+                <span className="text-green-600 font-semibold">
+                  Paid
                 </span>
               </p>
             </div>
           </div>
 
-          {/* ORDER ITEMS */}
-          <div className="space-y-3">
-            {order.items.map((item) => (
+          {/* ORDER ITEMS (PREVIEW) */}
+          <div className="flex flex-wrap gap-4">
+            {order.items.slice(0, 3).map((item) => (
               <div
                 key={item.id}
-                className="flex gap-4 border rounded p-3"
+                className="flex gap-3 items-center border rounded p-2"
               >
                 <img
                   src={item.product.images[0]}
-                  className="w-20 h-20 object-cover rounded"
+                  className="w-14 h-14 object-cover rounded"
                 />
-
-                <div className="flex-1">
-                  <h3 className="font-semibold">
+                <div>
+                  <p className="text-sm font-semibold">
                     {item.product.title}
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    Quantity: {item.quantity}
                   </p>
-                  <p className="text-sm text-gray-500">
-                    Price: ₹{item.price}
+                  <p className="text-xs text-gray-500">
+                    Qty: {item.quantity}
                   </p>
-                </div>
-
-                <div className="font-semibold">
-                  ₹{item.price * item.quantity}
                 </div>
               </div>
             ))}
+
+            {order.items.length > 3 && (
+              <div className="text-sm text-gray-500 flex items-center">
+                +{order.items.length - 3} more items
+              </div>
+            )}
           </div>
         </div>
       ))}

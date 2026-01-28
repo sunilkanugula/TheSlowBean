@@ -3,9 +3,9 @@ import { WishlistModel } from "../models/wishlist.model.js";
 /* GET USER WISHLIST */
 export const getWishlist = async (req, res) => {
   try {
-    const items = await WishlistModel.findByUser(req.user.id);
+    const items = await WishlistModel.findByUser(req.user.userId);
 
-    // return only products (frontend-friendly)
+    // Return only products (frontend-friendly)
     const products = items.map((item) => item.product);
 
     res.json(products);
@@ -36,7 +36,7 @@ export const addToWishlist = async (req, res) => {
   }
 };
 
-/* REMOVE FROM WISHLIST */
+/* REMOVE FROM WISHLIST (IDEMPOTENT ✅) */
 export const removeFromWishlist = async (req, res) => {
   try {
     const productId = Number(req.params.productId);
@@ -48,7 +48,7 @@ export const removeFromWishlist = async (req, res) => {
 
     res.json({ message: "Removed from wishlist" });
   } catch (err) {
-    console.error(err);
-    res.status(404).json({ message: "Wishlist item not found" });
+    // ✅ Already removed → still OK
+    res.json({ message: "Already removed" });
   }
 };

@@ -20,7 +20,6 @@ export default function Products() {
   const { add, remove, isInWishlist } = useWishlist();
   const location = useLocation();
 
-  /* ---------- FETCH PRODUCTS ---------- */
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const search = params.get("search");
@@ -36,56 +35,42 @@ export default function Products() {
     <div className="max-w-6xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">Products</h1>
 
-      {products.length === 0 && (
-        <p className="text-gray-500">No products found.</p>
-      )}
-
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {products.map((p) => {
-          const wished = isInWishlist(p.id);
+          const id = Number(p.id);
+          const wished = isInWishlist(id);
 
           return (
             <div
-              key={p.id}
-              className="relative bg-white border rounded-xl shadow-sm hover:shadow-lg transition"
+              key={id}
+              className="relative bg-white border rounded-xl shadow-sm"
             >
-              {/* Image */}
-              <Link to={`/products/${p.id}`}>
+              <Link to={`/products/${id}`}>
                 <img
-                  src={p.images[0]}
-                  alt={p.title}
+                  src={p.images?.[0] || "/placeholder.png"}
                   className="w-full h-48 object-cover rounded-t-xl"
                 />
               </Link>
 
-              {/* Wishlist icon – bottom right */}
               <button
-                title={
-                  wished ? "Remove from wishlist" : "Add to wishlist"
-                }
+                type="button"
                 onClick={(e) => {
                   e.preventDefault();
-                  wished ? remove(p.id) : add(p.id);
+                  wished ? remove(id) : add(id);
                 }}
-                className={`absolute bottom-3 right-3 z-10 p-2 rounded-full transition-all
+                className={`absolute bottom-3 right-3 p-2 rounded-full
                   ${
                     wished
-                      ? "bg-red-100 text-red-600 scale-105"
-                      : "bg-white text-gray-400 hover:text-red-500 hover:scale-105"
+                      ? "bg-red-100 text-red-600"
+                      : "bg-white text-gray-400 hover:text-red-500"
                   }`}
               >
-                {wished ? <FaHeart size={16} /> : <FiHeart size={16} />}
+                {wished ? <FaHeart /> : <FiHeart />}
               </button>
 
-              {/* Details */}
               <div className="p-4">
-                <Link to={`/products/${p.id}`}>
-                  <h2 className="font-semibold text-gray-800 truncate">
-                    {p.title}
-                  </h2>
-                </Link>
-
-                <p className="mt-1 font-bold text-green-600">
+                <h2 className="font-semibold">{p.title}</h2>
+                <p className="text-green-600 font-bold">
                   ₹{p.discountPrice ?? p.price}
                 </p>
               </div>

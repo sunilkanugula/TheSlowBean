@@ -17,13 +17,12 @@ export const WishlistModel = {
     });
   },
 
+  // ✅ SAFE DELETE (NO THROW)
   remove: ({ userId, productId }) => {
-    return prisma.wishlist.delete({
+    return prisma.wishlist.deleteMany({
       where: {
-        userId_productId: {
-          userId,
-          productId,
-        },
+        userId,
+        productId,
       },
     });
   },
