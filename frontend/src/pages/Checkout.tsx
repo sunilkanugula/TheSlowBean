@@ -15,19 +15,25 @@ export default function Checkout() {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // 👤 CUSTOMER INFO
+  /* 👤 CUSTOMER */
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [altPhone, setAltPhone] = useState("");
 
-  // 📍 ADDRESS
-  const [address, setAddress] = useState("");
+  /* 📍 ADDRESS */
+  const [addressLine1, setAddressLine1] = useState("");
   const [city, setCity] = useState("");
+  const [state, setState] = useState("");
   const [pincode, setPincode] = useState("");
+
+  /* PIN UX */
+  const [pinLoading, setPinLoading] = useState(false);
+  const [pinError, setPinError] = useState("");
 
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
-  /* ---------- LOAD CART ---------- */
+  /* ================= LOAD CART ================= */
   useEffect(() => {
     if (!token) {
       navigate("/login");
@@ -41,29 +47,71 @@ export default function Checkout() {
       .then((res) => setItems(res.data.items || []));
   }, []);
 
-  /* ---------- TOTAL ---------- */
+  /* ================= TOTAL ================= */
   const total = items.reduce((sum, item) => {
     const price =
       item.product.discountPrice ?? item.product.price;
     return sum + price * item.quantity;
   }, 0);
 
-  /* ---------- PAY WITH RAZORPAY ---------- */
+  /* ================= PINCODE LOOKUP ================= */
+  const fetchCityState = async (pin: string) => {
+    if (pin.length !== 6) return;
+
+    try {
+      setPinLoading(true);
+      setPinError("");
+
+      const res = await axios.get(
+        `https://api.postalpincode.in/pincode/${pin}`
+      );
+
+      const data = res.data?.[0];
+
+      if (data?.Status === "Success") {
+        const po = data.PostOffice[0];
+        setCity(po.District);
+        setState(po.State);
+      } else {
+        setPinError("Invalid pincode");
+        setCity("");
+        setState("");
+      }
+    } catch {
+      setPinError("Failed to fetch city/state");
+    } finally {
+      setPinLoading(false);
+    }
+  };
+
+  /* ================= PAY NOW ================= */
   const payNow = async () => {
-    if (!name || !phone || !address || !city || !pincode) {
-      alert("Please fill all required details");
+    if (
+      !name ||
+      !phone ||
+      !addressLine1 ||
+      !city ||
+      !state ||
+      !pincode
+    ) {
+      alert("Please fill all required fields");
       return;
     }
 
     if (!/^[6-9]\d{9}$/.test(phone)) {
-      alert("Enter valid 10-digit phone number");
+      alert("Enter valid primary phone number");
+      return;
+    }
+
+    if (altPhone && !/^[6-9]\d{9}$/.test(altPhone)) {
+      alert("Enter valid alternate phone number");
       return;
     }
 
     try {
       setLoading(true);
 
-      // 1️⃣ Create Razorpay order
+      /* 1️⃣ CREATE RAZORPAY ORDER */
       const res = await axios.post(
         `${ORDER_API}/razorpay/create`,
         {},
@@ -72,7 +120,7 @@ export default function Checkout() {
 
       const { orderId, key } = res.data;
 
-      // 2️⃣ Razorpay popup
+      /* 2️⃣ OPEN RAZORPAY */
       const razorpay = new window.Razorpay({
         key,
         amount: total * 100,
@@ -80,12 +128,14 @@ export default function Checkout() {
         order_id: orderId,
         name: "TheSlowBean ☕",
         description: "Order Payment",
+
         prefill: {
           name,
           contact: phone,
         },
+
         handler: async (response: any) => {
-          // 3️⃣ Verify payment + save address
+          /* 3️⃣ VERIFY + SAVE ORDER */
           const verifyRes = await axios.post(
             `${ORDER_API}/razorpay/verify`,
             {
@@ -93,8 +143,10 @@ export default function Checkout() {
               address: {
                 name,
                 phone,
-                address,
+                altPhone,
+                line1: addressLine1,
                 city,
+                state,
                 pincode,
               },
             },
@@ -103,9 +155,8 @@ export default function Checkout() {
 
           navigate(`/order-success/${verifyRes.data.orderId}`);
         },
-        theme: {
-          color: "#000000",
-        },
+
+        theme: { color: "#000000" },
       });
 
       razorpay.open();
@@ -117,61 +168,96 @@ export default function Checkout() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-4">
+    <div className="max-w-4xl mx-auto p-6 space-y-6">
       <h1 className="text-2xl font-bold">Checkout</h1>
 
-      {/* CUSTOMER INFO */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {/* 👤 CUSTOMER */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <input
-          placeholder="Full Name"
+          placeholder="Full Name *"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="border p-2 rounded"
+          className="border p-3 rounded"
         />
 
         <input
-          placeholder="Phone Number"
+          placeholder="Primary Phone *"
           value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          className="border p-2 rounded"
+          maxLength={10}
+          onChange={(e) =>
+            setPhone(e.target.value.replace(/\D/g, ""))
+          }
+          className="border p-3 rounded"
+        />
+
+        <input
+          placeholder="Alternate Phone (optional)"
+          value={altPhone}
+          maxLength={10}
+          onChange={(e) =>
+            setAltPhone(e.target.value.replace(/\D/g, ""))
+          }
+          className="border p-3 rounded"
         />
       </div>
 
-      {/* ADDRESS */}
+      {/* 📍 ADDRESS */}
       <textarea
-        placeholder="Street Address"
-        value={address}
-        onChange={(e) => setAddress(e.target.value)}
-        className="w-full border p-2 rounded"
+        placeholder="House / Street / Area *"
+        value={addressLine1}
+        onChange={(e) => setAddressLine1(e.target.value)}
+        className="border p-3 rounded w-full"
       />
 
-      <div className="flex gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <input
+          placeholder="Pincode *"
+          value={pincode}
+          maxLength={6}
+          onChange={(e) => {
+            const val = e.target.value.replace(/\D/g, "");
+            setPincode(val);
+            if (val.length === 6) fetchCityState(val);
+          }}
+          className="border p-3 rounded"
+        />
+
         <input
           placeholder="City"
           value={city}
-          onChange={(e) => setCity(e.target.value)}
-          className="border p-2 rounded flex-1"
+          disabled
+          className="border p-3 rounded bg-gray-100"
         />
+
         <input
-          placeholder="Pincode"
-          value={pincode}
-          onChange={(e) => setPincode(e.target.value)}
-          className="border p-2 rounded flex-1"
+          placeholder="State"
+          value={state}
+          disabled
+          className="border p-3 rounded bg-gray-100"
         />
       </div>
 
-      {/* TOTAL */}
-      <p className="font-bold text-green-600 text-lg">
-        Total: ₹{total}
-      </p>
+      {pinLoading && (
+        <p className="text-xs text-gray-500">
+          Fetching city & state…
+        </p>
+      )}
+      {pinError && (
+        <p className="text-xs text-red-500">{pinError}</p>
+      )}
 
-      {/* PAY BUTTON */}
+      {/* 💰 TOTAL */}
+      <div className="text-right text-lg font-semibold">
+        Total: ₹{total}
+      </div>
+
+      {/* 💳 PAY */}
       <button
         onClick={payNow}
         disabled={loading}
         className="w-full bg-black text-white py-3 rounded-lg font-semibold disabled:opacity-50"
       >
-        {loading ? "Processing Payment..." : "Pay with Razorpay"}
+        {loading ? "Processing Payment…" : "Pay with Razorpay"}
       </button>
     </div>
   );

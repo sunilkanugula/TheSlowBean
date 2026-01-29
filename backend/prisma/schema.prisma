@@ -14,11 +14,14 @@ enum PaymentStatus {
 }
 
 enum OrderStatus {
-  PENDING
-  CONFIRMED
-  SHIPPED
-  DELIVERED
-  CANCELLED
+ PENDING
+ SHIPPED
+ DELIVERED
+ RETURN_REQUESTED
+ RETURN_APPROVED
+ RETURN_REJECTED
+ RETURNED
+
 }
 
 
@@ -88,18 +91,25 @@ model CartItem {
 }
 
 model Order {
-  id               Int         @id @default(autoincrement())
-  userId           Int
-  totalAmount      Float
-  paymentStatus PaymentStatus?
-  orderStatus   OrderStatus?
-  paidAt           DateTime?
-  createdAt        DateTime    @default(now())
+  id                  Int           @id @default(autoincrement())
+  userId              Int
+  totalAmount         Float
 
-  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  address Json?   // ✅ MUST be optional
-  items   OrderItem[]
+  paymentStatus       PaymentStatus?
+  orderStatus         OrderStatus?
+
+  razorpayOrderId     String?        @unique
+  razorpayPaymentId  String?        @unique
+  razorpaySignature  String?
+
+  paidAt              DateTime?
+  createdAt           DateTime       @default(now())
+
+  address             Json?
+  user                User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items               OrderItem[]
 }
+
 
 model OrderItem {
   id        Int     @id @default(autoincrement())

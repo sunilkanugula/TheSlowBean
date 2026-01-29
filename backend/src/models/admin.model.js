@@ -26,8 +26,10 @@ export const AdminModel = {
   /* ================= UPDATE ORDER STATUS ================= */
   async updateOrderStatus(orderId, status) {
     return prisma.order.update({
-      where: { id: orderId },
-      data: { status },
+      where: { id: Number(orderId) },
+      data: {
+        orderStatus: status,
+      },
     });
   },
 
@@ -51,7 +53,7 @@ export const AdminModel = {
     /* ---------- TODAY PENDING ---------- */
     const todayPendingOrders = await prisma.order.count({
       where: {
-        status: "PENDING",
+        orderStatus: "PENDING",
         createdAt: {
           gte: todayStart,
           lte: todayEnd,
@@ -69,21 +71,21 @@ export const AdminModel = {
       prisma.order.count(),
 
       prisma.order.count({
-        where: { status: "PENDING" },
+        where: { orderStatus: "PENDING" },
       }),
 
       prisma.order.count({
-        where: { status: "SHIPPED" },
+        where: { orderStatus: "SHIPPED" },
       }),
 
       prisma.order.count({
-        where: { status: "DELIVERED" },
+        where: { orderStatus: "DELIVERED" },
       }),
     ]);
 
     /* ---------- TODAY REVENUE ---------- */
     const todayRevenue = todayOrders
-      .filter((o) => o.paymentCompleted)
+      .filter((o) => o.paymentStatus === "PAID")
       .reduce((sum, o) => sum + o.totalAmount, 0);
 
     /* ---------- MONTHLY REVENUE ---------- */
@@ -96,7 +98,7 @@ export const AdminModel = {
     const monthlyRevenueAgg = await prisma.order.aggregate({
       _sum: { totalAmount: true },
       where: {
-        paymentCompleted: true,
+        paymentStatus: "PAID",
         createdAt: { gte: monthStart },
       },
     });

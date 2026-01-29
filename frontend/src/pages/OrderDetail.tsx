@@ -14,19 +14,27 @@ type OrderItem = {
   };
 };
 
+type Address = {
+  name: string;
+  phone: string;
+  altPhone?: string;
+  line1: string;
+  city: string;
+  state: string;
+  pincode: string;
+};
+
+
 type Order = {
   id: number;
   totalAmount: number;
-  paymentCompleted: boolean;
-  paymentType: string;
+  paymentStatus?: string;
+  orderStatus?: string;
   createdAt: string;
-  address?: {
-    address: string;
-    city: string;
-    pincode: string;
-  };
+  address?: Address;
   items: OrderItem[];
 };
+
 
 export default function OrderDetail() {
   const { id } = useParams();
@@ -49,67 +57,144 @@ export default function OrderDetail() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  if (loading) return <p className="p-6">Loading order...</p>;
-  if (!order) return <p className="p-6">Order not found</p>;
+  if (loading) {
+    return (
+      <div className="max-w-5xl mx-auto p-6 text-green-700">
+        Loading order details...
+      </div>
+    );
+  }
+
+  if (!order) {
+    return (
+      <div className="max-w-5xl mx-auto p-6">
+        Order not found
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-6">
-      <h1 className="text-2xl font-bold">
+      {/* PAGE TITLE */}
+      <h1 className="text-2xl font-semibold text-green-800">
         Order #{order.id}
       </h1>
 
-      {/* ORDER META */}
-      <div className="border rounded p-4">
-        <p>
-          <strong>Date:</strong>{" "}
-          {new Date(order.createdAt).toLocaleString()}
-        </p>
-        <p>
-          <strong>Payment:</strong>{" "}
-          {order.paymentCompleted ? "Paid (Online)" : "Pending"}
-        </p>
-        <p className="font-bold text-green-600">
-          Total: ₹{order.totalAmount}
-        </p>
-      </div>
-
-      {/* ADDRESS */}
-      {order.address && (
-        <div className="border rounded p-4">
-          <h3 className="font-semibold mb-2">Delivery Address</h3>
-          <p>{order.address.address}</p>
-          <p>
-            {order.address.city} – {order.address.pincode}
+      {/* ORDER SUMMARY */}
+      <div className="bg-white rounded-2xl border border-green-100 shadow-sm p-5 flex flex-wrap justify-between gap-4">
+        <div className="space-y-1">
+          <p className="text-sm text-green-600">
+            Placed on
+          </p>
+          <p className="font-medium text-green-900">
+            {new Date(order.createdAt).toLocaleString()}
           </p>
         </div>
-      )}
 
-      {/* ITEMS */}
-      <div className="space-y-3">
+        <div className="space-y-1">
+          <p className="text-sm text-green-600">
+            Payment
+          </p>
+          <p className="font-medium text-green-900">
+            Paid (Online)
+          </p>
+        </div>
+
+        {order.orderStatus && (
+          <div className="space-y-1">
+            <p className="text-sm text-green-600">
+              Status
+            </p>
+            <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+              {order.orderStatus}
+            </span>
+          </div>
+        )}
+
+        <div className="space-y-1 text-right">
+          <p className="text-sm text-green-600">
+            Order Total
+          </p>
+          <p className="text-xl font-bold text-green-800">
+            ₹{order.totalAmount}
+          </p>
+        </div>
+      </div>
+
+     {/* DELIVERY ADDRESS */}
+{order.address && (
+  <div className="bg-white rounded-2xl border border-green-100 shadow-sm p-5">
+    <h3 className="text-lg font-semibold text-green-800 mb-3">
+      Delivery Address
+    </h3>
+
+    <div className="space-y-2 text-sm text-green-900">
+      {/* NAME */}
+      <p className="font-semibold text-base">
+        {order.address.name}
+      </p>
+
+      {/* ADDRESS LINE */}
+      <p className="leading-relaxed">
+        {order.address.line1}
+      </p>
+
+      {/* CITY / STATE / PIN */}
+      <p>
+        {order.address.city},{" "}
+        {order.address.state} -{" "}
+        <span className="font-medium">
+          {order.address.pincode}
+        </span>
+      </p>
+
+      {/* PHONES */}
+      <div className="pt-2 text-green-700 space-y-1">
+        <p>
+          <span className="font-medium">Phone:</span>{" "}
+          {order.address.phone}
+        </p>
+
+        {order.address.altPhone && (
+          <p>
+            <span className="font-medium">
+              Alternate Phone:
+            </span>{" "}
+            {order.address.altPhone}
+          </p>
+        )}
+      </div>
+    </div>
+  </div>
+)}
+
+      {/* ORDER ITEMS */}
+      <div className="bg-white rounded-2xl border border-green-100 shadow-sm p-5 space-y-4">
+        <h3 className="text-lg font-semibold text-green-800">
+          Items in this order
+        </h3>
+
         {order.items.map((item) => (
           <div
             key={item.id}
-            className="flex gap-4 border rounded p-3"
+            className="flex gap-4 items-center border-b border-green-100 pb-4 last:border-none last:pb-0"
           >
             <img
               src={item.product.images[0]}
-              className="w-20 h-20 object-cover rounded"
+              className="w-20 h-20 object-cover rounded-lg border border-green-200"
             />
 
             <div className="flex-1">
-              <h3 className="font-semibold">
+              <p className="font-medium text-green-900">
                 {item.product.title}
-              </h3>
-              <p className="text-sm text-gray-500">
-                Quantity: {item.quantity}
               </p>
-              <p className="text-sm text-gray-500">
-                Price: ₹{item.price}
+              <p className="text-sm text-green-600">
+                Qty: {item.quantity} × ₹{item.price}
               </p>
             </div>
 
-            <div className="font-semibold">
-              ₹{item.price * item.quantity}
+            <div className="font-semibold text-green-800">
+              ₹{item.quantity * item.price}
             </div>
           </div>
         ))}
