@@ -13,6 +13,7 @@ export default function CreateProduct() {
     price: "",
     discountPrice: "",
     stock: "",
+    isBestSelling: false,
   });
 
   const [images, setImages] = useState<File[]>([]);
@@ -22,12 +23,15 @@ export default function CreateProduct() {
 
   const token = localStorage.getItem("token");
 
+  /* ================= HANDLE INPUT ================= */
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
   };
 
+  /* ================= IMAGE HANDLER ================= */
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
 
@@ -35,7 +39,7 @@ export default function CreateProduct() {
 
     if (selectedFiles.length > MAX_IMAGES) {
       setError("You can upload a maximum of 4 images only");
-      e.target.value = ""; // reset file input
+      e.target.value = "";
       return;
     }
 
@@ -43,6 +47,7 @@ export default function CreateProduct() {
     setImages(selectedFiles);
   };
 
+  /* ================= SUBMIT ================= */
   const submit = async () => {
     if (images.length === 0) {
       setError("Please select at least one image");
@@ -62,6 +67,7 @@ export default function CreateProduct() {
       formData.append("subCategory", form.subCategory);
       formData.append("price", form.price);
       formData.append("stock", form.stock);
+      formData.append("isBestSelling", String(form.isBestSelling));
 
       if (form.discountPrice) {
         formData.append("discountPrice", form.discountPrice);
@@ -87,6 +93,7 @@ export default function CreateProduct() {
         price: "",
         discountPrice: "",
         stock: "",
+        isBestSelling: false,
       });
 
       setImages([]);
@@ -113,13 +120,58 @@ export default function CreateProduct() {
         </div>
       )}
 
+      {/* ================= FORM ================= */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <input name="title" placeholder="Title" value={form.title} onChange={handleChange} className="border p-2 rounded" />
-        <input name="category" placeholder="Category" value={form.category} onChange={handleChange} className="border p-2 rounded" />
-        <input name="subCategory" placeholder="Sub Category" value={form.subCategory} onChange={handleChange} className="border p-2 rounded" />
-        <input name="price" type="number" placeholder="Price" value={form.price} onChange={handleChange} className="border p-2 rounded" />
-        <input name="discountPrice" type="number" placeholder="Discount Price" value={form.discountPrice} onChange={handleChange} className="border p-2 rounded" />
-        <input name="stock" type="number" placeholder="Stock" value={form.stock} onChange={handleChange} className="border p-2 rounded" />
+        <input
+          name="title"
+          placeholder="Title"
+          value={form.title}
+          onChange={handleChange}
+          className="border p-2 rounded"
+        />
+
+        <input
+          name="category"
+          placeholder="Category"
+          value={form.category}
+          onChange={handleChange}
+          className="border p-2 rounded"
+        />
+
+        <input
+          name="subCategory"
+          placeholder="Sub Category"
+          value={form.subCategory}
+          onChange={handleChange}
+          className="border p-2 rounded"
+        />
+
+        <input
+          name="price"
+          type="number"
+          placeholder="Price"
+          value={form.price}
+          onChange={handleChange}
+          className="border p-2 rounded"
+        />
+
+        <input
+          name="discountPrice"
+          type="number"
+          placeholder="Discount Price"
+          value={form.discountPrice}
+          onChange={handleChange}
+          className="border p-2 rounded"
+        />
+
+        <input
+          name="stock"
+          type="number"
+          placeholder="Stock"
+          value={form.stock}
+          onChange={handleChange}
+          className="border p-2 rounded"
+        />
       </div>
 
       <textarea
@@ -131,10 +183,26 @@ export default function CreateProduct() {
         rows={4}
       />
 
+      {/* ================= BEST SELLING ================= */}
+      <div className="mt-4">
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={form.isBestSelling}
+            onChange={(e) =>
+              setForm({ ...form, isBestSelling: e.target.checked })
+            }
+          />
+          <span className="font-medium">Mark as Best Selling 🔥</span>
+        </label>
+      </div>
+
+      {/* ================= IMAGES ================= */}
       <div className="mt-6">
         <label className="font-semibold block mb-2">
           Product Images (max 4)
         </label>
+
         <input
           type="file"
           multiple

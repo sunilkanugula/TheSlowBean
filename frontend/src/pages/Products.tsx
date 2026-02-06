@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { Heart, Check, ShoppingCart } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+
 import { useWishlist } from "../hooks/useWishlist";
-import { useLocation, Link } from "react-router-dom";
-import { FiHeart } from "react-icons/fi";
-import { FaHeart } from "react-icons/fa";
 
 const API_URL = "http://localhost:5000/api/products";
 
@@ -17,6 +17,8 @@ type Product = {
 
 export default function Products() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [addedToCart, setAddedToCart] = useState<number | null>(null);
+
   const { add, remove, isInWishlist } = useWishlist();
   const location = useLocation();
 
@@ -31,53 +33,189 @@ export default function Products() {
     axios.get(url).then((res) => setProducts(res.data));
   }, [location.search]);
 
+  const handleAddToCart = (productId: number) => {
+    console.log("Added to cart:", productId);
+    setAddedToCart(productId);
+    setTimeout(() => setAddedToCart(null), 1200);
+  };
+
+  const handleQuickBuy = (productId: number) => {
+    window.location.href = `/checkout?productId=${productId}&qty=1`;
+  };
+
+  if (!products.length) return null;
+
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Products</h1>
+    <section className="py-24 bg-white">
+      <div className="max-w-7xl mx-auto px-6">
+        {/* HEADER */}
+        <div className="mb-20 text-center">
+          <h1 className="text-4xl md:text-5xl font-serif font-medium tracking-tight">
+            Products
+          </h1>
+          <div className="mt-5 h-[2px] w-16 bg-gray-300 mx-auto" />
+        </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {products.map((p) => {
-          const id = Number(p.id);
-          const wished = isInWishlist(id);
+        {/* GRID */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-10">
+          {products.map((product) => {
+            const liked = isInWishlist(product.id);
+            const isAdded = addedToCart === product.id;
 
-          return (
-            <div
-              key={id}
-              className="relative bg-white border rounded-xl shadow-sm"
-            >
-              <Link to={`/products/${id}`}>
-                <img
-                  src={p.images?.[0] || "/placeholder.png"}
-                  className="w-full h-48 object-cover rounded-t-xl"
-                />
-              </Link>
-
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  wished ? remove(id) : add(id);
-                }}
-                className={`absolute bottom-3 right-3 p-2 rounded-full
-                  ${
-                    wished
-                      ? "bg-red-100 text-red-600"
-                      : "bg-white text-gray-400 hover:text-red-500"
-                  }`}
+            return (
+              <div
+                key={product.id}
+                className="group h-[360px] flex flex-col rounded-3xl bg-white shadow-sm hover:shadow-lg transition overflow-hidden"
               >
-                {wished ? <FaHeart /> : <FiHeart />}
-              </button>
+                {/* IMAGE */}
+                <div className="relative overflow-hidden h-[160px] sm:h-auto sm:flex-1">
+                  <Link to={`/products/${product.id}`}>
+                    <img
+                      src={product.images?.[0] || "/placeholder.png"}
+                      alt={product.title}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  </Link>
 
-              <div className="p-4">
-                <h2 className="font-semibold">{p.title}</h2>
-                <p className="text-green-600 font-bold">
-                  ₹{p.discountPrice ?? p.price}
-                </p>
+                  {/* WISHLIST */}
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      liked ? remove(product.id) : add(product.id);
+                    }}
+                    className="
+                      absolute top-4 right-4
+                      opacity-0 scale-90
+                      pointer-events-none
+                      transition-all duration-300
+                      group-hover:opacity-100
+                      group-hover:scale-100
+                      group-hover:pointer-events-auto
+                    "
+                    aria-label="Add to wishlist"
+                  >
+                    <Heart
+                      size={18}
+                      strokeWidth={1.8}
+                      className={
+                        liked
+                          ? "fill-red-500 text-red-500 drop-shadow-sm"
+                          : "text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"
+                      }
+                    />
+                  </button>
+
+                  {/* ACTION OVERLAY */}
+                  <div
+                    className="
+                      absolute inset-x-0 bottom-0
+                      bg-gradient-to-t from-black/70 to-transparent
+                      px-3 pb-3 pt-10
+                      opacity-0 translate-y-4
+                      transition-all duration-300
+                      group-hover:opacity-100
+                      group-hover:translate-y-0
+                    "
+                  >
+                    <div className="flex gap-2">
+                      {/* ADD TO CART */}
+                      <button
+  onClick={() => handleAddToCart(product.id)}
+  className={`
+    group/button
+    relative flex-1 rounded-lg text-xs font-semibold py-2
+    overflow-hidden
+    transition-all duration-300
+    active:scale-95
+    ${
+      isAdded
+        ? "bg-green-600 text-white"
+        : "bg-white text-gray-900 hover:bg-gray-100"
+    }
+  `}
+>
+  {isAdded ? (
+    <span className="flex items-center justify-center gap-1 animate-[pop_0.3s_ease-out]">
+      <Check size={14} /> Added
+    </span>
+  ) : (
+    <span className="relative flex items-center justify-center h-full">
+      {/* TEXT */}
+      <span
+        className="
+          transition-all duration-200
+          group-hover/button:opacity-0
+          group-hover/button:-translate-y-1
+        "
+      >
+        Add to Cart
+      </span>
+
+      {/* ICON */}
+      <ShoppingCart
+        size={14}
+        className="
+          absolute
+          opacity-0 translate-y-2 scale-90
+          transition-all duration-200
+          group-hover/button:opacity-100
+          group-hover/button:translate-y-0
+          group-hover/button:scale-100
+        "
+      />
+    </span>
+  )}
+</button>
+
+
+                      {/* BUY NOW */}
+                      <button
+                        onClick={() => handleQuickBuy(product.id)}
+                        className="flex-1 rounded-lg bg-gray-900 text-white text-xs font-semibold py-2 hover:bg-black transition"
+                      >
+                        Buy Now
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* CONTENT */}
+                <div className="px-5 py-4">
+                  <h3 className="text-[14px] font-medium leading-snug line-clamp-2">
+                    {product.title}
+                  </h3>
+
+                  <div className="mt-4 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {product.discountPrice ? (
+                        <>
+                          <span className="text-base font-semibold">
+                            ₹{product.discountPrice}
+                          </span>
+                          <span className="text-xs text-gray-400 line-through">
+                            ₹{product.price}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-base font-semibold">
+                          ₹{product.price}
+                        </span>
+                      )}
+                    </div>
+
+                    <Link
+                      to={`/products/${product.id}`}
+                      className="text-[11px] tracking-widest uppercase text-gray-500 hover:text-gray-900"
+                    >
+                      View →
+                    </Link>
+                  </div>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
-    </div>
+    </section>
   );
 }

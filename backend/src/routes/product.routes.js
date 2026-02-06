@@ -8,11 +8,13 @@ import {
   deleteProduct,
   getAllProducts,
   getProductById,
+  getBestSellingProducts,
 } from "../controllers/product.controller.js";
 
 const router = express.Router();
 
 /* ---------- PUBLIC ---------- */
+router.get("/best-selling", getBestSellingProducts); // ⭐ MUST BE ABOVE :id
 router.get("/", getAllProducts);
 router.get("/:id", getProductById);
 
@@ -29,7 +31,7 @@ router.put(
   "/:id",
   protect,
   ownerOnly,
-  upload.array("images", 4), // 🔑 ADD THIS
+  upload.array("images", 4),
   updateProduct
 );
 

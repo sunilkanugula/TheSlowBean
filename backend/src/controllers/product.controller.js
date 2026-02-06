@@ -2,7 +2,7 @@ import cloudinary from "../utils/cloudinary.js";
 import { ProductModel } from "../models/product.model.js";
 import prisma from "../utils/prisma.js";
 
-/* CREATE (OWNER) */
+/* ================= CREATE PRODUCT (OWNER) ================= */
 export const createProduct = async (req, res) => {
   try {
     const {
@@ -13,11 +13,12 @@ export const createProduct = async (req, res) => {
       price,
       discountPrice,
       stock,
+      isBestSelling, // ⭐ NEW
     } = req.body;
 
     const createdById = req.user.userId;
 
-    // 🔥 UPLOAD IMAGES TO CLOUDINARY
+    /* ---------- UPLOAD IMAGES TO CLOUDINARY ---------- */
     const imageUrls = [];
 
     if (req.files && req.files.length > 0) {
@@ -43,7 +44,8 @@ export const createProduct = async (req, res) => {
         price: Number(price),
         discountPrice: discountPrice ? Number(discountPrice) : null,
         stock: Number(stock),
-        images: imageUrls, // ✅ NO UNDEFINED
+        images: imageUrls,
+        isBestSelling: isBestSelling === "true", // ⭐ NEW
         createdById,
       },
     });
@@ -55,8 +57,7 @@ export const createProduct = async (req, res) => {
   }
 };
 
-/* UPDATE (OWNER) */
-/* UPDATE (OWNER) — REPLACE IMAGES SAFELY */
+/* ================= UPDATE PRODUCT (OWNER) ================= */
 export const updateProduct = async (req, res) => {
   try {
     const productId = Number(req.params.id);
@@ -75,20 +76,19 @@ export const updateProduct = async (req, res) => {
       discountPrice,
       stock,
       imageIndexes,
+      isBestSelling, // ⭐ NEW
     } = req.body;
 
-    // start with old images
+    // Start with old images
     const images = [...existing.images];
 
     /* ---------- IMAGE REPLACEMENT ---------- */
     if (req.files && req.files.length > 0) {
       if (!imageIndexes) {
-        return res
-          .status(400)
-          .json({ message: "imageIndexes required" });
+        return res.status(400).json({ message: "imageIndexes required" });
       }
 
-      const indexes = JSON.parse(imageIndexes); // [0,2]
+      const indexes = JSON.parse(imageIndexes);
 
       if (indexes.length !== req.files.length) {
         return res.status(400).json({
@@ -106,7 +106,7 @@ export const updateProduct = async (req, res) => {
 
         const oldImage = images[index];
 
-        // 🔴 DELETE OLD IMAGE FIRST
+        // 🔴 DELETE OLD IMAGE
         if (oldImage) {
           const publicId = getPublicIdFromUrl(oldImage);
           await cloudinary.uploader.destroy(publicId);
@@ -132,18 +132,17 @@ export const updateProduct = async (req, res) => {
       discountPrice: discountPrice ? Number(discountPrice) : null,
       stock: Number(stock),
       images,
+      isBestSelling: isBestSelling === "true", // ⭐ NEW
     });
 
     res.json(updated);
   } catch (err) {
-    console.error(err);
+    console.error("UPDATE PRODUCT ERROR:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
 
-
-
-/* DELETE (OWNER) */
+/* ================= DELETE PRODUCT (OWNER) ================= */
 export const deleteProduct = async (req, res) => {
   try {
     await ProductModel.delete(Number(req.params.id));
@@ -153,26 +152,24 @@ export const deleteProduct = async (req, res) => {
   }
 };
 
-/* PUBLIC */
-/* GET ALL PRODUCTS + SEARCH */
+/* ================= GET ALL PRODUCTS (PUBLIC) ================= */
 export const getAllProducts = async (req, res) => {
   try {
     let { search } = req.query;
 
-    // ✅ FORCE search to be a string
     if (Array.isArray(search)) {
       search = search[0];
     }
 
     const products = await ProductModel.findAll(search);
-
     res.json(products);
   } catch (err) {
-    console.error("GET PRODUCTS ERROR:", err); // 🔥 IMPORTANT
+    console.error("GET PRODUCTS ERROR:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
 
+/* ================= GET PRODUCT BY ID ================= */
 export const getProductById = async (req, res) => {
   try {
     const product = await ProductModel.findById(Number(req.params.id));
@@ -185,10 +182,31 @@ export const getProductById = async (req, res) => {
   }
 };
 
+/* ================= BEST SELLING PRODUCTS ================= */
+export const getBestSellingProducts = async (req, res) => {
+  console.log("Fetching best selling products..."); // DEBUG
+  try {
+    const products = await prisma.product.findMany({
+      where: {
+        isBestSelling: true,
+      },
+      take: 6,
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
 
+    res.json(products);
+  } catch (error) {
+    console.error("BEST SELLING PRODUCTS ERROR:", error);
+    res.status(500).json({ message: "Failed to fetch best selling products" });
+  }
+};
+
+
+
+/* ================= UTILS ================= */
 const getPublicIdFromUrl = (url) => {
-  // example:
-  // https://res.cloudinary.com/.../products/abc123.jpg
   const parts = url.split("/");
   const file = parts[parts.length - 1];
   const name = file.split(".")[0];

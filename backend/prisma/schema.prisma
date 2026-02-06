@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native"]
 }
 
 datasource db {
@@ -53,6 +54,7 @@ model Product {
   discountPrice Float?
   stock         Int
   images        String[]
+  isBestSelling Boolean     @default(false)  // ⭐ ADD THIS
   createdById   Int
   createdAt     DateTime    @default(now())
   cartItems     CartItem[]
