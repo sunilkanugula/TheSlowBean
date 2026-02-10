@@ -5,7 +5,9 @@ import { Link, useLocation } from "react-router-dom";
 
 import { useWishlist } from "../hooks/useWishlist";
 
-const API_URL = "http://localhost:5000/api/products";
+const PRODUCTS_API = "http://localhost:5000/api/products";
+const CART_API = "http://localhost:5000/api/cart";
+const TOKEN_KEY = "token";
 
 type Product = {
   id: number;
@@ -22,23 +24,56 @@ export default function Products() {
   const { add, remove, isInWishlist } = useWishlist();
   const location = useLocation();
 
+  /* =======================
+     FETCH PRODUCTS (SEARCH)
+  ======================= */
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const search = params.get("search");
 
     const url = search
-      ? `${API_URL}?search=${encodeURIComponent(search)}`
-      : API_URL;
+      ? `${PRODUCTS_API}?search=${encodeURIComponent(search)}`
+      : PRODUCTS_API;
 
-    axios.get(url).then((res) => setProducts(res.data));
+    axios
+      .get(url)
+      .then((res) => setProducts(res.data))
+      .catch((err) => console.error("PRODUCT FETCH ERROR:", err));
   }, [location.search]);
 
-  const handleAddToCart = (productId: number) => {
-    console.log("Added to cart:", productId);
-    setAddedToCart(productId);
-    setTimeout(() => setAddedToCart(null), 1200);
+  /* =======================
+        ADD TO CART
+  ======================= */
+  const handleAddToCart = async (productId: number) => {
+    try {
+      const token = localStorage.getItem(TOKEN_KEY);
+
+      if (!token) {
+        alert("Please login to add items to cart");
+        return;
+      }
+
+      await axios.post(
+        CART_API,
+        { productId, quantity: 1 },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setAddedToCart(productId);
+      setTimeout(() => setAddedToCart(null), 1200);
+    } catch (err: any) {
+      console.error("ADD TO CART FAILED:", err.response?.data || err);
+      alert(err.response?.data?.message || "Failed to add to cart");
+    }
   };
 
+  /* =======================
+          BUY NOW
+  ======================= */
   const handleQuickBuy = (productId: number) => {
     window.location.href = `/checkout?productId=${productId}&qty=1`;
   };
@@ -79,6 +114,7 @@ export default function Products() {
 
                   {/* WISHLIST */}
                   <button
+                    type="button"
                     onClick={(e) => {
                       e.preventDefault();
                       liked ? remove(product.id) : add(product.id);
@@ -92,14 +128,13 @@ export default function Products() {
                       group-hover:scale-100
                       group-hover:pointer-events-auto
                     "
-                    aria-label="Add to wishlist"
                   >
                     <Heart
                       size={18}
                       strokeWidth={1.8}
                       className={
                         liked
-                          ? "fill-red-500 text-red-500 drop-shadow-sm"
+                          ? "fill-red-500 text-red-500"
                           : "text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"
                       }
                     />
@@ -111,65 +146,52 @@ export default function Products() {
                       absolute inset-x-0 bottom-0
                       bg-gradient-to-t from-black/70 to-transparent
                       px-3 pb-3 pt-10
-                      opacity-0 translate-y-4
+                      opacity-100 md:opacity-0
+                      md:translate-y-4
                       transition-all duration-300
-                      group-hover:opacity-100
-                      group-hover:translate-y-0
+                      md:group-hover:opacity-100
+                      md:group-hover:translate-y-0
                     "
                   >
                     <div className="flex gap-2">
                       {/* ADD TO CART */}
                       <button
-  onClick={() => handleAddToCart(product.id)}
-  className={`
-    group/button
-    relative flex-1 rounded-lg text-xs font-semibold py-2
-    overflow-hidden
-    transition-all duration-300
-    active:scale-95
-    ${
-      isAdded
-        ? "bg-green-600 text-white"
-        : "bg-white text-gray-900 hover:bg-gray-100"
-    }
-  `}
->
-  {isAdded ? (
-    <span className="flex items-center justify-center gap-1 animate-[pop_0.3s_ease-out]">
-      <Check size={14} /> Added
-    </span>
-  ) : (
-    <span className="relative flex items-center justify-center h-full">
-      {/* TEXT */}
-      <span
-        className="
-          transition-all duration-200
-          group-hover/button:opacity-0
-          group-hover/button:-translate-y-1
-        "
-      >
-        Add to Cart
-      </span>
-
-      {/* ICON */}
-      <ShoppingCart
-        size={14}
-        className="
-          absolute
-          opacity-0 translate-y-2 scale-90
-          transition-all duration-200
-          group-hover/button:opacity-100
-          group-hover/button:translate-y-0
-          group-hover/button:scale-100
-        "
-      />
-    </span>
-  )}
-</button>
-
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAddToCart(product.id);
+                        }}
+                        className={`
+                          group/button
+                          relative flex-1 rounded-lg text-xs font-semibold py-2
+                          transition-all duration-300 active:scale-95
+                          ${
+                            isAdded
+                              ? "bg-green-600 text-white"
+                              : "bg-white text-gray-900 hover:bg-gray-100"
+                          }
+                        `}
+                      >
+                        {isAdded ? (
+                          <span className="flex items-center justify-center gap-1">
+                            <Check size={14} /> Added
+                          </span>
+                        ) : (
+                          <span className="relative flex items-center justify-center">
+                            <span className="group-hover/button:opacity-0 transition">
+                              Add to Cart
+                            </span>
+                            <ShoppingCart
+                              size={14}
+                              className="absolute opacity-0 group-hover/button:opacity-100 transition"
+                            />
+                          </span>
+                        )}
+                      </button>
 
                       {/* BUY NOW */}
                       <button
+                        type="button"
                         onClick={() => handleQuickBuy(product.id)}
                         className="flex-1 rounded-lg bg-gray-900 text-white text-xs font-semibold py-2 hover:bg-black transition"
                       >
@@ -181,31 +203,27 @@ export default function Products() {
 
                 {/* CONTENT */}
                 <div className="px-5 py-4">
-                  <h3 className="text-[14px] font-medium leading-snug line-clamp-2">
+                  <h3 className="text-[14px] font-medium line-clamp-2">
                     {product.title}
                   </h3>
 
                   <div className="mt-4 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      {product.discountPrice ? (
-                        <>
-                          <span className="text-base font-semibold">
-                            ₹{product.discountPrice}
-                          </span>
-                          <span className="text-xs text-gray-400 line-through">
-                            ₹{product.price}
-                          </span>
-                        </>
-                      ) : (
-                        <span className="text-base font-semibold">
+                    {product.discountPrice ? (
+                      <div className="flex gap-2">
+                        <span className="font-semibold">
+                          ₹{product.discountPrice}
+                        </span>
+                        <span className="text-xs text-gray-400 line-through">
                           ₹{product.price}
                         </span>
-                      )}
-                    </div>
+                      </div>
+                    ) : (
+                      <span className="font-semibold">₹{product.price}</span>
+                    )}
 
                     <Link
                       to={`/products/${product.id}`}
-                      className="text-[11px] tracking-widest uppercase text-gray-500 hover:text-gray-900"
+                      className="text-[11px] uppercase tracking-widest text-gray-500 hover:text-gray-900"
                     >
                       View →
                     </Link>

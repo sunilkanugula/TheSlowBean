@@ -212,3 +212,30 @@ const getPublicIdFromUrl = (url) => {
   const name = file.split(".")[0];
   return `products/${name}`;
 };
+
+
+/* ================= RELATED PRODUCTS ================= */
+export const getRelatedProducts = async (req, res) => {
+  try {
+    const { subCategory } = req.params;
+    const { excludeId } = req.query;
+
+    const products = await prisma.product.findMany({
+      where: {
+        subCategory,
+        ...(excludeId && {
+          id: { not: Number(excludeId) },
+        }),
+      },
+      take: 6,
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    res.json(products);
+  } catch (error) {
+    console.error("RELATED PRODUCTS ERROR:", error);
+    res.status(500).json({ message: "Failed to fetch related products" });
+  }
+};

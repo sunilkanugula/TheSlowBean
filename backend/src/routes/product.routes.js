@@ -8,7 +8,7 @@ import {
   deleteProduct,
   getAllProducts,
   getProductById,
-  getBestSellingProducts,
+  getBestSellingProducts,getRelatedProducts
 } from "../controllers/product.controller.js";
 
 const router = express.Router();
@@ -34,6 +34,8 @@ router.put(
   upload.array("images", 4),
   updateProduct
 );
+
+router.get("/related/:subCategory", getRelatedProducts);
 
 router.delete("/:id", protect, ownerOnly, deleteProduct);
 

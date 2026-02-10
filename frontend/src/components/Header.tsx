@@ -11,7 +11,7 @@ import {
   LogOut,
   LogIn,
 } from "lucide-react";
-
+import logo from "../assets/logo1.jpg";
 export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -65,7 +65,7 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* LOGO */}
         <Link to="/" className="text-xl font-bold text-gray-800">
-          TheSlowBean ☕
+          <img src={logo} alt="The Slow Bean Logo" className="h-10 w-auto" />
         </Link>
 
         {/* NAV LINKS */}
