@@ -28,7 +28,7 @@ import Orders from "./pages/Orders";
 import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
 import OrderDetail from "./pages/OrderDetail";
-
+import Footer from "./components/layout/Footer";
 export default function App() {
   return (
     <Routes>

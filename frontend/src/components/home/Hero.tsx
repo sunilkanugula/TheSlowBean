@@ -9,7 +9,7 @@ export default function Hero() {
   const [flipped, setFlipped] = useState(false);
 
   return (
-    <section className="relative min-h-[80vh] overflow-hidden flex items-center">
+    <section className="bg-[#EAF2E8] relative min-h-[80vh] overflow-hidden flex items-center">
       
       {/* Background Video */}
      <video
@@ -24,7 +24,7 @@ export default function Hero() {
 
 
       {/* Overlay */}
-      <div className="absolute inset-0 bg-white/60" />
+      <div className="absolute inset-0 bg-[#EAF2E8]/60 backdrop-blur-[2px]" />
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">

@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Heart, Check, ShoppingCart } from "lucide-react";
+import { Heart, Repeat, Eye, ShoppingCart, Check } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-
 import { useWishlist } from "../hooks/useWishlist";
+import ProductsHero from "../components/products/ProductsHero";
+
 
 const PRODUCTS_API = "http://localhost:5000/api/products";
 const CART_API = "http://localhost:5000/api/cart";
@@ -25,7 +26,7 @@ export default function Products() {
   const location = useLocation();
 
   /* =======================
-     FETCH PRODUCTS (SEARCH)
+     FETCH PRODUCTS
   ======================= */
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -81,29 +82,34 @@ export default function Products() {
   if (!products.length) return null;
 
   return (
-    <section className="py-24 bg-white">
-      <div className="max-w-7xl mx-auto px-6">
-        {/* HEADER */}
-        <div className="mb-20 text-center">
-          <h1 className="text-4xl md:text-5xl font-serif font-medium tracking-tight">
-            Products
-          </h1>
-          <div className="mt-5 h-[2px] w-16 bg-gray-300 mx-auto" />
-        </div>
+     <>
+    <ProductsHero />
+    <section className="py-20 bg-[#EAF2E8]">
+      <div className="w-full px-4 md:px-6">
+        
 
         {/* GRID */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-10">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {products.map((product) => {
             const liked = isInWishlist(product.id);
             const isAdded = addedToCart === product.id;
 
+            const discountPercent =
+              product.discountPrice
+                ? Math.round(
+                    ((product.price - product.discountPrice) /
+                      product.price) *
+                      100
+                  )
+                : null;
+
             return (
               <div
                 key={product.id}
-                className="group h-[360px] flex flex-col rounded-3xl bg-white shadow-sm hover:shadow-lg transition overflow-hidden"
+                className="group flex flex-col rounded-3xl bg-white shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden"
               >
                 {/* IMAGE */}
-                <div className="relative overflow-hidden h-[160px] sm:h-auto sm:flex-1">
+                <div className="relative overflow-hidden h-[300px]">
                   <Link to={`/products/${product.id}`}>
                     <img
                       src={product.images?.[0] || "/placeholder.png"}
@@ -112,122 +118,87 @@ export default function Products() {
                     />
                   </Link>
 
-                  {/* WISHLIST */}
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      liked ? remove(product.id) : add(product.id);
-                    }}
-                    className="
-                      absolute top-4 right-4
-                      opacity-0 scale-90
-                      pointer-events-none
-                      transition-all duration-300
-                      group-hover:opacity-100
-                      group-hover:scale-100
-                      group-hover:pointer-events-auto
-                    "
-                  >
-                    <Heart
-                      size={18}
-                      strokeWidth={1.8}
-                      className={
-                        liked
-                          ? "fill-red-500 text-red-500"
-                          : "text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"
-                      }
-                    />
-                  </button>
+                  {/* DISCOUNT BADGE (Exact Style) */}
+                  {discountPercent && (
+                    <div className="absolute top-0 left-0 bg-[#C8B5A4] text-white text-[13px] font-semibold px-5 py-2 rounded-br-[28px]">
+                      -{discountPercent}%
+                    </div>
+                  )}
 
-                  {/* ACTION OVERLAY */}
-                  <div
-                    className="
-                      absolute inset-x-0 bottom-0
-                      bg-gradient-to-t from-black/70 to-transparent
-                      px-3 pb-3 pt-10
-                      opacity-100 md:opacity-0
-                      md:translate-y-4
-                      transition-all duration-300
-                      md:group-hover:opacity-100
-                      md:group-hover:translate-y-0
-                    "
-                  >
-                    <div className="flex gap-2">
-                      {/* ADD TO CART */}
+                  {/* Slight dark overlay on hover */}
+                  <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition duration-300" />
+
+                  {/* CENTER ICON OVERLAY */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300">
+                    <div className="flex items-center gap-8 bg-white px-7 py-3 rounded-2xl shadow-xl">
                       <button
-                        type="button"
                         onClick={(e) => {
-                          e.stopPropagation();
-                          handleAddToCart(product.id);
+                          e.preventDefault();
+                          liked ? remove(product.id) : add(product.id);
                         }}
-                        className={`
-                          group/button
-                          relative flex-1 rounded-lg text-xs font-semibold py-2
-                          transition-all duration-300 active:scale-95
-                          ${
-                            isAdded
-                              ? "bg-green-600 text-white"
-                              : "bg-white text-gray-900 hover:bg-gray-100"
-                          }
-                        `}
+                        className="text-[#2E5E3E] hover:scale-110 transition"
                       >
-                        {isAdded ? (
-                          <span className="flex items-center justify-center gap-1">
-                            <Check size={14} /> Added
-                          </span>
-                        ) : (
-                          <span className="relative flex items-center justify-center">
-                            <span className="group-hover/button:opacity-0 transition">
-                              Add to Cart
-                            </span>
-                            <ShoppingCart
-                              size={14}
-                              className="absolute opacity-0 group-hover/button:opacity-100 transition"
-                            />
-                          </span>
-                        )}
+                        <Heart
+                          size={20}
+                          className={
+                            liked ? "fill-[#2E5E3E] text-[#2E5E3E]" : ""
+                          }
+                        />
                       </button>
 
-                      {/* BUY NOW */}
-                      <button
-                        type="button"
-                        onClick={() => handleQuickBuy(product.id)}
-                        className="flex-1 rounded-lg bg-gray-900 text-white text-xs font-semibold py-2 hover:bg-black transition"
-                      >
-                        Buy Now
+                      <button className="text-[#2E5E3E] hover:scale-110 transition">
+                        <Repeat size={20} />
+                      </button>
+
+                      <button className="text-[#2E5E3E] hover:scale-110 transition">
+                        <Eye size={20} />
                       </button>
                     </div>
                   </div>
                 </div>
 
                 {/* CONTENT */}
-                <div className="px-5 py-4">
-                  <h3 className="text-[14px] font-medium line-clamp-2">
+                <div className="px-5 py-5">
+                  {/* <p className="text-sm text-green-700 font-medium mb-1">
+                    Brand Name
+                  </p> */}
+
+                  <h3 className="text-[15px] font-semibold line-clamp-2 text-gray-800">
                     {product.title}
                   </h3>
 
-                  <div className="mt-4 flex items-center justify-between">
+                  <div className="mt-4 flex items-center gap-3">
                     {product.discountPrice ? (
-                      <div className="flex gap-2">
-                        <span className="font-semibold">
+                      <>
+                        <span className="text-green-700 font-bold text-lg">
                           ₹{product.discountPrice}
                         </span>
-                        <span className="text-xs text-gray-400 line-through">
+                        <span className="text-sm text-gray-400 line-through">
                           ₹{product.price}
                         </span>
-                      </div>
+                      </>
                     ) : (
-                      <span className="font-semibold">₹{product.price}</span>
+                      <span className="text-green-700 font-bold text-lg">
+                       Rs ₹{product.price}
+                      </span>
                     )}
-
-                    <Link
-                      to={`/products/${product.id}`}
-                      className="text-[11px] uppercase tracking-widest text-gray-500 hover:text-gray-900"
-                    >
-                      View →
-                    </Link>
                   </div>
+
+                  {/* ADD TO CART BUTTON */}
+                  <button
+                    onClick={() => handleAddToCart(product.id)}
+                    className="mt-5 w-full bg-green-700 text-white py-3 rounded-xl font-medium hover:bg-green-800 transition"
+                  >
+                    {isAdded ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <Check size={18} /> Added
+                      </span>
+                    ) : (
+                      <span className="flex items-center justify-center gap-2">
+                        <ShoppingCart size={18} /> Add To Cart
+                      </span>
+                    )}
+                  </button>
                 </div>
               </div>
             );
@@ -235,5 +206,6 @@ export default function Products() {
         </div>
       </div>
     </section>
+     </>
   );
 }

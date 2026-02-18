@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
+import ReceiptButton from "../components/admin/ReceiptButton";
 
 const ADMIN_API = "http://localhost:5000/api/admin";
 const PAGE_SIZE = 20;
@@ -268,10 +269,16 @@ export default function OwnerOrders() {
               ))}
             </div>
 
-            {/* TOTAL */}
-            <div className="border-t border-green-100 pt-4 text-right text-lg font-semibold text-green-800">
-              Total ₹ {order.totalAmount}/-
-            </div>
+            {/* TOTAL + RECEIPT */}
+<div className="border-t border-green-100 pt-4 flex justify-between items-center">
+  
+  <ReceiptButton order={order} />
+
+  <div className="text-lg font-semibold text-green-800">
+    Total ₹ {order.totalAmount}/-
+  </div>
+</div>
+
           </div>
         );
       })}

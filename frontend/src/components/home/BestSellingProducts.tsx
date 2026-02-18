@@ -104,7 +104,7 @@ export default function BestSellingProducts() {
       </section>
 
       {/* ================= BEST SELLERS ================= */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-[#EAF2E8]">
         <div className="max-w-7xl mx-auto px-6">
           {/* HEADER */}
           <div className="mb-20 text-center">
