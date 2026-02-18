@@ -120,3 +120,16 @@ export const getDashboardStats = async (req, res) => {
     res.status(500).json({ message: "Failed to load dashboard data" });
   }
 };
+
+/**
+ * ADVANCED OVERVIEW (ADMIN)
+ */
+export const getDashboardOverview = async (req, res) => {
+  try {
+    const overview = await AdminModel.getDashboardOverview();
+    res.json(overview);
+  } catch (err) {
+    console.error("DASHBOARD OVERVIEW ERROR:", err);
+    res.status(500).json({ message: "Failed to load dashboard overview" });
+  }
+};

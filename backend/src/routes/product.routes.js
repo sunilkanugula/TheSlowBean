@@ -7,35 +7,25 @@ import {
   updateProduct,
   deleteProduct,
   getAllProducts,
+  getProductCatalog,
   getProductById,
-  getBestSellingProducts,getRelatedProducts
+  getBestSellingProducts,
+  getRelatedProducts,
 } from "../controllers/product.controller.js";
 
 const router = express.Router();
 
 /* ---------- PUBLIC ---------- */
-router.get("/best-selling", getBestSellingProducts); // ⭐ MUST BE ABOVE :id
+router.get("/best-selling", getBestSellingProducts);
+router.get("/catalog", getProductCatalog);
+router.get("/related/:subCategory", getRelatedProducts);
 router.get("/", getAllProducts);
 router.get("/:id", getProductById);
 
 /* ---------- OWNER ONLY ---------- */
-router.post(
-  "/",
-  protect,
-  ownerOnly,
-  upload.array("images", 4),
-  createProduct
-);
+router.post("/", protect, ownerOnly, upload.array("images", 4), createProduct);
 
-router.put(
-  "/:id",
-  protect,
-  ownerOnly,
-  upload.array("images", 4),
-  updateProduct
-);
-
-router.get("/related/:subCategory", getRelatedProducts);
+router.put("/:id", protect, ownerOnly, upload.array("images", 4), updateProduct);
 
 router.delete("/:id", protect, ownerOnly, deleteProduct);
 

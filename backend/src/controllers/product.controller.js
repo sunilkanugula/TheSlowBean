@@ -2,6 +2,14 @@ import cloudinary from "../utils/cloudinary.js";
 import { ProductModel } from "../models/product.model.js";
 import prisma from "../utils/prisma.js";
 
+const parseBooleanParam = (value) =>
+  value === "true" ? true : value === "false" ? false : undefined;
+
+const parseNumberParam = (value) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
+};
+
 /* ================= CREATE PRODUCT (OWNER) ================= */
 export const createProduct = async (req, res) => {
   try {
@@ -165,6 +173,108 @@ export const getAllProducts = async (req, res) => {
     res.json(products);
   } catch (err) {
     console.error("GET PRODUCTS ERROR:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+/* ================= ADVANCED PRODUCT CATALOG ================= */
+export const getProductCatalog = async (req, res) => {
+  try {
+    let { search, category, subCategory, minPrice, maxPrice, inStock, bestSelling, sort, page, limit } =
+      req.query;
+
+    if (Array.isArray(search)) search = search[0];
+    if (Array.isArray(category)) category = category[0];
+    if (Array.isArray(subCategory)) subCategory = subCategory[0];
+    if (Array.isArray(minPrice)) minPrice = minPrice[0];
+    if (Array.isArray(maxPrice)) maxPrice = maxPrice[0];
+    if (Array.isArray(inStock)) inStock = inStock[0];
+    if (Array.isArray(bestSelling)) bestSelling = bestSelling[0];
+    if (Array.isArray(sort)) sort = sort[0];
+    if (Array.isArray(page)) page = page[0];
+    if (Array.isArray(limit)) limit = limit[0];
+
+    const parsedPage = Math.max(parseNumberParam(page) || 1, 1);
+    const parsedLimit = Math.min(Math.max(parseNumberParam(limit) || 12, 1), 48);
+    const parsedMinPrice = parseNumberParam(minPrice);
+    const parsedMaxPrice = parseNumberParam(maxPrice);
+    const parsedInStock = parseBooleanParam(inStock);
+    const parsedBestSelling = parseBooleanParam(bestSelling);
+
+    const where = {
+      ...(search
+        ? {
+            OR: [
+              { title: { contains: search, mode: "insensitive" } },
+              { category: { contains: search, mode: "insensitive" } },
+              { subCategory: { contains: search, mode: "insensitive" } },
+            ],
+          }
+        : {}),
+      ...(category ? { category: { equals: category, mode: "insensitive" } } : {}),
+      ...(subCategory ? { subCategory: { equals: subCategory, mode: "insensitive" } } : {}),
+      ...(parsedInStock ? { stock: { gt: 0 } } : {}),
+      ...(parsedBestSelling !== undefined ? { isBestSelling: parsedBestSelling } : {}),
+      ...((parsedMinPrice !== undefined || parsedMaxPrice !== undefined)
+        ? {
+            price: {
+              ...(parsedMinPrice !== undefined ? { gte: parsedMinPrice } : {}),
+              ...(parsedMaxPrice !== undefined ? { lte: parsedMaxPrice } : {}),
+            },
+          }
+        : {}),
+    };
+
+    const orderByMap = {
+      newest: { createdAt: "desc" },
+      oldest: { createdAt: "asc" },
+      price_asc: { price: "asc" },
+      price_desc: { price: "desc" },
+      title_asc: { title: "asc" },
+      title_desc: { title: "desc" },
+      stock_desc: { stock: "desc" },
+    };
+
+    const orderBy = orderByMap[sort] || orderByMap.newest;
+    const skip = (parsedPage - 1) * parsedLimit;
+
+    const [items, total, categoriesData, subCategoriesData] = await Promise.all([
+      prisma.product.findMany({ where, orderBy, skip, take: parsedLimit }),
+      prisma.product.count({ where }),
+      prisma.product.findMany({
+        select: { category: true },
+        distinct: ["category"],
+        orderBy: { category: "asc" },
+      }),
+      prisma.product.findMany({
+        select: { subCategory: true },
+        where: { subCategory: { not: null } },
+        distinct: ["subCategory"],
+        orderBy: { subCategory: "asc" },
+      }),
+    ]);
+
+    const totalPages = Math.max(Math.ceil(total / parsedLimit), 1);
+
+    res.json({
+      items,
+      meta: {
+        page: parsedPage,
+        limit: parsedLimit,
+        total,
+        totalPages,
+        hasNext: parsedPage < totalPages,
+        hasPrev: parsedPage > 1,
+      },
+      filters: {
+        categories: categoriesData.map((item) => item.category),
+        subCategories: subCategoriesData
+          .map((item) => item.subCategory)
+          .filter(Boolean),
+      },
+    });
+  } catch (err) {
+    console.error("GET PRODUCT CATALOG ERROR:", err);
     res.status(500).json({ message: "Server error" });
   }
 };

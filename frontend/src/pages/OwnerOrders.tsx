@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import ReceiptButton from "../components/admin/ReceiptButton";
+import AdminPanelNav from "../components/admin/AdminPanelNav";
 
 const ADMIN_API = "http://localhost:5000/api/admin";
 const PAGE_SIZE = 20;
@@ -103,6 +104,8 @@ export default function OwnerOrders() {
 
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-8">
+      <AdminPanelNav />
+
       <h1 className="text-2xl font-semibold text-green-800">
         Orders (Admin)
       </h1>

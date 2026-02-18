@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import AdminPanelNav from "../components/admin/AdminPanelNav";
 
 const API_URL = "http://localhost:5000/api/products";
 
@@ -41,6 +42,8 @@ export default function OwnerProducts() {
 
   return (
     <div className="max-w-6xl mx-auto p-6">
+      <AdminPanelNav />
+
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Products</h1>
         <button
