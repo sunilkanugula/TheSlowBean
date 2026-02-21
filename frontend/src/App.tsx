@@ -24,11 +24,10 @@ import ResetPassword from "./pages/ResetPassword";
 import VerifyResetOTP from "./pages/VerifyResetOTP";
 import MyAccount from "./pages/MyAccount";
 import ChangePassword from "./pages/ChangePassword";
-import Orders from "./pages/Orders";
 import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
 import OrderDetail from "./pages/OrderDetail";
-import Footer from "./components/layout/Footer";
+import TrackOrder from "./pages/TrackOrder";
 export default function App() {
   return (
     <Routes>
@@ -52,6 +51,7 @@ export default function App() {
         <Route path="/order-success/:id" element={<OrderSuccess />} />
         <Route path="/orders" element={<MyOrders/>} />
         <Route path="/orders/:id" element={<OrderDetail/>} />
+        <Route path="/track-order" element={<TrackOrder />} />
         <Route path="/my-account" element={<MyAccount />} />
 
       </Route>

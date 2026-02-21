@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { Plus, PencilLine, Trash2, Sparkles, Search } from "lucide-react";
+
 import AdminPanelNav from "../components/admin/AdminPanelNav";
 
 const API_URL = "http://localhost:5000/api/products";
@@ -18,12 +20,13 @@ type Product = {
 
 export default function OwnerProducts() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [query, setQuery] = useState("");
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
   const fetchProducts = async () => {
     const res = await axios.get(API_URL);
-    setProducts(res.data);
+    setProducts(res.data || []);
   };
 
   useEffect(() => {
@@ -40,89 +43,119 @@ export default function OwnerProducts() {
     fetchProducts();
   };
 
+  const filteredProducts = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return products;
+    return products.filter((p) =>
+      [p.title, p.category, p.subCategory, String(p.id)].join(" ").toLowerCase().includes(q)
+    );
+  }, [products, query]);
+
+  const lowStockCount = products.filter((p) => p.stock < 10).length;
+
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="mx-auto max-w-7xl p-6">
       <AdminPanelNav />
 
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Products</h1>
-        <button
-          onClick={() => navigate("/owner/products/add")}
-          className="bg-black text-white px-4 py-2 rounded"
-        >
-          + Add Product
-        </button>
-      </div>
-
-      {/* Column Headings */}
-      <div className="hidden md:grid grid-cols-12 gap-4 px-3 text-sm font-semibold text-gray-600 mb-2">
-        <div className="col-span-1"></div>
-        <div className="col-span-3">Title</div>
-        <div className="col-span-2">Category</div>
-        <div className="col-span-2">Sub-category</div>
-        <div className="col-span-2">Price</div>
-        <div className="col-span-1">Stock</div>
-        <div className="col-span-1 text-right">Actions</div>
-      </div>
-
-      {/* Rows */}
-      <div className="space-y-2">
-        {products.map((p) => (
-          <div
-            key={p.id}
-            className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center border rounded p-3 hover:bg-gray-50"
+      <section className="mb-6 rounded-3xl border border-[#c5d5cc] bg-gradient-to-r from-[#12362c] via-[#194e40] to-[#1d5c4d] p-6 text-white md:p-8">
+        <p className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#d6efe3]">
+          <Sparkles size={14} /> Catalog Manager
+        </p>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-semibold md:text-4xl">Premium Product Operations</h1>
+            <p className="mt-2 text-sm text-[#d4e8df] md:text-base">Control pricing, stock, and product content from one elevated workspace.</p>
+          </div>
+          <button
+            onClick={() => navigate("/owner/products/add")}
+            className="inline-flex items-center gap-2 rounded-2xl bg-white px-4 py-2.5 text-sm font-semibold text-[#123d31] transition hover:bg-[#edf5ef]"
           >
-            {/* Image */}
-            <img
-              src={p.images[0]}
-              className="w-14 h-14 object-cover rounded md:col-span-1"
-            />
+            <Plus size={16} /> Add Product
+          </button>
+        </div>
+      </section>
 
-            {/* Title + Product ID */}
-            <div className="md:col-span-3">
-              <div className="text-xs text-gray-500">ID: #{p.id}</div>
-              <div className="font-medium">{p.title}</div>
+      <div className="mb-5 grid gap-4 sm:grid-cols-3">
+        <StatCard label="Total Products" value={String(products.length)} />
+        <StatCard label="Low Stock (<10)" value={String(lowStockCount)} />
+        <StatCard label="Visible Rows" value={String(filteredProducts.length)} />
+      </div>
+
+      <div className="mb-4 rounded-2xl border border-[#d6e3dc] bg-white p-3 shadow-sm">
+        <label className="flex items-center gap-2 rounded-xl border border-[#d1dfd8] bg-[#f8fbf9] px-3 py-2">
+          <Search size={15} className="text-[#557b6e]" />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by title, category, subcategory, ID"
+            className="w-full bg-transparent text-sm text-[#184839] outline-none"
+          />
+        </label>
+      </div>
+
+      <div className="space-y-3">
+        {filteredProducts.map((p) => (
+          <article
+            key={p.id}
+            className="grid grid-cols-1 items-center gap-4 rounded-2xl border border-[#d8e4de] bg-white p-4 shadow-[0_14px_30px_-24px_rgba(18,53,44,0.5)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_-24px_rgba(18,53,44,0.6)] md:grid-cols-[72px_1.4fr_1fr_1fr_1fr_auto]"
+          >
+            <img src={p.images[0]} className="h-[72px] w-[72px] rounded-xl border border-[#d1ded8] object-cover" alt={p.title} />
+
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#68887d]">ID #{p.id}</p>
+              <p className="mt-1 text-sm font-semibold text-[#163f32]">{p.title}</p>
             </div>
 
-            {/* Category */}
-            <div className="md:col-span-2 text-sm text-gray-600">
-              {p.category}
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.12em] text-[#68887d]">Category</p>
+              <p className="mt-1 text-sm text-[#295f50]">{p.category}</p>
             </div>
 
-            {/* Sub-category */}
-            <div className="md:col-span-2 text-sm text-gray-500">
-              {p.subCategory}
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.12em] text-[#68887d]">Subcategory</p>
+              <p className="mt-1 text-sm text-[#295f50]">{p.subCategory || "-"}</p>
             </div>
 
-            {/* Price */}
-            <div className="md:col-span-2 font-semibold">
-              ₹{p.discountPrice ?? p.price}
+            <div className="flex items-center justify-between gap-4 md:block">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.12em] text-[#68887d]">Price</p>
+                <p className="mt-1 text-sm font-semibold text-[#163f32]">Rs {p.discountPrice ?? p.price}</p>
+              </div>
+              <span className={`rounded-full px-3 py-1 text-xs font-semibold ${p.stock < 10 ? "bg-red-50 text-red-700" : "bg-emerald-50 text-emerald-700"}`}>
+                Stock {p.stock}
+              </span>
             </div>
 
-            {/* Stock */}
-            <div className="md:col-span-1 text-sm">
-              {p.stock}
-            </div>
-
-            {/* Actions */}
-            <div className="md:col-span-1 flex justify-end items-center gap-4">
+            <div className="flex items-center justify-end gap-2">
               <button
                 onClick={() => navigate(`/owner/products/edit/${p.id}`)}
-                className="text-sm text-gray-700 hover:underline"
+                className="inline-flex items-center gap-1 rounded-xl border border-[#bfd3c9] px-3 py-2 text-xs font-semibold text-[#1a5848] transition hover:bg-[#edf5ef]"
               >
-                Edit
+                <PencilLine size={14} /> Edit
               </button>
               <button
                 onClick={() => deleteProduct(p.id)}
-                className="text-xl text-gray-400 hover:text-black"
-                title="Delete"
+                className="inline-flex items-center gap-1 rounded-xl border border-red-200 px-3 py-2 text-xs font-semibold text-red-700 transition hover:bg-red-50"
               >
-                ×
+                <Trash2 size={14} /> Delete
               </button>
             </div>
-          </div>
+          </article>
         ))}
+
+        {filteredProducts.length === 0 ? (
+          <div className="rounded-2xl border border-[#d6e3dc] bg-white p-8 text-center text-[#4a6f63]">No products found for this search.</div>
+        ) : null}
       </div>
+    </div>
+  );
+}
+
+function StatCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-2xl border border-[#d6e3dc] bg-white p-4 shadow-sm">
+      <p className="text-xs uppercase tracking-[0.12em] text-[#6a877d]">{label}</p>
+      <p className="mt-2 text-2xl font-semibold text-[#143b2f]">{value}</p>
     </div>
   );
 }

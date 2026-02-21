@@ -21,6 +21,7 @@ export const createProduct = async (req, res) => {
       price,
       discountPrice,
       stock,
+      weightGrams,
       isBestSelling, // ⭐ NEW
     } = req.body;
 
@@ -42,6 +43,9 @@ export const createProduct = async (req, res) => {
     if (imageUrls.length === 0) {
       return res.status(400).json({ message: "At least one image required" });
     }
+    if (!weightGrams || Number(weightGrams) <= 0) {
+      return res.status(400).json({ message: "weightGrams must be a positive number" });
+    }
 
     const product = await prisma.product.create({
       data: {
@@ -52,6 +56,7 @@ export const createProduct = async (req, res) => {
         price: Number(price),
         discountPrice: discountPrice ? Number(discountPrice) : null,
         stock: Number(stock),
+        weightGrams: Number(weightGrams),
         images: imageUrls,
         isBestSelling: isBestSelling === "true", // ⭐ NEW
         createdById,
@@ -83,6 +88,7 @@ export const updateProduct = async (req, res) => {
       price,
       discountPrice,
       stock,
+      weightGrams,
       imageIndexes,
       isBestSelling, // ⭐ NEW
     } = req.body;
@@ -130,6 +136,10 @@ export const updateProduct = async (req, res) => {
       }
     }
 
+    if (weightGrams !== undefined && Number(weightGrams) <= 0) {
+      return res.status(400).json({ message: "weightGrams must be a positive number" });
+    }
+
     /* ---------- UPDATE PRODUCT ---------- */
     const updated = await ProductModel.update(productId, {
       title,
@@ -139,6 +149,7 @@ export const updateProduct = async (req, res) => {
       price: Number(price),
       discountPrice: discountPrice ? Number(discountPrice) : null,
       stock: Number(stock),
+      ...(weightGrams !== undefined ? { weightGrams: Number(weightGrams) } : {}),
       images,
       isBestSelling: isBestSelling === "true", // ⭐ NEW
     });
@@ -294,7 +305,6 @@ export const getProductById = async (req, res) => {
 
 /* ================= BEST SELLING PRODUCTS ================= */
 export const getBestSellingProducts = async (req, res) => {
-  console.log("Fetching best selling products..."); // DEBUG
   try {
     const products = await prisma.product.findMany({
       where: {

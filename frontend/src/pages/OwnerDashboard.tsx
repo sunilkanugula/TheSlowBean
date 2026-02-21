@@ -57,7 +57,7 @@ type DashboardOverview = {
   recentOrders: Array<{
     id: number;
     createdAt: string;
-    orderStatus: string;
+    deliveryStatus: string;
     paymentStatus: string;
     totalAmount: number;
     itemsCount: number;
@@ -297,7 +297,7 @@ export default function OwnerDashboard() {
                   <td className="py-3 pr-3">{order.paymentStatus}</td>
                   <td className="py-3">
                     <span className="rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-800">
-                      {order.orderStatus}
+                      {order.deliveryStatus}
                     </span>
                   </td>
                 </tr>

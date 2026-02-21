@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
 
-const ORDER_API = "http://localhost:5000/api/orders";
+import { api } from "../services/api";
+
+const ORDER_API = "/orders";
 
 type OrderItem = {
   id: number;
@@ -18,211 +21,153 @@ type OrderItem = {
 type Order = {
   id: number;
   totalAmount: number;
-  orderStatus: string;
+  deliveryStatus: string;
   createdAt: string;
   items: OrderItem[];
+};
+
+const statusClasses: Record<string, string> = {
+  CREATED: "bg-[#edf4ef] text-[#275e4f]",
+  CONFIRMED: "bg-[#e5f3ea] text-[#1f634f]",
+  PICKED_UP: "bg-[#e0f0ec] text-[#205b58]",
+  IN_TRANSIT: "bg-[#e2edf7] text-[#1f4f70]",
+  OUT_FOR_DELIVERY: "bg-[#e8eefb] text-[#2a4f87]",
+  DELIVERED: "bg-[#dff2e5] text-[#1f6946]",
+  FAILED: "bg-[#fde8e8] text-[#8a1d1d]",
+  RETURN_REQUESTED: "bg-[#fcf2e1] text-[#7f5d1d]",
+  RETURNED: "bg-[#ececec] text-[#454545]",
 };
 
 export default function MyOrders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
-  /* ================= FETCH ORDERS ================= */
   useEffect(() => {
+    const token = localStorage.getItem("token");
     if (!token) {
       navigate("/login");
       return;
     }
 
-    axios
-      .get(`${ORDER_API}/my`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+    api
+      .get(`${ORDER_API}/my`)
       .then((res) => setOrders(res.data || []))
       .catch(() => setOrders([]))
       .finally(() => setLoading(false));
-  }, []);
+  }, [navigate]);
 
-  /* ================= STATES ================= */
   if (loading) {
-    return (
-      <div className="max-w-6xl mx-auto p-6 text-gray-700">
-        Loading orders...
-      </div>
-    );
+    return <div className="mx-auto max-w-6xl p-6 text-[#38594f]">Loading orders...</div>;
   }
 
   if (orders.length === 0) {
     return (
-      <div className="max-w-6xl mx-auto p-6">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-2">
-          My Orders
-        </h1>
-        <p className="text-gray-600">
-          You have not placed any orders yet.
-        </p>
+      <div className="mx-auto max-w-6xl p-6">
+        <h1 className="text-3xl font-semibold text-[#143b2f]">My Orders</h1>
+        <p className="mt-2 text-[#58756c]">You have not placed any orders yet.</p>
       </div>
     );
   }
 
-  /* ================= UI ================= */
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-6">
-      <h1 className="text-2xl font-semibold text-gray-900">
-        My Orders
-      </h1>
+    <div className="mx-auto max-w-6xl p-6">
+      <div className="mb-6 rounded-3xl border border-[#c6d7ce] bg-gradient-to-r from-[#12362c] to-[#1d5c4d] p-6 text-white">
+        <p className="text-xs uppercase tracking-[0.34em] text-[#afd6c2]">Customer Center</p>
+        <h1 className="mt-2 text-3xl font-semibold">My Orders</h1>
+      </div>
 
-      {orders.map((order) => {
-        const totalItems = order.items.reduce(
-          (sum, i) => sum + i.quantity,
-          0
-        );
-
-        return (
-          <div
-            key={order.id}
-            className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden"
-          >
-            {/* ================= HEADER ================= */}
-            <div
-              className="flex items-center justify-between px-6 py-4 cursor-pointer"
-              onClick={() => navigate(`/orders/${order.id}`)}
+      <div className="space-y-5">
+        {orders.map((order) => {
+          const totalItems = order.items.reduce((sum, item) => sum + item.quantity, 0);
+          return (
+            <article
+              key={order.id}
+              className="overflow-hidden rounded-3xl border border-[#c7d8ce] bg-white shadow-[0_22px_55px_-35px_rgba(18,53,44,0.48)]"
             >
-              <div>
-                <p className="font-semibold text-gray-900">
-                  Order #{order.id}
-                </p>
-                <p className="text-xs text-gray-500">
-                  Placed on{" "}
-                  {new Date(order.createdAt).toLocaleDateString()}
-                </p>
-              </div>
-
-              <span className="px-3 py-1 text-xs font-semibold rounded-full bg-gray-900 text-white">
-                {order.orderStatus}
-              </span>
-            </div>
-
-            {/* ================= META ================= */}
-            <div className="flex gap-8 px-6 py-3 text-sm border-t border-b border-gray-100 text-gray-700">
-              <div>
-                <span className="font-medium text-gray-900">
-                  Items:
-                </span>{" "}
-                {totalItems}
-              </div>
-              <div>
-                <span className="font-medium text-gray-900">
-                  Payment:
-                </span>{" "}
-                Online
-              </div>
-              <div>
-                <span className="font-medium text-gray-900">
-                  Order Value:
-                </span>{" "}
-                ₹{order.totalAmount}
-              </div>
-            </div>
-
-            {/* ================= ITEMS ================= */}
-            <div className="px-6 py-4 space-y-4">
-              {order.items.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-center gap-4"
-                >
-                  {/* IMAGE */}
-                  <img
-                    src={item.product.images[0]}
-                    className="w-16 h-16 object-cover rounded-lg border border-gray-200"
-                  />
-
-                  {/* DETAILS */}
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">
-                      {item.product.title}
-                    </p>
-                    <p className="text-xs text-gray-600">
-                      Qty: {item.quantity} × ₹{item.price}
-                    </p>
-                  </div>
-
-                  {/* PRICE */}
-                  <div className="text-sm font-semibold text-gray-900">
-                    ₹{item.quantity * item.price}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* ================= TOTAL ================= */}
-            <div className="flex justify-end px-6 py-4 border-t border-gray-200 text-lg font-semibold text-gray-900">
-              Total ₹{order.totalAmount}
-            </div>
-
-            {/* ================= ACTION ================= */}
-            <div className="px-6 py-4 bg-gray-50">
-              {/* RETURN BUTTON */}
-              {order.orderStatus === "DELIVERED" && (
-                <button
-                  onClick={async (e) => {
-                    e.stopPropagation();
-
-                    try {
-                      await axios.post(
-                        `${ORDER_API}/${order.id}/return`,
-                        {},
-                        {
-                          headers: {
-                            Authorization: `Bearer ${token}`,
-                          },
-                        }
-                      );
-
-                      // ✅ UPDATE UI
-                      setOrders((prev) =>
-                        prev.map((o) =>
-                          o.id === order.id
-                            ? {
-                                ...o,
-                                orderStatus: "RETURN_REQUESTED",
-                              }
-                            : o
-                        )
-                      );
-                    } catch (err: any) {
-                      alert(
-                        err?.response?.data?.message ||
-                          "Failed to request return"
-                      );
-                    }
-                  }}
-                  className="px-4 py-2 text-sm font-medium border border-gray-900 text-gray-900 rounded-lg hover:bg-gray-900 hover:text-white transition"
-                >
-                  Request Return
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e4ece6] bg-[#f8fbf9] px-6 py-4">
+                <button onClick={() => navigate(`/orders/${order.id}`)} className="text-left">
+                  <p className="text-lg font-semibold text-[#153a2f]">Order #{order.id}</p>
+                  <p className="text-xs text-[#58756c]">Placed on {new Date(order.createdAt).toLocaleDateString()}</p>
                 </button>
-              )}
+                <span
+                  className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                    statusClasses[order.deliveryStatus] || "bg-[#edf4ef] text-[#275e4f]"
+                  }`}
+                >
+                  {order.deliveryStatus}
+                </span>
+              </div>
 
-              {/* RETURN STATES */}
-              {order.orderStatus === "RETURN_REQUESTED" && (
-                <p className="text-sm font-medium text-gray-700">
-                  Return requested
+              <div className="grid gap-3 border-b border-[#ecf2ee] px-6 py-3 text-sm text-[#365c50] md:grid-cols-3">
+                <p>
+                  Items: <strong>{totalItems}</strong>
                 </p>
-              )}
+                <p>
+                  Payment: <strong>Online</strong>
+                </p>
+                <p>
+                  Order Value: <strong>Rs {order.totalAmount}</strong>
+                </p>
+              </div>
 
-              {order.orderStatus === "RETURNED" && (
-                <p className="text-sm font-semibold text-gray-900">
-                  Order returned
-                </p>
-              )}
-            </div>
-          </div>
-        );
-      })}
+              <div className="space-y-3 px-6 py-4">
+                {order.items.map((item) => (
+                  <div key={item.id} className="flex items-center gap-3 rounded-xl border border-[#e6ede8] p-3">
+                    <img
+                      src={item.product.images[0]}
+                      className="h-16 w-16 rounded-lg border border-[#dbe7df] object-cover"
+                      alt={item.product.title}
+                    />
+                    <div className="flex-1">
+                      <p className="font-medium text-[#143b2f]">{item.product.title}</p>
+                      <p className="text-xs text-[#5a776d]">
+                        Qty: {item.quantity} x Rs {item.price}
+                      </p>
+                    </div>
+                    <p className="text-sm font-semibold text-[#173f33]">Rs {item.quantity * item.price}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#ecf2ee] bg-[#f9fbfa] px-6 py-4">
+                <div>
+                  {order.deliveryStatus === "DELIVERED" ? (
+                    <button
+                      onClick={async () => {
+                        try {
+                          const reason = window.prompt("Reason for return:");
+                          if (!reason || reason.trim().length < 2) {
+                            toast.error("Please enter a valid return reason");
+                            return;
+                          }
+                          await api.post(`${ORDER_API}/${order.id}/return`, { reason: reason.trim() });
+                          setOrders((prev) =>
+                            prev.map((o) =>
+                              o.id === order.id ? { ...o, deliveryStatus: "RETURN_REQUESTED" } : o
+                            )
+                          );
+                        } catch (err: any) {
+                          if (axios.isAxiosError(err)) {
+                            toast.error(err.response?.data?.message || "Failed to request return");
+                            return;
+                          }
+                          toast.error("Failed to request return");
+                        }
+                      }}
+                      className="rounded-lg border border-[#143b2f] px-4 py-2 text-sm font-semibold text-[#143b2f] transition hover:bg-[#143b2f] hover:text-white"
+                    >
+                      Request Return
+                    </button>
+                  ) : null}
+                </div>
+                <p className="text-lg font-semibold text-[#143b2f]">Total Rs {order.totalAmount}</p>
+              </div>
+            </article>
+          );
+        })}
+      </div>
     </div>
   );
 }

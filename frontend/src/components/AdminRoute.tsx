@@ -1,9 +1,34 @@
+import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 
-export default function AdminRoute() {
-  const role = localStorage.getItem("role");
+import { api } from "../services/api";
 
-  if (role !== "ADMIN") {
+export default function AdminRoute() {
+  const [state, setState] = useState<"loading" | "ok" | "forbidden">("loading");
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setState("forbidden");
+      return;
+    }
+
+    api
+      .get("/auth/me")
+      .then((res) => {
+        const role = res.data?.user?.role;
+        localStorage.setItem("user", JSON.stringify(res.data?.user || {}));
+        localStorage.setItem("role", role || "USER");
+        setState(role === "ADMIN" ? "ok" : "forbidden");
+      })
+      .catch(() => setState("forbidden"));
+  }, []);
+
+  if (state === "loading") {
+    return <div className="p-6 text-sm text-[#4b6f63]">Validating admin access...</div>;
+  }
+
+  if (state === "forbidden") {
     return <Navigate to="/" replace />;
   }
 

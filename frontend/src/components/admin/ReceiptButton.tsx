@@ -13,7 +13,7 @@ export default function ReceiptButton({ order }: ReceiptButtonProps) {
   const downloadReceipt = () => {
     const doc = new jsPDF();
 
-    const primaryColor = [22, 101, 52];
+    const primaryColor: [number, number, number] = [22, 101, 52];
 
     /* ================= HEADER BAR ================= */
     doc.setFillColor(...primaryColor);

@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
-const ORDER_API = "http://localhost:5000/api/orders";
+import { api } from "../services/api";
+
+const ORDER_API = "/orders";
 
 type OrderItem = {
   id: number;
@@ -24,178 +25,209 @@ type Address = {
   pincode: string;
 };
 
+type TrackingEvent = {
+  id: number;
+  status: string;
+  title: string;
+  description?: string;
+  location?: string;
+  source?: string;
+  eventTime: string;
+};
+
+type Shipment = {
+  id: number;
+  shiprocketOrderId?: string;
+  awbCode?: string;
+  status: string;
+  trackingUrl?: string;
+  lastSyncedAt?: string;
+};
 
 type Order = {
   id: number;
   totalAmount: number;
   paymentStatus?: string;
-  orderStatus?: string;
+  deliveryStatus?: string;
   createdAt: string;
   address?: Address;
   items: OrderItem[];
 };
 
+const STATUS_STEPS = [
+  "CREATED",
+  "CONFIRMED",
+  "PICKED_UP",
+  "IN_TRANSIT",
+  "OUT_FOR_DELIVERY",
+  "DELIVERED",
+];
 
 export default function OrderDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [order, setOrder] = useState<Order | null>(null);
+  const [shipment, setShipment] = useState<Shipment | null>(null);
+  const [events, setEvents] = useState<TrackingEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const token = localStorage.getItem("token");
-
   useEffect(() => {
-    axios
-      .get(`${ORDER_API}/my`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        const found = res.data.find(
-          (o: Order) => o.id === Number(id)
-        );
-        setOrder(found || null);
-      })
-      .finally(() => setLoading(false));
-  }, [id]);
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    let mounted = true;
+
+    const fetchOrderAndTracking = async () => {
+      try {
+        const [orderRes, trackingRes] = await Promise.allSettled([
+          api.get(`${ORDER_API}/my`),
+          api.get(`${ORDER_API}/${id}/tracking`),
+        ]);
+
+        if (!mounted) return;
+
+        if (orderRes.status === "fulfilled") {
+          const found = orderRes.value.data.find((o: Order) => o.id === Number(id));
+          setOrder(found || null);
+        }
+
+        if (trackingRes.status === "fulfilled") {
+          setShipment(trackingRes.value.data.shipment || null);
+          setEvents(trackingRes.value.data.events || []);
+        }
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    fetchOrderAndTracking();
+    const interval = setInterval(fetchOrderAndTracking, 30000);
+
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, [id, navigate]);
+
+  const currentStepIndex = useMemo(() => {
+    const status = shipment?.status || order?.deliveryStatus || "CREATED";
+    const idx = STATUS_STEPS.indexOf(status);
+    return idx >= 0 ? idx : 0;
+  }, [order?.deliveryStatus, shipment?.status]);
 
   if (loading) {
-    return (
-      <div className="max-w-5xl mx-auto p-6 text-green-700">
-        Loading order details...
-      </div>
-    );
+    return <div className="mx-auto max-w-5xl p-6 text-green-700">Loading order details...</div>;
   }
 
   if (!order) {
-    return (
-      <div className="max-w-5xl mx-auto p-6">
-        Order not found
-      </div>
-    );
+    return <div className="mx-auto max-w-5xl p-6">Order not found</div>;
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-6">
-      {/* PAGE TITLE */}
-      <h1 className="text-2xl font-semibold text-green-800">
-        Order #{order.id}
-      </h1>
+    <div className="mx-auto max-w-5xl space-y-6 p-6">
+      <h1 className="text-2xl font-semibold text-green-800">Order #{order.id}</h1>
 
-      {/* ORDER SUMMARY */}
-      <div className="bg-white rounded-2xl border border-green-100 shadow-sm p-5 flex flex-wrap justify-between gap-4">
-        <div className="space-y-1">
-          <p className="text-sm text-green-600">
-            Placed on
-          </p>
-          <p className="font-medium text-green-900">
-            {new Date(order.createdAt).toLocaleString()}
-          </p>
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-green-100 bg-white p-5 shadow-sm">
+        <div>
+          <p className="text-sm text-green-600">Placed on</p>
+          <p className="font-medium text-green-900">{new Date(order.createdAt).toLocaleString()}</p>
         </div>
 
-        <div className="space-y-1">
-          <p className="text-sm text-green-600">
-            Payment
-          </p>
-          <p className="font-medium text-green-900">
-            Paid (Online)
-          </p>
+        <div>
+          <p className="text-sm text-green-600">Current status</p>
+          <span className="inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-800">
+            {shipment?.status || order.deliveryStatus}
+          </span>
         </div>
 
-        {order.orderStatus && (
-          <div className="space-y-1">
-            <p className="text-sm text-green-600">
-              Status
-            </p>
-            <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-              {order.orderStatus}
-            </span>
-          </div>
-        )}
+        <div>
+          <p className="text-sm text-green-600">Delivery partner</p>
+          <p className="font-medium text-green-900">Shiprocket</p>
+        </div>
 
-        <div className="space-y-1 text-right">
-          <p className="text-sm text-green-600">
-            Order Total
-          </p>
-          <p className="text-xl font-bold text-green-800">
-            ₹{order.totalAmount}
-          </p>
+        <div className="text-right">
+          <p className="text-sm text-green-600">Order Total</p>
+          <p className="text-xl font-bold text-green-800">Rs {order.totalAmount}</p>
         </div>
       </div>
 
-     {/* DELIVERY ADDRESS */}
-{order.address && (
-  <div className="bg-white rounded-2xl border border-green-100 shadow-sm p-5">
-    <h3 className="text-lg font-semibold text-green-800 mb-3">
-      Delivery Address
-    </h3>
+      <div className="rounded-2xl border border-green-100 bg-white p-5 shadow-sm">
+        <div className="mb-5 flex items-center justify-between gap-3">
+          <h2 className="text-lg font-semibold text-green-800">Live Tracking</h2>
+          {shipment?.trackingUrl ? (
+            <a href={shipment.trackingUrl} target="_blank" rel="noreferrer" className="text-sm font-medium text-green-700 underline">
+              Open carrier tracking
+            </a>
+          ) : null}
+        </div>
 
-    <div className="space-y-2 text-sm text-green-900">
-      {/* NAME */}
-      <p className="font-semibold text-base">
-        {order.address.name}
-      </p>
+        <div className="mb-6 grid gap-3 md:grid-cols-5">
+          {STATUS_STEPS.map((step, index) => {
+            const done = index <= currentStepIndex;
+            return (
+              <div key={step} className="flex items-center gap-2">
+                <div className={`h-3 w-3 rounded-full ${done ? "bg-green-700" : "bg-green-200"}`} />
+                <p className={`text-xs font-medium ${done ? "text-green-800" : "text-green-500"}`}>
+                  {step.replaceAll("_", " ")}
+                </p>
+              </div>
+            );
+          })}
+        </div>
 
-      {/* ADDRESS LINE */}
-      <p className="leading-relaxed">
-        {order.address.line1}
-      </p>
-
-      {/* CITY / STATE / PIN */}
-      <p>
-        {order.address.city},{" "}
-        {order.address.state} -{" "}
-        <span className="font-medium">
-          {order.address.pincode}
-        </span>
-      </p>
-
-      {/* PHONES */}
-      <div className="pt-2 text-green-700 space-y-1">
-        <p>
-          <span className="font-medium">Phone:</span>{" "}
-          {order.address.phone}
-        </p>
-
-        {order.address.altPhone && (
-          <p>
-            <span className="font-medium">
-              Alternate Phone:
-            </span>{" "}
-            {order.address.altPhone}
-          </p>
-        )}
+        <div className="space-y-3">
+          {events.length === 0 ? (
+            <p className="text-sm text-green-700">Tracking events will appear once shipment updates begin.</p>
+          ) : (
+            events.map((event) => (
+              <div key={event.id} className="rounded-xl border border-green-100 bg-green-50/40 p-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-sm font-semibold text-green-900">{event.title}</p>
+                  <p className="text-xs text-green-700">{new Date(event.eventTime).toLocaleString()}</p>
+                </div>
+                <p className="mt-1 text-xs text-green-700">
+                  {event.status}
+                  {event.location ? ` | ${event.location}` : ""}
+                  {event.source ? ` | ${event.source}` : ""}
+                </p>
+                {event.description ? <p className="mt-1 text-sm text-green-800">{event.description}</p> : null}
+              </div>
+            ))
+          )}
+        </div>
       </div>
-    </div>
-  </div>
-)}
 
-      {/* ORDER ITEMS */}
-      <div className="bg-white rounded-2xl border border-green-100 shadow-sm p-5 space-y-4">
-        <h3 className="text-lg font-semibold text-green-800">
-          Items in this order
-        </h3>
+      {order.address ? (
+        <div className="rounded-2xl border border-green-100 bg-white p-5 shadow-sm">
+          <h3 className="mb-3 text-lg font-semibold text-green-800">Delivery Address</h3>
+          <p className="font-semibold text-green-900">{order.address.name}</p>
+          <p className="text-sm text-green-800">{order.address.line1}</p>
+          <p className="text-sm text-green-800">
+            {order.address.city}, {order.address.state} - {order.address.pincode}
+          </p>
+          <p className="mt-2 text-sm text-green-700">Phone: {order.address.phone}</p>
+          {order.address.altPhone ? <p className="text-sm text-green-700">Alternate: {order.address.altPhone}</p> : null}
+        </div>
+      ) : null}
+
+      <div className="space-y-4 rounded-2xl border border-green-100 bg-white p-5 shadow-sm">
+        <h3 className="text-lg font-semibold text-green-800">Items in this order</h3>
 
         {order.items.map((item) => (
-          <div
-            key={item.id}
-            className="flex gap-4 items-center border-b border-green-100 pb-4 last:border-none last:pb-0"
-          >
-            <img
-              src={item.product.images[0]}
-              className="w-20 h-20 object-cover rounded-lg border border-green-200"
-            />
+          <div key={item.id} className="flex items-center gap-4 border-b border-green-100 pb-4 last:border-none last:pb-0">
+            <img src={item.product.images[0]} className="h-20 w-20 rounded-lg border border-green-200 object-cover" alt={item.product.title} />
 
             <div className="flex-1">
-              <p className="font-medium text-green-900">
-                {item.product.title}
-              </p>
+              <p className="font-medium text-green-900">{item.product.title}</p>
               <p className="text-sm text-green-600">
-                Qty: {item.quantity} × ₹{item.price}
+                Qty: {item.quantity} x Rs {item.price}
               </p>
             </div>
 
-            <div className="font-semibold text-green-800">
-              ₹{item.quantity * item.price}
-            </div>
+            <div className="font-semibold text-green-800">Rs {item.quantity * item.price}</div>
           </div>
         ))}
       </div>

@@ -1,9 +1,6 @@
-import { useNavigate } from "react-router-dom";
 import heroBg from "../../assets/chocoBean.webp"; // change filename
 
 export default function ProductsHero() {
-  const navigate = useNavigate();
-
   return (
     <section className="relative min-h-[36vh] flex items-center overflow-hidden">
       

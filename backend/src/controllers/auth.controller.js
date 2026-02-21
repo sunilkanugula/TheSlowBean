@@ -8,7 +8,6 @@ import { sendEmail } from "../utils/sendEmail.js";
 export const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    console.log("Registering user:", name, email);
     if (!name || !email || !password)
       return res.status(400).json({ message: "All fields required" });
 
@@ -177,7 +176,6 @@ export const resetPassword = async (req, res) => {
     const { email, newPassword } = req.body;
 
     const user = await UserModel.findByEmail(email);
-    console.log(user)
     if (!user || !user.resetVerified)
       return res.status(403).json({ message: "OTP not verified" });
 
@@ -211,4 +209,47 @@ export const changePassword = async (req, res) => {
   res.status(500).json({ message: "Server error" });
 }
 
+};
+
+export const getMe = async (req, res) => {
+  try {
+    const user = await UserModel.findById(req.user.userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.json({
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        emailVerified: user.emailVerified,
+      },
+    });
+  } catch {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const logoutAll = async (req, res) => {
+  try {
+    await UserModel.incrementTokenVersion(req.user.userId);
+    res.json({ message: "Logged out from all sessions" });
+  } catch {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    const { name } = req.body;
+    const user = await UserModel.updateProfile(req.user.userId, {
+      ...(name ? { name } : {}),
+    });
+    res.json({ user });
+  } catch (err) {
+    if (err?.code === "P2002") {
+      return res.status(409).json({ message: "Email already in use" });
+    }
+    res.status(500).json({ message: "Server error" });
+  }
 };

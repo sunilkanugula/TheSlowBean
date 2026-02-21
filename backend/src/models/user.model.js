@@ -102,5 +102,26 @@ export const UserModel = {
       where: { id },
       data: { password }
     });
+  },
+
+  incrementTokenVersion: (id) => {
+    return prisma.user.update({
+      where: { id },
+      data: { tokenVersion: { increment: 1 } },
+    });
+  },
+
+  updateProfile: (id, data) => {
+    return prisma.user.update({
+      where: { id },
+      data,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        emailVerified: true,
+      },
+    });
   }
 };

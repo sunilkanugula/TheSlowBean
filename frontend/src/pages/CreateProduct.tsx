@@ -1,5 +1,9 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import type { ReactNode } from "react";
 import axios from "axios";
+import { ImagePlus, Loader2, Sparkles, UploadCloud } from "lucide-react";
+
+import AdminPanelNav from "../components/admin/AdminPanelNav";
 
 const API_URL = "http://localhost:5000/api/products";
 const MAX_IMAGES = 4;
@@ -23,22 +27,27 @@ export default function CreateProduct() {
 
   const token = localStorage.getItem("token");
 
-  /* ================= HANDLE INPUT ================= */
+  const imagePreviews = useMemo(() => {
+    return images.map((file) => ({
+      file,
+      url: URL.createObjectURL(file),
+    }));
+  }, [images]);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  /* ================= IMAGE HANDLER ================= */
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
 
     const selectedFiles = Array.from(e.target.files);
 
     if (selectedFiles.length > MAX_IMAGES) {
-      setError("You can upload a maximum of 4 images only");
+      setError(`You can upload a maximum of ${MAX_IMAGES} images`);
       e.target.value = "";
       return;
     }
@@ -47,7 +56,6 @@ export default function CreateProduct() {
     setImages(selectedFiles);
   };
 
-  /* ================= SUBMIT ================= */
   const submit = async () => {
     if (images.length === 0) {
       setError("Please select at least one image");
@@ -84,7 +92,6 @@ export default function CreateProduct() {
       });
 
       setSuccess("Product created successfully");
-
       setForm({
         title: "",
         description: "",
@@ -95,7 +102,6 @@ export default function CreateProduct() {
         stock: "",
         isBestSelling: false,
       });
-
       setImages([]);
     } catch (err: any) {
       setError(err.response?.data?.message || "Something went wrong");
@@ -105,126 +111,135 @@ export default function CreateProduct() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Create Product</h1>
+    <div className="mx-auto max-w-7xl p-6">
+      <AdminPanelNav />
 
-      {error && (
-        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
-          {error}
+      <section className="mb-6 rounded-3xl border border-[#c5d5cc] bg-gradient-to-r from-[#12362c] via-[#194e40] to-[#1d5c4d] p-6 text-white md:p-8">
+        <p className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#d6efe3]">
+          <Sparkles size={14} /> Product Studio
+        </p>
+        <h1 className="mt-4 text-3xl font-semibold md:text-4xl">Create Premium Product Listing</h1>
+        <p className="mt-2 max-w-2xl text-sm text-[#d4e8df] md:text-base">
+          Add polished product details and image set in one flow. This panel is optimized for fast catalog publishing.
+        </p>
+      </section>
+
+      {error ? (
+        <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{error}</div>
+      ) : null}
+
+      {success ? (
+        <div className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{success}</div>
+      ) : null}
+
+      <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+        <div className="rounded-3xl border border-[#d5e1da] bg-white p-5 shadow-[0_22px_55px_-35px_rgba(18,53,44,0.45)] md:p-6">
+          <h2 className="text-lg font-semibold text-[#153d31]">Product Information</h2>
+          <p className="mt-1 text-sm text-[#607c73]">Enter details exactly as customers should see them.</p>
+
+          <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <Field label="Title">
+              <input name="title" placeholder="Dark Almond Bar" value={form.title} onChange={handleChange} className="w-full rounded-xl border border-[#c8d9d0] bg-[#fcfefd] px-3 py-2.5 text-sm text-[#143b2f] outline-none transition focus:border-[#2b6f5c] focus:ring-2 focus:ring-[#c6dfd3]" />
+            </Field>
+
+            <Field label="Category">
+              <input name="category" placeholder="Chocolate" value={form.category} onChange={handleChange} className="w-full rounded-xl border border-[#c8d9d0] bg-[#fcfefd] px-3 py-2.5 text-sm text-[#143b2f] outline-none transition focus:border-[#2b6f5c] focus:ring-2 focus:ring-[#c6dfd3]" />
+            </Field>
+
+            <Field label="Sub Category">
+              <input name="subCategory" placeholder="Dark" value={form.subCategory} onChange={handleChange} className="w-full rounded-xl border border-[#c8d9d0] bg-[#fcfefd] px-3 py-2.5 text-sm text-[#143b2f] outline-none transition focus:border-[#2b6f5c] focus:ring-2 focus:ring-[#c6dfd3]" />
+            </Field>
+
+            <Field label="Price (INR)">
+              <input name="price" type="number" placeholder="249" value={form.price} onChange={handleChange} className="w-full rounded-xl border border-[#c8d9d0] bg-[#fcfefd] px-3 py-2.5 text-sm text-[#143b2f] outline-none transition focus:border-[#2b6f5c] focus:ring-2 focus:ring-[#c6dfd3]" />
+            </Field>
+
+            <Field label="Discount Price (optional)">
+              <input name="discountPrice" type="number" placeholder="199" value={form.discountPrice} onChange={handleChange} className="w-full rounded-xl border border-[#c8d9d0] bg-[#fcfefd] px-3 py-2.5 text-sm text-[#143b2f] outline-none transition focus:border-[#2b6f5c] focus:ring-2 focus:ring-[#c6dfd3]" />
+            </Field>
+
+            <Field label="Stock">
+              <input name="stock" type="number" placeholder="150" value={form.stock} onChange={handleChange} className="w-full rounded-xl border border-[#c8d9d0] bg-[#fcfefd] px-3 py-2.5 text-sm text-[#143b2f] outline-none transition focus:border-[#2b6f5c] focus:ring-2 focus:ring-[#c6dfd3]" />
+            </Field>
+          </div>
+
+          <Field label="Description" className="mt-4">
+            <textarea
+              name="description"
+              placeholder="Crafted from slow-roasted cocoa beans with caramelized almond crunch."
+              value={form.description}
+              onChange={handleChange}
+              rows={5}
+              className="w-full min-h-[130px] resize-y rounded-xl border border-[#c8d9d0] bg-[#fcfefd] px-3 py-2.5 text-sm text-[#143b2f] outline-none transition focus:border-[#2b6f5c] focus:ring-2 focus:ring-[#c6dfd3]"
+            />
+          </Field>
+
+          <label className="mt-5 inline-flex items-center gap-3 rounded-2xl border border-[#d8e5de] bg-[#f7fbf9] px-4 py-3 text-sm font-medium text-[#1a5547]">
+            <input
+              type="checkbox"
+              checked={form.isBestSelling}
+              onChange={(e) => setForm((prev) => ({ ...prev, isBestSelling: e.target.checked }))}
+              className="h-4 w-4 rounded border-[#93b8a8]"
+            />
+            Mark as Best Selling
+          </label>
         </div>
-      )}
 
-      {success && (
-        <div className="mb-4 p-3 bg-green-100 text-green-700 rounded">
-          {success}
+        <div className="rounded-3xl border border-[#d5e1da] bg-white p-5 shadow-[0_22px_55px_-35px_rgba(18,53,44,0.45)] md:p-6">
+          <h2 className="text-lg font-semibold text-[#153d31]">Image Set</h2>
+          <p className="mt-1 text-sm text-[#607c73]">Upload up to {MAX_IMAGES} images. First image will be cover.</p>
+
+          <label className="mt-5 flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-[#a8c3b7] bg-[#f7fbf9] px-4 py-8 text-center transition hover:bg-[#eff7f3]">
+            <UploadCloud size={24} className="text-[#2a6f5b]" />
+            <span className="mt-2 text-sm font-medium text-[#1f5d4d]">Choose Product Images</span>
+            <span className="mt-1 text-xs text-[#6b887f]">PNG, JPG, WEBP supported</span>
+            <input type="file" multiple accept="image/*" onChange={handleImageChange} className="hidden" />
+          </label>
+
+          <div className="mt-4 rounded-xl bg-[#f3f8f5] px-3 py-2 text-xs font-medium text-[#436a5f]">
+            {images.length} / {MAX_IMAGES} selected
+          </div>
+
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            {imagePreviews.map((preview, idx) => (
+              <div key={`${preview.file.name}-${idx}`} className="overflow-hidden rounded-xl border border-[#d9e6df]">
+                <img src={preview.url} alt={preview.file.name} className="h-28 w-full object-cover" />
+              </div>
+            ))}
+            {images.length === 0 ? (
+              <div className="col-span-2 flex min-h-[120px] items-center justify-center rounded-xl border border-dashed border-[#c7d9d0] text-sm text-[#6f8d83]">
+                <ImagePlus size={16} className="mr-2" /> No images selected
+              </div>
+            ) : null}
+          </div>
+
+          <button
+            onClick={submit}
+            disabled={loading}
+            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#153d31] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#102f26] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {loading ? <Loader2 size={16} className="animate-spin" /> : null}
+            {loading ? "Publishing Product..." : "Create Product"}
+          </button>
         </div>
-      )}
-
-      {/* ================= FORM ================= */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <input
-          name="title"
-          placeholder="Title"
-          value={form.title}
-          onChange={handleChange}
-          className="border p-2 rounded"
-        />
-
-        <input
-          name="category"
-          placeholder="Category"
-          value={form.category}
-          onChange={handleChange}
-          className="border p-2 rounded"
-        />
-
-        <input
-          name="subCategory"
-          placeholder="Sub Category"
-          value={form.subCategory}
-          onChange={handleChange}
-          className="border p-2 rounded"
-        />
-
-        <input
-          name="price"
-          type="number"
-          placeholder="Price"
-          value={form.price}
-          onChange={handleChange}
-          className="border p-2 rounded"
-        />
-
-        <input
-          name="discountPrice"
-          type="number"
-          placeholder="Discount Price"
-          value={form.discountPrice}
-          onChange={handleChange}
-          className="border p-2 rounded"
-        />
-
-        <input
-          name="stock"
-          type="number"
-          placeholder="Stock"
-          value={form.stock}
-          onChange={handleChange}
-          className="border p-2 rounded"
-        />
-      </div>
-
-      <textarea
-        name="description"
-        placeholder="Description"
-        value={form.description}
-        onChange={handleChange}
-        className="border p-2 rounded w-full mt-4"
-        rows={4}
-      />
-
-      {/* ================= BEST SELLING ================= */}
-      <div className="mt-4">
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={form.isBestSelling}
-            onChange={(e) =>
-              setForm({ ...form, isBestSelling: e.target.checked })
-            }
-          />
-          <span className="font-medium">Mark as Best Selling 🔥</span>
-        </label>
-      </div>
-
-      {/* ================= IMAGES ================= */}
-      <div className="mt-6">
-        <label className="font-semibold block mb-2">
-          Product Images (max 4)
-        </label>
-
-        <input
-          type="file"
-          multiple
-          accept="image/*"
-          onChange={handleImageChange}
-          className="border p-2 w-full rounded"
-        />
-
-        {images.length > 0 && (
-          <p className="text-sm text-gray-600 mt-2">
-            {images.length} / {MAX_IMAGES} images selected
-          </p>
-        )}
-      </div>
-
-      <button
-        onClick={submit}
-        disabled={loading}
-        className="mt-6 bg-green-600 text-white px-6 py-3 rounded font-semibold"
-      >
-        {loading ? "Creating..." : "Create Product"}
-      </button>
+      </section>
     </div>
+  );
+}
+
+function Field({
+  label,
+  className = "",
+  children,
+}: {
+  label: string;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <label className={`block ${className}`}>
+      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-[#55776b]">{label}</span>
+      {children}
+    </label>
   );
 }

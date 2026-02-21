@@ -9,17 +9,17 @@ const links = [
 
 export default function AdminPanelNav() {
   return (
-    <div className="mb-6 rounded-2xl border border-green-100 bg-white p-2 shadow-sm">
+    <div className="mb-6 rounded-3xl border border-[#bfd2c7] bg-white/95 p-2.5 shadow-[0_20px_50px_-35px_rgba(18,53,44,0.5)]">
       <div className="flex flex-wrap gap-2">
         {links.map((link) => (
           <NavLink
             key={link.to}
             to={link.to}
             className={({ isActive }) =>
-              `rounded-xl px-4 py-2 text-sm font-medium transition ${
+              `rounded-2xl px-4 py-2 text-sm font-semibold tracking-wide transition ${
                 isActive
-                  ? "bg-green-800 text-white"
-                  : "text-green-800 hover:bg-green-50"
+                  ? "bg-[#143b2f] text-white shadow"
+                  : "text-[#1a5848] hover:bg-[#edf5ef]"
               }`
             }
           >

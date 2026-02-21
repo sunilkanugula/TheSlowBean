@@ -1,17 +1,12 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Heart, ShoppingCart, Check } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { useWishlist } from "../hooks/useWishlist";
-
-const WISHLIST_API = "http://localhost:5000/api/wishlist";
-const PRODUCTS_API = "http://localhost:5000/api/products";
-const CART_API = "http://localhost:5000/api/cart";
+import { api } from "../services/api";
 
 const GUEST_KEY = "guest_wishlist";
-const TOKEN_KEY = "token";
 
 type Product = {
   id: number;
@@ -25,93 +20,80 @@ export default function Wishlist() {
   const [products, setProducts] = useState<Product[]>([]);
   const [addedToCart, setAddedToCart] = useState<number | null>(null);
 
-  const token = localStorage.getItem(TOKEN_KEY);
-  const { remove, isInWishlist } = useWishlist();
+  const { remove } = useWishlist();
 
-  /* =======================
-        LOAD WISHLIST
-  ======================= */
   useEffect(() => {
-    // 🔐 Logged-in user
+    const token = localStorage.getItem("token");
+
     if (token) {
-      axios
-        .get(WISHLIST_API, {
+      api
+        .get("/wishlist", {
           headers: { Authorization: `Bearer ${token}` },
         })
-        .then((res) => setProducts(res.data))
+        .then((res) => setProducts(res.data || []))
         .catch(() => setProducts([]));
+      return;
     }
-    // 👤 Guest user
-    else {
-      const stored = localStorage.getItem(GUEST_KEY);
-      if (!stored) return setProducts([]);
 
-      const ids: number[] = JSON.parse(stored);
-      if (!ids.length) return setProducts([]);
-
-      axios
-        .get(PRODUCTS_API)
-        .then((res) => {
-          const wished = res.data.filter((p: Product) =>
-            ids.includes(p.id)
-          );
-          setProducts(wished);
-        })
-        .catch(() => setProducts([]));
+    const stored = localStorage.getItem(GUEST_KEY);
+    if (!stored) {
+      setProducts([]);
+      return;
     }
-  }, [token]);
 
-  /* =======================
-        ADD TO CART
-  ======================= */
+    const ids: number[] = JSON.parse(stored);
+    if (!ids.length) {
+      setProducts([]);
+      return;
+    }
+
+    api
+      .get("/products")
+      .then((res) => {
+        const wished = (res.data || []).filter((p: Product) => ids.includes(p.id));
+        setProducts(wished);
+      })
+      .catch(() => setProducts([]));
+  }, []);
+
   const handleAddToCart = async (productId: number) => {
+    const token = localStorage.getItem("token");
+
     if (!token) {
       toast.warning("Please login to add items to cart");
       return;
     }
 
     try {
-      await axios.post(
-        CART_API,
-        { productId, quantity: 1 },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
+      await api.post("/cart", { productId, quantity: 1 });
       setAddedToCart(productId);
-      toast.success("Added to cart 🛒");
-
+      toast.success("Added to cart");
       setTimeout(() => setAddedToCart(null), 1200);
-    } catch {
-      toast.error("Failed to add to cart");
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Failed to add to cart");
     }
   };
 
-  /* =======================
-        REMOVE WISHLIST
-  ======================= */
-  const handleRemoveWishlist = (id: number) => {
-    remove(id);
-    setProducts((prev) => prev.filter((p) => p.id !== id));
-    toast("Removed from wishlist");
+  const handleRemoveWishlist = async (id: number) => {
+    try {
+      await remove(id);
+      setProducts((prev) => prev.filter((p) => p.id !== id));
+      toast("Removed from wishlist");
+    } catch {
+      toast.error("Failed to update wishlist");
+    }
   };
 
   return (
     <section className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-6">
-        {/* HEADER */}
         <div className="mb-20 text-center">
-          <h1 className="text-4xl md:text-5xl font-serif font-medium tracking-tight">
-            My Wishlist
-          </h1>
+          <h1 className="text-4xl md:text-5xl font-serif font-medium tracking-tight">My Wishlist</h1>
           <div className="mt-5 h-[2px] w-16 bg-gray-300 mx-auto" />
         </div>
 
         {products.length === 0 ? (
-          <p className="text-center text-gray-500">
-            Your wishlist is empty
-          </p>
+          <p className="text-center text-gray-500">Your wishlist is empty</p>
         ) : (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-10">
             {products.map((product) => {
@@ -122,7 +104,6 @@ export default function Wishlist() {
                   key={product.id}
                   className="group h-[360px] flex flex-col rounded-3xl bg-white shadow-sm hover:shadow-lg transition overflow-hidden"
                 >
-                  {/* IMAGE */}
                   <div className="relative overflow-hidden h-[160px] sm:h-auto sm:flex-1">
                     <Link to={`/products/${product.id}`}>
                       <img
@@ -132,57 +113,21 @@ export default function Wishlist() {
                       />
                     </Link>
 
-                    {/* REMOVE WISHLIST */}
                     <button
                       type="button"
-                      onClick={() =>
-                        handleRemoveWishlist(product.id)
-                      }
-                      className="
-                        absolute top-4 right-4
-                        opacity-0 scale-90
-                        pointer-events-none
-                        transition-all duration-300
-                        group-hover:opacity-100
-                        group-hover:scale-100
-                        group-hover:pointer-events-auto
-                      "
+                      onClick={() => handleRemoveWishlist(product.id)}
+                      className="absolute top-4 right-4 opacity-0 scale-90 pointer-events-none transition-all duration-300 group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto"
                     >
-                      <Heart
-                        size={18}
-                        className="fill-red-500 text-red-500"
-                      />
+                      <Heart size={18} className="fill-red-500 text-red-500" />
                     </button>
 
-                    {/* ACTION OVERLAY */}
-                    <div
-                      className="
-                        absolute inset-x-0 bottom-0
-                        bg-gradient-to-t from-black/70 to-transparent
-                        px-3 pb-3 pt-10
-                        opacity-100 md:opacity-0
-                        md:translate-y-4
-                        transition-all duration-300
-                        md:group-hover:opacity-100
-                        md:group-hover:translate-y-0
-                      "
-                    >
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-3 pb-3 pt-10 opacity-100 md:opacity-0 md:translate-y-4 transition-all duration-300 md:group-hover:opacity-100 md:group-hover:translate-y-0">
                       <div className="flex gap-2">
-                        {/* ADD TO CART */}
                         <button
-                          onClick={() =>
-                            handleAddToCart(product.id)
-                          }
-                          className={`
-                            group/button
-                            relative flex-1 rounded-lg text-xs font-semibold py-2
-                            transition-all duration-300 active:scale-95
-                            ${
-                              isAdded
-                                ? "bg-green-600 text-white"
-                                : "bg-white text-gray-900 hover:bg-gray-100"
-                            }
-                          `}
+                          onClick={() => handleAddToCart(product.id)}
+                          className={`group/button relative flex-1 rounded-lg text-xs font-semibold py-2 transition-all duration-300 active:scale-95 ${
+                            isAdded ? "bg-green-600 text-white" : "bg-white text-gray-900 hover:bg-gray-100"
+                          }`}
                         >
                           {isAdded ? (
                             <span className="flex items-center justify-center gap-1">
@@ -190,9 +135,7 @@ export default function Wishlist() {
                             </span>
                           ) : (
                             <span className="relative flex items-center justify-center">
-                              <span className="group-hover/button:opacity-0 transition">
-                                Add to Cart
-                              </span>
+                              <span className="group-hover/button:opacity-0 transition">Add to Cart</span>
                               <ShoppingCart
                                 size={14}
                                 className="absolute opacity-0 group-hover/button:opacity-100 transition"
@@ -204,33 +147,24 @@ export default function Wishlist() {
                     </div>
                   </div>
 
-                  {/* CONTENT */}
                   <div className="px-5 py-4">
-                    <h3 className="text-[14px] font-medium line-clamp-2">
-                      {product.title}
-                    </h3>
+                    <h3 className="text-[14px] font-medium line-clamp-2">{product.title}</h3>
 
                     <div className="mt-4 flex items-center justify-between">
                       {product.discountPrice ? (
                         <div className="flex gap-2">
-                          <span className="font-semibold">
-                            ₹{product.discountPrice}
-                          </span>
-                          <span className="text-xs text-gray-400 line-through">
-                            ₹{product.price}
-                          </span>
+                          <span className="font-semibold">Rs {product.discountPrice}</span>
+                          <span className="text-xs text-gray-400 line-through">Rs {product.price}</span>
                         </div>
                       ) : (
-                        <span className="font-semibold">
-                          ₹{product.price}
-                        </span>
+                        <span className="font-semibold">Rs {product.price}</span>
                       )}
 
                       <Link
                         to={`/products/${product.id}`}
                         className="text-[11px] uppercase tracking-widest text-gray-500 hover:text-gray-900"
                       >
-                        View →
+                        View &gt;
                       </Link>
                     </div>
                   </div>

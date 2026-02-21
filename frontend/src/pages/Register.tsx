@@ -31,24 +31,28 @@ export default function Register() {
     <AuthWrapper title="Create Account" error={error}>
       <Input
         label="Name"
-        onChange={(e: any) =>
-          setForm({ ...form, name: e.target.value })
-        }
+        placeholder="Full name"
+        onChange={(e: any) => setForm({ ...form, name: e.target.value })}
       />
       <Input
         label="Email"
-        onChange={(e: any) =>
-          setForm({ ...form, email: e.target.value })
-        }
+        type="email"
+        placeholder="name@email.com"
+        onChange={(e: any) => setForm({ ...form, email: e.target.value })}
       />
       <Input
         label="Password"
         type="password"
-        onChange={(e: any) =>
-          setForm({ ...form, password: e.target.value })
-        }
+        placeholder="At least 8 characters"
+        onChange={(e: any) => setForm({ ...form, password: e.target.value })}
       />
       <Button loading={loading} onClick={submit} text="Register" />
+      <p className="pt-1 text-center text-sm text-[#577169]">
+        Already have an account?{" "}
+        <button onClick={() => navigate("/login")} className="font-semibold text-[#1b6956] underline">
+          Login
+        </button>
+      </p>
     </AuthWrapper>
   );
 }

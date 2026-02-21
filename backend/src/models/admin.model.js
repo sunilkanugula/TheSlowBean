@@ -10,6 +10,7 @@ export const AdminModel = {
         orderBy: { createdAt: "desc" },
         include: {
           user: true,
+          shipment: true,
           items: {
             include: {
               product: true,
@@ -28,7 +29,7 @@ export const AdminModel = {
     return prisma.order.update({
       where: { id: Number(orderId) },
       data: {
-        orderStatus: status,
+        deliveryStatus: status,
       },
     });
   },
@@ -53,7 +54,7 @@ export const AdminModel = {
     /* ---------- TODAY PENDING ---------- */
     const todayPendingOrders = await prisma.order.count({
       where: {
-        orderStatus: "PENDING",
+        deliveryStatus: "CREATED",
         createdAt: {
           gte: todayStart,
           lte: todayEnd,
@@ -71,15 +72,15 @@ export const AdminModel = {
       prisma.order.count(),
 
       prisma.order.count({
-        where: { orderStatus: "PENDING" },
+        where: { deliveryStatus: "CREATED" },
       }),
 
       prisma.order.count({
-        where: { orderStatus: "SHIPPED" },
+        where: { deliveryStatus: "IN_TRANSIT" },
       }),
 
       prisma.order.count({
-        where: { orderStatus: "DELIVERED" },
+        where: { deliveryStatus: "DELIVERED" },
       }),
     ]);
 
@@ -143,8 +144,8 @@ export const AdminModel = {
     ] = await Promise.all([
       prisma.order.count(),
       prisma.order.count({ where: { paymentStatus: "PAID" } }),
-      prisma.order.count({ where: { orderStatus: "PENDING" } }),
-      prisma.order.count({ where: { orderStatus: "RETURN_REQUESTED" } }),
+      prisma.order.count({ where: { deliveryStatus: "CREATED" } }),
+      prisma.order.count({ where: { deliveryStatus: "RETURN_REQUESTED" } }),
       prisma.product.findMany({
         where: { stock: { lte: 5 } },
         orderBy: { stock: "asc" },
@@ -261,7 +262,7 @@ export const AdminModel = {
       recentOrders: recentOrders.map((order) => ({
         id: order.id,
         createdAt: order.createdAt,
-        orderStatus: order.orderStatus,
+        deliveryStatus: order.deliveryStatus,
         paymentStatus: order.paymentStatus,
         totalAmount: order.totalAmount,
         user: order.user,

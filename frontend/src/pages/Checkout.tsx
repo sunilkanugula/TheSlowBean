@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
-const CART_API = "http://localhost:5000/api/cart";
-const ORDER_API = "http://localhost:5000/api/orders";
+import { api } from "../services/api";
+
+const PHONE_REGEX = /^[6-9]\d{9}$/;
 
 declare global {
   interface Window {
@@ -15,46 +16,55 @@ export default function Checkout() {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
-  /* 👤 CUSTOMER */
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [altPhone, setAltPhone] = useState("");
 
-  /* 📍 ADDRESS */
   const [addressLine1, setAddressLine1] = useState("");
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [pincode, setPincode] = useState("");
 
-  /* PIN UX */
   const [pinLoading, setPinLoading] = useState(false);
   const [pinError, setPinError] = useState("");
 
-  const token = localStorage.getItem("token");
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  /* ================= LOAD CART ================= */
   useEffect(() => {
+    const token = localStorage.getItem("token");
     if (!token) {
       navigate("/login");
       return;
     }
 
-    axios
-      .get(CART_API, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => setItems(res.data.items || []));
-  }, []);
+    const buyNowProductId = Number(searchParams.get("productId"));
+    const buyNowQty = Number(searchParams.get("qty")) || 1;
 
-  /* ================= TOTAL ================= */
+    const bootstrap = async () => {
+      try {
+        if (buyNowProductId) {
+          await api.post("/cart", {
+            productId: buyNowProductId,
+            quantity: Math.max(1, buyNowQty),
+          });
+        }
+
+        const cartRes = await api.get("/cart");
+        setItems(cartRes.data?.items || []);
+      } catch {
+        setItems([]);
+      }
+    };
+
+    bootstrap();
+  }, [navigate, searchParams]);
+
   const total = items.reduce((sum, item) => {
-    const price =
-      item.product.discountPrice ?? item.product.price;
+    const price = item.product.discountPrice ?? item.product.price;
     return sum + price * item.quantity;
   }, 0);
 
-  /* ================= PINCODE LOOKUP ================= */
   const fetchCityState = async (pin: string) => {
     if (pin.length !== 6) return;
 
@@ -62,11 +72,9 @@ export default function Checkout() {
       setPinLoading(true);
       setPinError("");
 
-      const res = await axios.get(
-        `https://api.postalpincode.in/pincode/${pin}`
-      );
-
-      const data = res.data?.[0];
+      const res = await fetch(`https://api.postalpincode.in/pincode/${pin}`);
+      const json = await res.json();
+      const data = json?.[0];
 
       if (data?.Status === "Success") {
         const po = data.PostOffice[0];
@@ -84,62 +92,52 @@ export default function Checkout() {
     }
   };
 
-  /* ================= PAY NOW ================= */
   const payNow = async () => {
-    if (
-      !name ||
-      !phone ||
-      !addressLine1 ||
-      !city ||
-      !state ||
-      !pincode
-    ) {
-      alert("Please fill all required fields");
+    if (!name || !phone || !addressLine1 || !city || !state || !pincode) {
+      toast.error("Please fill all required fields");
       return;
     }
 
-    if (!/^[6-9]\d{9}$/.test(phone)) {
-      alert("Enter valid primary phone number");
+    if (!PHONE_REGEX.test(phone)) {
+      toast.error("Enter valid primary phone number");
       return;
     }
 
-    if (altPhone && !/^[6-9]\d{9}$/.test(altPhone)) {
-      alert("Enter valid alternate phone number");
+    if (altPhone && !PHONE_REGEX.test(altPhone)) {
+      toast.error("Enter valid alternate phone number");
+      return;
+    }
+
+    if (!items.length) {
+      toast.error("Your cart is empty");
+      return;
+    }
+
+    if (!window.Razorpay) {
+      toast.error("Razorpay SDK not loaded. Please refresh and try again.");
       return;
     }
 
     try {
       setLoading(true);
 
-      /* 1️⃣ CREATE RAZORPAY ORDER */
-      const res = await axios.post(
-        `${ORDER_API}/razorpay/create`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const createRes = await api.post("/orders/razorpay/create", {});
+      const { orderId, key, amount } = createRes.data;
+      const idempotencyKey = `${orderId}:${Date.now()}`;
 
-      const { orderId, key } = res.data;
-
-      /* 2️⃣ OPEN RAZORPAY */
       const razorpay = new window.Razorpay({
         key,
-        amount: total * 100,
+        amount,
         currency: "INR",
         order_id: orderId,
-        name: "TheSlowBean ☕",
+        name: "TheSlowBean",
         description: "Order Payment",
-
-        prefill: {
-          name,
-          contact: phone,
-        },
-
+        prefill: { name, contact: phone },
         handler: async (response: any) => {
-          /* 3️⃣ VERIFY + SAVE ORDER */
-          const verifyRes = await axios.post(
-            `${ORDER_API}/razorpay/verify`,
-            {
+          try {
+            const verifyRes = await api.post("/orders/razorpay/verify", {
               ...response,
+              idempotencyKey,
               address: {
                 name,
                 phone,
@@ -149,19 +147,20 @@ export default function Checkout() {
                 state,
                 pincode,
               },
-            },
-            { headers: { Authorization: `Bearer ${token}` } }
-          );
+            });
 
-          navigate(`/order-success/${verifyRes.data.orderId}`);
+            navigate(`/order-success/${verifyRes.data.orderId}`);
+          } catch {
+            toast.warning("Payment captured, but order verification failed. Please check My Orders.");
+            navigate("/orders");
+          }
         },
-
         theme: { color: "#000000" },
       });
 
       razorpay.open();
-    } catch {
-      alert("Payment failed");
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Payment failed");
     } finally {
       setLoading(false);
     }
@@ -171,7 +170,6 @@ export default function Checkout() {
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <h1 className="text-2xl font-bold">Checkout</h1>
 
-      {/* 👤 CUSTOMER */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <input
           placeholder="Full Name *"
@@ -184,9 +182,7 @@ export default function Checkout() {
           placeholder="Primary Phone *"
           value={phone}
           maxLength={10}
-          onChange={(e) =>
-            setPhone(e.target.value.replace(/\D/g, ""))
-          }
+          onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
           className="border p-3 rounded"
         />
 
@@ -194,14 +190,11 @@ export default function Checkout() {
           placeholder="Alternate Phone (optional)"
           value={altPhone}
           maxLength={10}
-          onChange={(e) =>
-            setAltPhone(e.target.value.replace(/\D/g, ""))
-          }
+          onChange={(e) => setAltPhone(e.target.value.replace(/\D/g, ""))}
           className="border p-3 rounded"
         />
       </div>
 
-      {/* 📍 ADDRESS */}
       <textarea
         placeholder="House / Street / Area *"
         value={addressLine1}
@@ -222,42 +215,22 @@ export default function Checkout() {
           className="border p-3 rounded"
         />
 
-        <input
-          placeholder="City"
-          value={city}
-          disabled
-          className="border p-3 rounded bg-gray-100"
-        />
+        <input placeholder="City" value={city} disabled className="border p-3 rounded bg-gray-100" />
 
-        <input
-          placeholder="State"
-          value={state}
-          disabled
-          className="border p-3 rounded bg-gray-100"
-        />
+        <input placeholder="State" value={state} disabled className="border p-3 rounded bg-gray-100" />
       </div>
 
-      {pinLoading && (
-        <p className="text-xs text-gray-500">
-          Fetching city & state…
-        </p>
-      )}
-      {pinError && (
-        <p className="text-xs text-red-500">{pinError}</p>
-      )}
+      {pinLoading && <p className="text-xs text-gray-500">Fetching city and state...</p>}
+      {pinError && <p className="text-xs text-red-500">{pinError}</p>}
 
-      {/* 💰 TOTAL */}
-      <div className="text-right text-lg font-semibold">
-        Total: ₹{total}
-      </div>
+      <div className="text-right text-lg font-semibold">Total: Rs {total}</div>
 
-      {/* 💳 PAY */}
       <button
         onClick={payNow}
         disabled={loading}
         className="w-full bg-black text-white py-3 rounded-lg font-semibold disabled:opacity-50"
       >
-        {loading ? "Processing Payment…" : "Pay with Razorpay"}
+        {loading ? "Processing Payment..." : "Pay with Razorpay"}
       </button>
     </div>
   );

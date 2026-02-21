@@ -7,24 +7,40 @@ import {
   forgotPassword,
   verifyResetOTP,
   resetPassword,
-  changePassword
+  changePassword,
+  getMe,
+  logoutAll,
+  updateProfile,
 } from "../controllers/auth.controller.js";
 import { protect } from "../middlewares/auth.middleware.js";
+import { validate } from "../middlewares/validate.middleware.js";
+import {
+  registerSchema,
+  emailOtpSchema,
+  resendEmailSchema,
+  loginSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+  changePasswordSchema,
+} from "../validations/auth.validation.js";
 
 const router = express.Router();
 
 /* AUTH */
-router.post("/register", register);
-router.post("/verify-email-otp", verifyEmailOTP);
-router.post("/resend-email-otp", resendEmailOTP);
-router.post("/login", login);
+router.post("/register", validate(registerSchema), register);
+router.post("/verify-email-otp", validate(emailOtpSchema), verifyEmailOTP);
+router.post("/resend-email-otp", validate(resendEmailSchema), resendEmailOTP);
+router.post("/login", validate(loginSchema), login);
 
 /* FORGOT PASSWORD */
-router.post("/forgot-password", forgotPassword);
-router.post("/verify-reset-otp", verifyResetOTP);
-router.post("/reset-password", resetPassword);
+router.post("/forgot-password", validate(forgotPasswordSchema), forgotPassword);
+router.post("/verify-reset-otp", validate(emailOtpSchema), verifyResetOTP);
+router.post("/reset-password", validate(resetPasswordSchema), resetPassword);
 
 /* LOGGED IN */
-router.post("/change-password", protect, changePassword);
+router.post("/change-password", protect, validate(changePasswordSchema), changePassword);
+router.get("/me", protect, getMe);
+router.post("/logout-all", protect, logoutAll);
+router.put("/profile", protect, updateProfile);
 
 export default router;

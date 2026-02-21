@@ -6,44 +6,34 @@ import AdminPanelNav from "../components/admin/AdminPanelNav";
 const ADMIN_API = "http://localhost:5000/api/admin";
 const PAGE_SIZE = 20;
 
-/* ================= STATUS COLORS ================= */
 const STATUS_COLORS: Record<string, string> = {
-  PENDING: "bg-green-50 text-green-700 border border-green-200",
-  SHIPPED: "bg-green-100 text-green-800 border border-green-300",
-  DELIVERED: "bg-green-200 text-green-900 border border-green-400",
-
-  RETURN_REQUESTED: "bg-yellow-50 text-yellow-800 border border-yellow-300",
-  RETURN_APPROVED: "bg-blue-50 text-blue-800 border border-blue-300",
-  RETURN_REJECTED: "bg-red-50 text-red-700 border border-red-300",
-  RETURNED: "bg-gray-100 text-gray-800 border border-gray-300",
+  CREATED: "bg-[#edf4ef] text-[#275e4f] border-[#cadbcf]",
+  CONFIRMED: "bg-[#e5f3ea] text-[#1f634f] border-[#c0ddcf]",
+  PICKED_UP: "bg-[#e0f0ec] text-[#205b58] border-[#bcd8d4]",
+  IN_TRANSIT: "bg-[#e2edf7] text-[#1f4f70] border-[#c5d7eb]",
+  OUT_FOR_DELIVERY: "bg-[#e8eefb] text-[#2a4f87] border-[#cdd8f2]",
+  DELIVERED: "bg-[#dff2e5] text-[#1f6946] border-[#badec8]",
+  FAILED: "bg-[#fde8e8] text-[#8a1d1d] border-[#f2c0c0]",
+  RETURN_REQUESTED: "bg-[#fcf2e1] text-[#7f5d1d] border-[#f0ddb8]",
+  RETURNED: "bg-[#ececec] text-[#454545] border-[#d6d6d6]",
 };
 
-/* ================= ALL STATUSES (FILTER) ================= */
 const ALL_STATUSES = [
-  "PENDING",
-  "SHIPPED",
+  "CREATED",
+  "CONFIRMED",
+  "PICKED_UP",
+  "IN_TRANSIT",
+  "OUT_FOR_DELIVERY",
   "DELIVERED",
+  "FAILED",
   "RETURN_REQUESTED",
-  "RETURN_APPROVED",
-  "RETURN_REJECTED",
   "RETURNED",
-];
+] as const;
 
-/* ================= STATUS FLOW (KEY LOGIC) ================= */
 const getAllowedNextStatuses = (current: string): string[] => {
   switch (current) {
-    case "PENDING":
-      return ["SHIPPED"];
-
-    case "SHIPPED":
-      return ["DELIVERED"];
-
-    case "RETURN_REQUESTED":
-      return ["RETURN_APPROVED", "RETURN_REJECTED"];
-
-    case "RETURN_APPROVED":
-      return ["RETURNED"];
-
+    case "CREATED":
+      return ["CONFIRMED"];
     default:
       return [];
   }
@@ -51,13 +41,9 @@ const getAllowedNextStatuses = (current: string): string[] => {
 
 export default function OwnerOrders() {
   const [orders, setOrders] = useState<any[]>([]);
-  const [statusFilter, setStatusFilter] = useState<
-    "ALL" | (typeof ALL_STATUSES)[number]
-  >("ALL");
-
+  const [statusFilter, setStatusFilter] = useState<"ALL" | (typeof ALL_STATUSES)[number]>("ALL");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-
   const [openStatusMenu, setOpenStatusMenu] = useState<number | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
@@ -65,31 +51,40 @@ export default function OwnerOrders() {
 
   const token = localStorage.getItem("token");
 
-  /* ================= FETCH ================= */
   const fetchOrders = async (page = 1) => {
-    const res = await axios.get(
-      `${ADMIN_API}/orders?page=${page}&limit=${PAGE_SIZE}`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-
+    const res = await axios.get(`${ADMIN_API}/orders?page=${page}&limit=${PAGE_SIZE}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     setOrders(res.data.orders);
     setCurrentPage(res.data.currentPage);
     setTotalPages(res.data.totalPages);
   };
 
-  /* ================= UPDATE STATUS ================= */
   const updateStatus = async () => {
     if (!selectedOrder || !newStatus) return;
-
     await axios.put(
       `${ADMIN_API}/orders/${selectedOrder.id}/status`,
       { status: newStatus },
       { headers: { Authorization: `Bearer ${token}` } }
     );
-
     setConfirmOpen(false);
     setSelectedOrder(null);
     setNewStatus("");
+    fetchOrders(currentPage);
+  };
+
+  const decideReturn = async (orderId: number, decision: "ACCEPT" | "REJECT") => {
+    const reason = window.prompt(
+      decision === "ACCEPT" ? "Reason for accepting return:" : "Reason for rejecting return:"
+    );
+    if (!reason || reason.trim().length < 2) return;
+
+    await axios.post(
+      `${ADMIN_API}/orders/${orderId}/return-decision`,
+      { decision, reason: reason.trim() },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
     fetchOrders(currentPage);
   };
 
@@ -99,242 +94,205 @@ export default function OwnerOrders() {
 
   const filteredOrders = useMemo(() => {
     if (statusFilter === "ALL") return orders;
-    return orders.filter((o) => o.orderStatus === statusFilter);
+    return orders.filter((o) => o.deliveryStatus === statusFilter);
   }, [orders, statusFilter]);
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-8">
+    <div className="mx-auto max-w-7xl p-6">
       <AdminPanelNav />
 
-      <h1 className="text-2xl font-semibold text-green-800">
-        Orders (Admin)
-      </h1>
+      <div className="mb-6 rounded-3xl border border-[#c5d5cc] bg-gradient-to-r from-[#12362c] to-[#1d5c4d] p-6 text-white">
+        <p className="text-xs uppercase tracking-[0.34em] text-[#add3c0]">Admin Fulfillment</p>
+        <h1 className="mt-2 text-3xl font-semibold">Order Operations</h1>
+      </div>
 
-      {/* ================= FILTER ================= */}
-      <div className="flex flex-wrap gap-2">
-        {(["ALL", ...ALL_STATUSES] as const).map((s) => (
+      <div className="mb-6 flex flex-wrap gap-2">
+        {(["ALL", ...ALL_STATUSES] as const).map((status) => (
           <button
-            key={s}
+            key={status}
             onClick={() => {
-              setStatusFilter(s);
+              setStatusFilter(status);
               setCurrentPage(1);
             }}
-            className={`px-3 py-1.5 rounded-full text-sm border transition ${
-              statusFilter === s
-                ? "bg-green-600 text-white border-green-600"
-                : "bg-white text-green-700 border-green-300 hover:bg-green-50"
+            className={`rounded-full border px-3 py-1.5 text-xs font-semibold tracking-wide transition ${
+              statusFilter === status
+                ? "border-[#153e32] bg-[#153e32] text-white"
+                : "border-[#c6d8ce] bg-white text-[#245647] hover:bg-[#edf5ef]"
             }`}
           >
-            {s}
+            {status}
           </button>
         ))}
       </div>
 
-      {/* ================= ORDERS ================= */}
-      {filteredOrders.map((order) => {
-        const a = order.address || {};
-        const nextStatuses = getAllowedNextStatuses(order.orderStatus);
-
-        return (
-          <div
-            key={order.id}
-            className="bg-white rounded-2xl border border-green-100 shadow-sm p-6 space-y-6"
-          >
-            {/* HEADER */}
-            <div className="flex justify-between items-start gap-4">
-              <div className="space-y-1">
-                <div className="flex flex-wrap items-center gap-6">
-                  <p className="text-lg font-semibold text-green-900">
-                    Order #{order.id}
+      <div className="space-y-5">
+        {filteredOrders.map((order) => {
+          const a = order.address || {};
+          const nextStatuses = getAllowedNextStatuses(order.deliveryStatus);
+          return (
+            <article
+              key={order.id}
+              className="rounded-3xl border border-[#c8d8cf] bg-white p-6 shadow-[0_22px_55px_-35px_rgba(18,53,44,0.48)]"
+            >
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <p className="text-xl font-semibold text-[#143b2f]">Order #{order.id}</p>
+                  <p className="mt-1 text-xs text-[#5c786f]">{new Date(order.createdAt).toLocaleString()}</p>
+                  <p className="mt-2 text-sm text-[#245647]">
+                    {order.user.name} <span className="text-[#7a948b]">({order.user.email})</span>
                   </p>
-
-                  <div className="flex items-center gap-1">
-                    <span className="text-xs text-green-600">
-                      Name:
-                    </span>
-                    <span className="text-sm font-medium text-green-900">
-                      {order.user.name}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-1">
-                    <span className="text-xs text-green-600">
-                      Email:
-                    </span>
-                    <span className="text-xs text-green-700">
-                      {order.user.email}
-                    </span>
-                  </div>
                 </div>
 
-                <p className="text-xs text-green-600">
-                  {new Date(order.createdAt).toLocaleString()}
-                </p>
+                <div className="relative">
+                  <button
+                    onClick={() =>
+                      nextStatuses.length
+                        ? setOpenStatusMenu(openStatusMenu === order.id ? null : order.id)
+                        : null
+                    }
+                    className={`rounded-full border px-3 py-1 text-xs font-semibold ${
+                      STATUS_COLORS[order.deliveryStatus] || "bg-[#edf4ef] text-[#275e4f] border-[#cadbcf]"
+                    } ${nextStatuses.length ? "cursor-pointer" : "cursor-default"}`}
+                  >
+                    {order.deliveryStatus}
+                    {nextStatuses.length ? " v" : ""}
+                  </button>
+
+                  {openStatusMenu === order.id ? (
+                    <div className="absolute right-0 z-20 mt-2 min-w-44 rounded-xl border border-[#d5e2da] bg-white p-1.5 shadow-xl">
+                      {nextStatuses.map((status) => (
+                        <button
+                          key={status}
+                          onClick={() => {
+                            setSelectedOrder(order);
+                            setNewStatus(status);
+                            setConfirmOpen(true);
+                            setOpenStatusMenu(null);
+                          }}
+                          className="block w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-[#1f5445] hover:bg-[#eef6f0]"
+                        >
+                          {status}
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
               </div>
 
-              {/* STATUS */}
-              <div className="relative">
-                <button
-                  onClick={() =>
-                    nextStatuses.length
-                      ? setOpenStatusMenu(
-                          openStatusMenu === order.id
-                            ? null
-                            : order.id
-                        )
-                      : null
-                  }
-                  className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                    STATUS_COLORS[order.orderStatus]
-                  } ${nextStatuses.length ? "cursor-pointer" : "cursor-default"}`}
-                >
-                  {order.orderStatus}
-                  {nextStatuses.length ? " ▼" : ""}
-                </button>
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
+                <div className="rounded-2xl border border-[#e2ebe5] bg-[#f9fbfa] p-4 text-sm text-[#355d51]">
+                  <p className="text-xs uppercase tracking-[0.2em] text-[#6f8981]">Delivery Address</p>
+                  <p className="mt-2 font-semibold text-[#143b2f]">{a.name}</p>
+                  <p>{a.phone}{a.altPhone ? ` / ${a.altPhone}` : ""}</p>
+                  <p>{a.line1}, {a.city}, {a.state} - {a.pincode}</p>
+                </div>
+                <div className="rounded-2xl border border-[#e2ebe5] bg-[#f9fbfa] p-4 text-sm text-[#355d51]">
+                  <p className="text-xs uppercase tracking-[0.2em] text-[#6f8981]">Payment</p>
+                  <p className="mt-2 font-semibold text-[#143b2f]">{order.paymentStatus}</p>
+                  {order.razorpayPaymentId ? (
+                    <p className="mt-1 break-all text-xs text-[#5f7a71]">Payment ID: {order.razorpayPaymentId}</p>
+                  ) : null}
+                </div>
+              </div>
 
-                {openStatusMenu === order.id && (
-                  <div className="absolute right-0 mt-2 bg-white border border-green-200 rounded-lg shadow z-10">
-                    {nextStatuses.map((s) => (
+              <div className="mt-5 space-y-3 border-t border-[#e8eeea] pt-4">
+                {order.items.map((item: any) => (
+                  <div key={item.id} className="flex items-center gap-3 rounded-xl border border-[#e8eeea] p-3">
+                    <img
+                      src={item.product.images[0]}
+                      className="h-14 w-14 rounded-lg border border-[#dbe7df] object-cover"
+                      alt={item.product.title}
+                    />
+                    <div className="flex-1">
+                      <p className="font-medium text-[#143b2f]">{item.product.title}</p>
+                      <p className="text-xs text-[#5b776d]">Qty {item.quantity}</p>
+                    </div>
+                    <p className="text-sm font-semibold text-[#173f33]">Rs {item.quantity * item.price}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-5 flex items-center justify-between border-t border-[#e8eeea] pt-4">
+                <ReceiptButton order={order} />
+                <div className="flex items-center gap-3">
+                  {order.deliveryStatus === "RETURN_REQUESTED" ? (
+                    <>
                       <button
-                        key={s}
-                        onClick={() => {
-                          setSelectedOrder(order);
-                          setNewStatus(s);
-                          setConfirmOpen(true);
-                          setOpenStatusMenu(null);
-                        }}
-                        className="block w-full px-4 py-2 text-sm text-green-800 hover:bg-green-50 text-left"
+                        onClick={() => decideReturn(order.id, "ACCEPT")}
+                        className="rounded-lg bg-[#1b6a4d] px-3 py-2 text-xs font-semibold text-white"
                       >
-                        {s}
+                        Accept Return
                       </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* ADDRESS + PAYMENT */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="rounded-lg bg-green-50/40 border border-green-100 p-4 text-sm">
-                <p className="text-xs uppercase text-green-600 mb-2">
-                  Delivery Address
-                </p>
-                <p className="font-medium text-green-900">
-                  {a.name}
-                </p>
-                <p className="text-xs text-green-700">
-                  {a.phone}
-                  {a.altPhone && ` / ${a.altPhone}`}
-                </p>
-                <p className="text-xs text-green-700">
-                  {a.line1}, {a.city}, {a.state} - {a.pincode}
-                </p>
-              </div>
-
-              <div className="rounded-lg bg-green-50/40 border border-green-100 p-4 text-sm">
-                <p className="text-xs uppercase text-green-600 mb-2">
-                  Payment
-                </p>
-                <p className="font-medium text-green-900">
-                  {order.paymentStatus}
-                </p>
-                {order.razorpayPaymentId && (
-                  <p className="text-xs text-green-700 break-all">
-                    Payment ID: {order.razorpayPaymentId}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* ITEMS */}
-            <div className="border-t border-green-100 pt-4 space-y-4">
-              {order.items.map((item: any) => (
-                <div
-                  key={item.id}
-                  className="flex items-center gap-4"
-                >
-                  <img
-                    src={item.product.images[0]}
-                    className="w-14 h-14 rounded-lg object-cover border border-green-200"
-                  />
-                  <div className="flex-1">
-                    <p className="font-medium text-green-900">
-                      {item.product.title}
-                    </p>
-                    <p className="text-xs text-green-600">
-                      Qty {item.quantity}
-                    </p>
-                  </div>
-                  <div className="text-sm font-medium text-green-800">
-                    ₹{item.quantity * item.price}
-                  </div>
+                      <button
+                        onClick={() => decideReturn(order.id, "REJECT")}
+                        className="rounded-lg border border-[#8a1d1d] px-3 py-2 text-xs font-semibold text-[#8a1d1d]"
+                      >
+                        Reject Return
+                      </button>
+                    </>
+                  ) : null}
+                  {order.shipment?.trackingUrl ? (
+                    <a
+                      href={order.shipment.trackingUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs font-semibold text-[#1f4f70] underline"
+                    >
+                      Track on Shiprocket
+                    </a>
+                  ) : null}
+                  <p className="text-lg font-semibold text-[#143b2f]">Total Rs {order.totalAmount}/-</p>
                 </div>
-              ))}
-            </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
 
-            {/* TOTAL + RECEIPT */}
-<div className="border-t border-green-100 pt-4 flex justify-between items-center">
-  
-  <ReceiptButton order={order} />
-
-  <div className="text-lg font-semibold text-green-800">
-    Total ₹ {order.totalAmount}/-
-  </div>
-</div>
-
-          </div>
-        );
-      })}
-
-      {/* ================= PAGINATION ================= */}
-      <div className="flex justify-center gap-4">
+      <div className="mt-8 flex items-center justify-center gap-4">
         <button
           disabled={currentPage === 1}
           onClick={() => fetchOrders(currentPage - 1)}
-          className="px-3 py-1 border border-green-300 rounded text-green-700 disabled:opacity-40"
+          className="rounded-lg border border-[#bfd2c7] px-3 py-1 text-sm font-medium text-[#1e5647] disabled:opacity-40"
         >
           Prev
         </button>
-        <span className="text-sm text-green-700">
+        <span className="text-sm text-[#4f7066]">
           Page {currentPage} of {totalPages}
         </span>
         <button
           disabled={currentPage === totalPages}
           onClick={() => fetchOrders(currentPage + 1)}
-          className="px-3 py-1 border border-green-300 rounded text-green-700 disabled:opacity-40"
+          className="rounded-lg border border-[#bfd2c7] px-3 py-1 text-sm font-medium text-[#1e5647] disabled:opacity-40"
         >
           Next
         </button>
       </div>
 
-      {/* ================= CONFIRM MODAL ================= */}
-      {confirmOpen && selectedOrder && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl w-full max-w-md p-6">
-            <h2 className="text-lg font-semibold text-green-800">
-              Update Order Status
-            </h2>
-            <p className="text-sm text-green-700 mt-2">
-              Change order #{selectedOrder.id} to{" "}
-              <b>{newStatus}</b>?
+      {confirmOpen && selectedOrder ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 px-4">
+          <div className="w-full max-w-md rounded-2xl border border-[#cad8d1] bg-white p-6">
+            <h2 className="text-xl font-semibold text-[#143b2f]">Update Delivery Status</h2>
+            <p className="mt-2 text-sm text-[#557167]">
+              Change order #{selectedOrder.id} to <strong>{newStatus}</strong>?
             </p>
-            <div className="flex justify-end gap-3 mt-6">
+            <div className="mt-6 flex justify-end gap-3">
               <button
                 onClick={() => setConfirmOpen(false)}
-                className="px-4 py-2 border border-green-300 rounded text-green-700"
+                className="rounded-lg border border-[#c7d6cd] px-4 py-2 text-sm text-[#2e5b4f]"
               >
                 Cancel
               </button>
               <button
                 onClick={updateStatus}
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded"
+                className="rounded-lg bg-[#143b2f] px-4 py-2 text-sm font-semibold text-white"
               >
                 Confirm
               </button>
             </div>
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

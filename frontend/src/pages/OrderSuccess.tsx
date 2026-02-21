@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { CheckCircle } from "lucide-react";
 
 export default function OrderSuccess() {
-  const { orderId } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
 
   return (
@@ -20,7 +20,7 @@ export default function OrderSuccess() {
 
         <p className="mt-4 font-semibold">
           Order ID:{" "}
-          <span className="text-green-600">#{orderId}</span>
+          <span className="text-green-600">#{id}</span>
         </p>
 
         <div className="mt-6 space-y-3">
