@@ -22,6 +22,14 @@ export const loginSchema = z.object({
   query: z.object({}),
 });
 
+export const googleLoginSchema = z.object({
+  body: z.object({
+    idToken: z.string().min(1),
+  }),
+  params: z.object({}),
+  query: z.object({}),
+});
+
 export const emailOtpSchema = z.object({
   body: z.object({
     email,

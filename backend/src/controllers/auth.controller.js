@@ -1,4 +1,6 @@
 import bcrypt from "bcrypt";
+import crypto from "crypto";
+import axios from "axios";
 import { UserModel } from "../models/user.model.js";
 import { generateToken } from "../utils/generateToken.js";
 import { generateOTP } from "../utils/generateOTP.js";
@@ -237,6 +239,72 @@ export const logoutAll = async (req, res) => {
     res.json({ message: "Logged out from all sessions" });
   } catch {
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+/* ================= GOOGLE LOGIN ================= */
+export const googleLogin = async (req, res) => {
+  try {
+    const { idToken } = req.body;
+    const configuredClientIds = String(process.env.GOOGLE_CLIENT_ID || "")
+      .split(",")
+      .map((v) => v.trim())
+      .filter(Boolean);
+
+    if (!configuredClientIds.length) {
+      return res.status(500).json({ message: "Google login is not configured" });
+    }
+
+    const tokenRes = await axios.get("https://oauth2.googleapis.com/tokeninfo", {
+      params: { id_token: idToken },
+      timeout: 10000,
+    });
+
+    const payload = tokenRes.data || {};
+    const aud = String(payload.aud || "");
+    const email = String(payload.email || "").trim().toLowerCase();
+    const emailVerified = String(payload.email_verified || "").toLowerCase() === "true";
+    const name = String(payload.name || "Google User").slice(0, 60);
+
+    if (!aud || !configuredClientIds.includes(aud)) {
+      return res.status(401).json({ message: "Invalid Google token audience" });
+    }
+
+    if (!email || !emailVerified) {
+      return res.status(401).json({ message: "Google account email is not verified" });
+    }
+
+    let user = await UserModel.findByEmail(email);
+
+    if (!user) {
+      const randomPassword = crypto.randomBytes(32).toString("hex");
+      const hashedPassword = await bcrypt.hash(randomPassword, 10);
+      user = await UserModel.create({
+        name,
+        email,
+        password: hashedPassword,
+        emailVerified: true,
+      });
+    } else if (!user.emailVerified) {
+      await UserModel.verifyEmail(email);
+      user = await UserModel.findByEmail(email);
+    }
+
+    const token = generateToken(user);
+
+    return res.json({
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        emailVerified: user.emailVerified,
+      },
+    });
+  } catch (err) {
+    console.error("GOOGLE LOGIN ERROR:", err?.response?.data || err);
+    return res.status(500).json({ message: "Google login failed" });
   }
 };
 

@@ -4,6 +4,7 @@ import {
   verifyEmailOTP,
   resendEmailOTP,
   login,
+  googleLogin,
   forgotPassword,
   verifyResetOTP,
   resetPassword,
@@ -19,6 +20,7 @@ import {
   emailOtpSchema,
   resendEmailSchema,
   loginSchema,
+  googleLoginSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
   changePasswordSchema,
@@ -31,6 +33,7 @@ router.post("/register", validate(registerSchema), register);
 router.post("/verify-email-otp", validate(emailOtpSchema), verifyEmailOTP);
 router.post("/resend-email-otp", validate(resendEmailSchema), resendEmailOTP);
 router.post("/login", validate(loginSchema), login);
+router.post("/google", validate(googleLoginSchema), googleLogin);
 
 /* FORGOT PASSWORD */
 router.post("/forgot-password", validate(forgotPasswordSchema), forgotPassword);

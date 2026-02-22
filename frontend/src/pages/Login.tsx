@@ -1,6 +1,23 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../services/api";
+
+declare global {
+  interface Window {
+    google?: {
+      accounts: {
+        id: {
+          initialize: (config: { client_id: string; callback: (response: { credential: string }) => void }) => void;
+          renderButton: (
+            parent: HTMLElement,
+            options: Record<string, string | number | boolean>
+          ) => void;
+          prompt: () => void;
+        };
+      };
+    };
+  }
+}
 
 export default function Login() {
   const navigate = useNavigate();
@@ -10,6 +27,15 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [emailNotVerified, setEmailNotVerified] = useState(false);
+  const googleBtnRef = useRef<HTMLDivElement | null>(null);
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
+  const persistAuth = (payload: any) => {
+    localStorage.setItem("token", payload.token);
+    localStorage.setItem("user", JSON.stringify(payload.user));
+    localStorage.setItem("role", payload.user.role);
+    navigate("/");
+  };
 
   const submit = async () => {
     try {
@@ -18,10 +44,7 @@ export default function Login() {
       setEmailNotVerified(false);
 
       const res = await api.post("/auth/login", { email, password });
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
-      localStorage.setItem("role", res.data.user.role);
-      navigate("/");
+      persistAuth(res.data);
     } catch (err: any) {
       if (err.response?.status === 403) {
         setEmailNotVerified(true);
@@ -32,6 +55,37 @@ export default function Login() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!googleClientId || !googleBtnRef.current || !window.google?.accounts?.id) return;
+
+    const handleGoogleCredential = async (response: { credential: string }) => {
+      try {
+        setLoading(true);
+        setError("");
+        const res = await api.post("/auth/google", { idToken: response.credential });
+        persistAuth(res.data);
+      } catch (err: any) {
+        setError(err?.response?.data?.message || "Google login failed");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    window.google.accounts.id.initialize({
+      client_id: googleClientId,
+      callback: handleGoogleCredential,
+    });
+
+    googleBtnRef.current.innerHTML = "";
+    window.google.accounts.id.renderButton(googleBtnRef.current, {
+      theme: "outline",
+      size: "large",
+      shape: "pill",
+      text: "continue_with",
+      width: 320,
+    });
+  }, [googleClientId]);
 
   const handleVerifyEmail = async () => {
     try {
@@ -129,6 +183,22 @@ export default function Login() {
             >
               Login
             </button>
+
+            <div className="my-4 flex items-center gap-3 text-xs text-[#7b8c84]">
+              <div className="h-px flex-1 bg-[#d8e3dd]" />
+              <span>OR</span>
+              <div className="h-px flex-1 bg-[#d8e3dd]" />
+            </div>
+
+            {googleClientId ? (
+              <div className="flex justify-center">
+                <div ref={googleBtnRef} />
+              </div>
+            ) : (
+              <p className="text-center text-xs text-[#8a9a93]">
+                Google login is not configured. Set `VITE_GOOGLE_CLIENT_ID`.
+              </p>
+            )}
 
             <p className="mt-4 text-center text-sm text-[#567068]">
               New here?{" "}
