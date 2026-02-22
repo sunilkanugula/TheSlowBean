@@ -51,6 +51,7 @@ export default function App() {
         <Route path="/order-success/:id" element={<OrderSuccess />} />
         <Route path="/orders" element={<MyOrders/>} />
         <Route path="/orders/:id" element={<OrderDetail/>} />
+        <Route path="/orders/:id/tracking" element={<TrackOrder />} />
         <Route path="/track-order" element={<TrackOrder />} />
         <Route path="/my-account" element={<MyAccount />} />
 

@@ -133,6 +133,12 @@ export default function MyOrders() {
 
               <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#ecf2ee] bg-[#f9fbfa] px-6 py-4">
                 <div>
+                  <button
+                    onClick={() => navigate(`/orders/${order.id}/tracking`)}
+                    className="mr-2 rounded-lg border border-[#153a2f] px-4 py-2 text-sm font-semibold text-[#153a2f] transition hover:bg-[#153a2f] hover:text-white"
+                  >
+                    Track Order
+                  </button>
                   {order.deliveryStatus === "DELIVERED" ? (
                     <button
                       onClick={async () => {

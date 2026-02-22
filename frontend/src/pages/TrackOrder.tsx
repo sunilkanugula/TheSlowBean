@@ -1,7 +1,6 @@
-import { useMemo, useState } from "react";
-import axios from "axios";
-
-const ORDER_API = "http://localhost:5000/api/orders";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { api } from "../services/api";
 
 const TIMELINE_STEPS = [
   "CREATED",
@@ -34,11 +33,27 @@ type TrackingResponse = {
 };
 
 export default function TrackOrder() {
-  const [orderId, setOrderId] = useState("");
-  const [mobile, setMobile] = useState("");
+  const { id: routeOrderId } = useParams();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  const orderId = routeOrderId || searchParams.get("orderId") || "";
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [data, setData] = useState<TrackingResponse | null>(null);
+  const role = localStorage.getItem("role");
+  const token = localStorage.getItem("token");
+  const scope = searchParams.get("scope") || "";
+
+  const resolveEndpoint = () => {
+    if (orderId.trim() && token && role === "ADMIN" && scope === "admin") {
+      return `/admin/orders/${orderId.trim()}/tracking`;
+    }
+    if (orderId.trim() && token) {
+      return `/orders/${orderId.trim()}/tracking`;
+    }
+    return null;
+  };
 
   const currentStepIndex = useMemo(() => {
     const status = data?.deliveryStatus || "CREATED";
@@ -46,65 +61,79 @@ export default function TrackOrder() {
     return index < 0 ? 0 : index;
   }, [data?.deliveryStatus]);
 
-  const searchTracking = async () => {
+  const searchTracking = async (silent = false) => {
     try {
-      setError("");
-      setLoading(true);
+      if (!silent) {
+        setError("");
+        setLoading(true);
+      }
 
-      if (!orderId.trim() && !mobile.trim()) {
-        setError("Enter Order ID or mobile number.");
+      if (!orderId.trim()) {
+        setError("Open tracking from your order card.");
         return;
       }
 
-      const res = await axios.get(`${ORDER_API}/track`, {
-        params: {
-          orderId: orderId.trim() || undefined,
-          mobile: mobile.trim() || undefined,
-        },
-      });
+      const endpoint = resolveEndpoint();
+      if (!endpoint) {
+        setError("Open tracking from your order card.");
+        return;
+      }
+
+      const res = await api.get(endpoint);
 
       setData(res.data);
+
     } catch (err: any) {
       setData(null);
       setError(err?.response?.data?.message || "Unable to fetch tracking right now.");
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
+  useEffect(() => {
+    if (!orderId) return;
+    searchTracking();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orderId, role, scope]);
+
+  useEffect(() => {
+    if (!data) return;
+    const timer = setInterval(() => {
+      searchTracking(true);
+    }, 30000);
+    return () => clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, orderId, role, scope, token]);
+
   return (
     <div className="mx-auto max-w-4xl p-6">
-      <h1 className="text-2xl font-semibold text-green-900">Track Order</h1>
-      <p className="mt-2 text-sm text-green-700">
-        Search using Order ID or mobile number used at checkout.
-      </p>
+      <h1 className="text-2xl font-semibold text-green-900">Track My Order</h1>
+      <p className="mt-2 text-sm text-green-700">Live shipment timeline for your selected order.</p>
 
-      <div className="mt-5 rounded-2xl border border-green-100 bg-white p-5 shadow-sm">
-        <div className="grid gap-3 md:grid-cols-2">
-          <input
-            value={orderId}
-            onChange={(e) => setOrderId(e.target.value)}
-            placeholder="Order ID"
-            className="rounded-lg border border-green-200 px-3 py-2 text-sm outline-none focus:border-green-500"
-          />
-          <input
-            value={mobile}
-            onChange={(e) => setMobile(e.target.value)}
-            placeholder="Mobile Number"
-            className="rounded-lg border border-green-200 px-3 py-2 text-sm outline-none focus:border-green-500"
-          />
+      {!orderId ? (
+        <div className="mt-5 rounded-2xl border border-green-100 bg-white p-5 shadow-sm">
+          <p className="text-sm text-green-800">Open this page from the `Track Order` button under an order.</p>
+          <button
+            onClick={() => navigate("/orders")}
+            className="mt-4 rounded-lg bg-green-700 px-4 py-2 text-sm font-medium text-white hover:bg-green-800"
+          >
+            Go To My Orders
+          </button>
         </div>
+      ) : null}
 
-        <button
-          onClick={searchTracking}
-          disabled={loading}
-          className="mt-4 rounded-lg bg-green-700 px-4 py-2 text-sm font-medium text-white hover:bg-green-800 disabled:opacity-60"
-        >
-          {loading ? "Searching..." : "Track Order"}
-        </button>
+      {loading ? (
+        <div className="mt-5 rounded-2xl border border-green-100 bg-white p-5 shadow-sm text-sm text-green-700">
+          Loading live status...
+        </div>
+      ) : null}
 
-        {error ? <p className="mt-3 text-sm text-red-600">{error}</p> : null}
-      </div>
+      {error ? (
+        <div className="mt-5 rounded-2xl border border-red-100 bg-white p-5 shadow-sm">
+          <p className="text-sm text-red-600">{error}</p>
+        </div>
+      ) : null}
 
       {data ? (
         <div className="mt-6 space-y-4 rounded-2xl border border-green-100 bg-white p-5 shadow-sm">
@@ -115,7 +144,7 @@ export default function TrackOrder() {
             </div>
             <div>
               <p className="text-sm text-green-600">Status</p>
-              <p className="font-semibold text-green-900">{data.deliveryStatus}</p>
+              <p className="font-semibold text-green-900">{data.deliveryStatus.replaceAll("_", " ")}</p>
             </div>
             <div>
               <p className="text-sm text-green-600">Last Updated</p>

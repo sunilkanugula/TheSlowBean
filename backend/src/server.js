@@ -1,6 +1,3 @@
-import dotenv from "dotenv";
-dotenv.config(); // MUST BE FIRST
-
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";

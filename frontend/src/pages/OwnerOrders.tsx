@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import ReceiptButton from "../components/admin/ReceiptButton";
 import AdminPanelNav from "../components/admin/AdminPanelNav";
 
@@ -40,6 +42,7 @@ const getAllowedNextStatuses = (current: string): string[] => {
 };
 
 export default function OwnerOrders() {
+  const navigate = useNavigate();
   const [orders, setOrders] = useState<any[]>([]);
   const [statusFilter, setStatusFilter] = useState<"ALL" | (typeof ALL_STATUSES)[number]>("ALL");
   const [currentPage, setCurrentPage] = useState(1);
@@ -86,6 +89,25 @@ export default function OwnerOrders() {
     );
 
     fetchOrders(currentPage);
+  };
+
+  const downloadShiprocketInvoice = async (orderId: number) => {
+    try {
+      const res = await axios.get(
+        `${ADMIN_API}/orders/${orderId}/shiprocket-document?type=invoice`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      const url = res.data?.url;
+      if (!url) {
+        toast.error("Shiprocket invoice URL not available");
+        return;
+      }
+
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Failed to download Shiprocket invoice");
+    }
   };
 
   useEffect(() => {
@@ -215,6 +237,19 @@ export default function OwnerOrders() {
               <div className="mt-5 flex items-center justify-between border-t border-[#e8eeea] pt-4">
                 <ReceiptButton order={order} />
                 <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => navigate(`/track-order?orderId=${order.id}&scope=admin`)}
+                    className="rounded-lg border border-[#205b58] px-3 py-2 text-xs font-semibold text-[#205b58] hover:bg-[#edf7f5]"
+                  >
+                    Track Timeline
+                  </button>
+                  <button
+                    onClick={() => downloadShiprocketInvoice(order.id)}
+                    disabled={!order.shipment}
+                    className="rounded-lg border border-[#1f4f70] px-3 py-2 text-xs font-semibold text-[#1f4f70] hover:bg-[#edf3f9] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Download Shiprocket Invoice
+                  </button>
                   {order.deliveryStatus === "RETURN_REQUESTED" ? (
                     <>
                       <button

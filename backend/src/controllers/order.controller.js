@@ -7,11 +7,25 @@ import {
 } from "../services/delivery.service.js";
 import {
   notifyOrderPlaced,
+  notifyAdminReturnRequested,
   notifyOrderStatusChange,
 } from "../services/notification.service.js";
 
 const toNumber = (value) => Number(value);
 const idempotencyCache = new Map();
+const GST_RATE = 0.05;
+
+const getCartTotals = (items = []) => {
+  const subtotal = items.reduce((sum, item) => {
+    const price = item.product.discountPrice ?? item.product.price;
+    return sum + price * item.quantity;
+  }, 0);
+
+  const gstAmount = Number((subtotal * GST_RATE).toFixed(2));
+  const totalAmount = Number((subtotal + gstAmount).toFixed(2));
+
+  return { subtotal, gstAmount, totalAmount };
+};
 
 const parseWebhookOrderId = (payload) => {
   const directId = Number(payload?.orderId || payload?.order_id || payload?.reference_order_id);
@@ -43,10 +57,7 @@ export const createRazorpayOrder = async (req, res) => {
       return res.status(400).json({ message: "Cart is empty" });
     }
 
-    const totalAmount = cart.items.reduce((sum, item) => {
-      const price = item.product.discountPrice ?? item.product.price;
-      return sum + price * item.quantity;
-    }, 0);
+    const { subtotal, gstAmount, totalAmount } = getCartTotals(cart.items);
     if (totalAmount <= 0) {
       return res.status(400).json({ message: "Invalid cart total" });
     }
@@ -60,6 +71,10 @@ export const createRazorpayOrder = async (req, res) => {
     res.json({
       orderId: razorpayOrder.id,
       amount: razorpayOrder.amount,
+      subtotal,
+      gstAmount,
+      totalAmount,
+      gstRate: GST_RATE,
       key: process.env.RAZORPAY_KEY_ID,
     });
   } catch (err) {
@@ -133,10 +148,7 @@ export const verifyRazorpayPayment = async (req, res) => {
       }
     }
 
-    const totalAmount = cart.items.reduce((sum, item) => {
-      const price = item.product.discountPrice ?? item.product.price;
-      return sum + price * item.quantity;
-    }, 0);
+    const { subtotal, gstAmount, totalAmount } = getCartTotals(cart.items);
 
     const order = await prisma.$transaction(async (tx) => {
       const createdOrder = await tx.order.create({
@@ -203,6 +215,10 @@ export const verifyRazorpayPayment = async (req, res) => {
     const responsePayload = {
       message: "Payment successful, order placed",
       orderId: order.id,
+      subtotal,
+      gstAmount,
+      totalAmount,
+      gstRate: GST_RATE,
     };
 
     if (idempotencyKey) {
@@ -220,6 +236,7 @@ export const verifyRazorpayPayment = async (req, res) => {
 
 const attemptRefund = async (order) => {
   if (!order?.razorpayPaymentId) return { ok: false, reason: "payment_id_missing" };
+  if (!razorpay) return { ok: false, reason: "gateway_not_configured" };
   try {
     await razorpay.payments.refund(order.razorpayPaymentId, {});
     return { ok: true };
@@ -281,6 +298,16 @@ export const cancelMyOrder = async (req, res) => {
       message: refund.ok
         ? "Order cancelled and refund initiated"
         : "Order cancelled, refund will be processed manually",
+    });
+
+    Promise.allSettled([
+      notifyOrderStatusChange(orderId, refund.ok ? "CANCELLED" : "CANCELLED_REFUND_PENDING"),
+    ]).then((results) => {
+      for (const result of results) {
+        if (result.status === "rejected") {
+          console.error("CANCEL ORDER SIDE-EFFECT ERROR:", result.reason);
+        }
+      }
     });
   } catch (err) {
     console.error("CANCEL ORDER ERROR:", err);
@@ -376,7 +403,7 @@ export const requestReturn = async (req, res) => {
       });
     });
 
-    await notifyOrderStatusChange(orderId, "RETURN_REQUESTED");
+    await notifyAdminReturnRequested(orderId, reason);
     res.json({ message: "Return request submitted" });
   } catch (err) {
     console.error("RETURN REQUEST ERROR:", err);

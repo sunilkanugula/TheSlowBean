@@ -225,7 +225,8 @@ export const getMe = async (req, res) => {
         emailVerified: user.emailVerified,
       },
     });
-  } catch {
+  } catch (err) {
+    console.error("LOGIN ERROR:", err);
     res.status(500).json({ message: "Server error" });
   }
 };

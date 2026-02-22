@@ -33,6 +33,22 @@ const buildPackageDimensionsByWeight = (totalWeightKg) => {
 const buildShiprocketOrderPayload = (order) => {
   const address = order.address || {};
   const pickupLocation = process.env.SHIPROCKET_PICKUP_LOCATION || "Primary";
+  const configuredGstRate = Number(process.env.GST_RATE || 0.05);
+  const configuredGstPercent = Number((configuredGstRate * 100).toFixed(2));
+  const shiprocketPricesIncludeGst =
+    String(process.env.SHIPROCKET_PRICES_INCLUDE_GST || "true").toLowerCase() === "true";
+  const subTotal = Number(
+    order.items
+      .reduce((sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 0), 0)
+      .toFixed(2)
+  );
+  const totalFromOrder = Number(order.totalAmount || 0);
+  const inferredTax =
+    totalFromOrder > subTotal
+      ? Number((totalFromOrder - subTotal).toFixed(2))
+      : Number((subTotal * configuredGstRate).toFixed(2));
+  const grandTotal = Number((subTotal + inferredTax).toFixed(2));
+  const invoiceDate = new Date(order.createdAt).toISOString().slice(0, 10);
 
   const totalWeightGrams = order.items.reduce((sum, item) => {
     return sum + Number(item.product.weightGrams || 0) * Number(item.quantity || 0);
@@ -45,9 +61,31 @@ const buildShiprocketOrderPayload = (order) => {
   const totalWeightKg = Number((totalWeightGrams / 1000).toFixed(3));
   const dimensions = buildPackageDimensionsByWeight(totalWeightKg);
 
+  const orderItems = order.items.map((item) => {
+    const basePrice = Number(item.price || 0);
+    const gstInclusivePrice = Number((basePrice * (1 + configuredGstRate)).toFixed(2));
+    const sellingPrice = shiprocketPricesIncludeGst ? gstInclusivePrice : basePrice;
+    const lineSubtotal = basePrice * Number(item.quantity || 0);
+    const lineTax =
+      subTotal > 0 ? Number(((lineSubtotal / subTotal) * inferredTax).toFixed(2)) : 0;
+
+      return {
+        name: item.product.title,
+        sku: `SKU-${item.product.id}`,
+        units: item.quantity,
+        selling_price: sellingPrice,
+        tax: configuredGstPercent,
+      };
+    });
+
+  const shiprocketSubTotal = shiprocketPricesIncludeGst ? grandTotal : subTotal;
+  const shiprocketTax = shiprocketPricesIncludeGst ? 0 : inferredTax;
+
   return {
     order_id: String(order.id),
-    order_date: new Date(order.createdAt).toISOString().slice(0, 10),
+    order_date: invoiceDate,
+    invoice_no: `TSB-${order.id}`,
+    invoice_date: invoiceDate,
     pickup_location: pickupLocation,
     channel_id: "",
     billing_customer_name: address.name || order.user?.name || "Customer",
@@ -68,14 +106,15 @@ const buildShiprocketOrderPayload = (order) => {
     shipping_email: order.user?.email || "support@example.com",
     shipping_phone: address.phone || "0000000000",
     shipping_is_billing: false,
-    order_items: order.items.map((item) => ({
-      name: item.product.title,
-      sku: `SKU-${item.product.id}`,
-      units: item.quantity,
-      selling_price: item.price,
-    })),
+    order_items: orderItems,
     payment_method: "Prepaid",
-    sub_total: order.totalAmount,
+    sub_total: shiprocketSubTotal,
+    tax: shiprocketTax,
+    total: grandTotal,
+    total_discount: 0,
+    shipping_charges: 0,
+    transaction_charges: 0,
+    giftwrap_charges: 0,
     weight: totalWeightKg,
     length: dimensions.length,
     breadth: dimensions.breadth,
@@ -144,16 +183,16 @@ export const createShipmentForOrder = async (orderId) => {
     await tx.order.update({
       where: { id: numericOrderId },
       data: {
-        deliveryStatus: "CREATED",
+        deliveryStatus: "CONFIRMED",
       },
     });
 
     await tx.orderTrackingEvent.create({
       data: {
         orderId: numericOrderId,
-        status: "CREATED",
-        title: "Shipment Created",
-        description: "Shipment created via Shiprocket on admin confirmation",
+        status: "CONFIRMED",
+        title: "Order Confirmed",
+        description: "Order confirmed by admin and shipment created via Shiprocket.",
         source: "SHIPROCKET",
         eventTime: new Date(),
       },

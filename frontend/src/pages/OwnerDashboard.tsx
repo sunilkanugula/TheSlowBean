@@ -6,6 +6,7 @@ import {
   Area,
   AreaChart,
   CartesianGrid,
+  Cell,
   Legend,
   Pie,
   PieChart,
@@ -75,6 +76,12 @@ const currency = (value: number) =>
     currency: "INR",
     maximumFractionDigits: 0,
   }).format(value);
+
+const ORDER_HEALTH_COLORS: Record<string, string> = {
+  Paid: "#15803d",
+  Pending: "#d97706",
+  "Return Requested": "#b91c1c",
+};
 
 export default function OwnerDashboard() {
   const [overview, setOverview] = useState<DashboardOverview | null>(null);
@@ -189,15 +196,29 @@ export default function OwnerDashboard() {
                   outerRadius={84}
                   innerRadius={44}
                   paddingAngle={2}
-                  fill="#166534"
-                />
+                >
+                  {statusPieData.map((entry) => (
+                    <Cell
+                      key={entry.name}
+                      fill={ORDER_HEALTH_COLORS[entry.name] || "#166534"}
+                    />
+                  ))}
+                </Pie>
                 <Tooltip />
                 <Legend />
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <div className="mt-4 rounded-xl bg-green-50 p-3 text-sm text-green-800">
-            Pending: <strong>{kpis.pendingOrders}</strong> | Returns: <strong>{kpis.returnRequestedOrders}</strong>
+          <div className="mt-4 flex flex-wrap gap-2 rounded-xl bg-slate-50 p-3 text-xs font-semibold">
+            <span className="rounded-full bg-green-100 px-3 py-1 text-green-800">
+              Paid: {kpis.paidOrders}
+            </span>
+            <span className="rounded-full bg-amber-100 px-3 py-1 text-amber-800">
+              Pending: {kpis.pendingOrders}
+            </span>
+            <span className="rounded-full bg-red-100 px-3 py-1 text-red-800">
+              Return Requested: {kpis.returnRequestedOrders}
+            </span>
           </div>
         </div>
       </div>

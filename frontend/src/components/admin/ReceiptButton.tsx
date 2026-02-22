@@ -12,6 +12,12 @@ export default function ReceiptButton({ order }: ReceiptButtonProps) {
 
   const downloadReceipt = () => {
     const doc = new jsPDF();
+    const subtotal = order.items.reduce(
+      (sum: number, item: any) => sum + Number(item.quantity) * Number(item.price),
+      0
+    );
+    const gstAmount = Number((subtotal * 0.05).toFixed(2));
+    const grandTotal = Number(order.totalAmount ?? subtotal + gstAmount);
 
     const primaryColor: [number, number, number] = [22, 101, 52];
 
@@ -93,7 +99,45 @@ export default function ReceiptButton({ order }: ReceiptButtonProps) {
         ]),
         [
           {
-            content: "Grand Total",
+            content: "Subtotal",
+            colSpan: 3,
+            styles: {
+              halign: "right",
+              fontStyle: "bold",
+              fontSize: 10,
+            },
+          },
+          {
+            content: formatCurrency(subtotal),
+            styles: {
+              halign: "right",
+              fontStyle: "bold",
+              fontSize: 10,
+            },
+          },
+        ],
+        [
+          {
+            content: "GST (5%)",
+            colSpan: 3,
+            styles: {
+              halign: "right",
+              fontStyle: "bold",
+              fontSize: 10,
+            },
+          },
+          {
+            content: formatCurrency(gstAmount),
+            styles: {
+              halign: "right",
+              fontStyle: "bold",
+              fontSize: 10,
+            },
+          },
+        ],
+        [
+          {
+            content: "Grand Total (Incl. GST)",
             colSpan: 3,
             styles: {
               halign: "right",
@@ -102,7 +146,7 @@ export default function ReceiptButton({ order }: ReceiptButtonProps) {
             },
           },
           {
-            content: formatCurrency(order.totalAmount),
+            content: formatCurrency(grandTotal),
             styles: {
               halign: "right",
               fontStyle: "bold",

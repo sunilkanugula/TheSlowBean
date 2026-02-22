@@ -64,6 +64,8 @@ export default function Checkout() {
     const price = item.product.discountPrice ?? item.product.price;
     return sum + price * item.quantity;
   }, 0);
+  const gstAmount = Number((total * 0.05).toFixed(2));
+  const grandTotal = Number((total + gstAmount).toFixed(2));
 
   const fetchCityState = async (pin: string) => {
     if (pin.length !== 6) return;
@@ -223,7 +225,20 @@ export default function Checkout() {
       {pinLoading && <p className="text-xs text-gray-500">Fetching city and state...</p>}
       {pinError && <p className="text-xs text-red-500">{pinError}</p>}
 
-      <div className="text-right text-lg font-semibold">Total: Rs {total}</div>
+      <div className="rounded-lg border p-4 text-sm">
+        <div className="flex justify-between py-1">
+          <span>Subtotal</span>
+          <span>Rs {total.toFixed(2)}</span>
+        </div>
+        <div className="flex justify-between py-1">
+          <span>GST (5%)</span>
+          <span>Rs {gstAmount.toFixed(2)}</span>
+        </div>
+        <div className="mt-2 flex justify-between border-t pt-2 text-lg font-semibold">
+          <span>Grand Total</span>
+          <span>Rs {grandTotal.toFixed(2)}</span>
+        </div>
+      </div>
 
       <button
         onClick={payNow}
