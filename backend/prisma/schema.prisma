@@ -50,8 +50,7 @@ model Product {
   id            Int      @id @default(autoincrement())
   title         String
   description   String?
-  category      String
-  subCategory   String?
+  collection    String
   price         Float
   discountPrice Float?
   stock         Int
@@ -60,9 +59,28 @@ model Product {
   isBestSelling Boolean  @default(false)
   createdById   Int
   createdAt     DateTime @default(now())
+  collections   ProductCollection[]
   cartItems     CartItem[]
   orderItems    OrderItem[]
   wishlistedBy  Wishlist[]
+}
+
+model Collection {
+  id        Int                 @id @default(autoincrement())
+  name      String              @unique
+  imageUrl  String
+  createdAt DateTime            @default(now())
+  products  ProductCollection[]
+}
+
+model ProductCollection {
+  productId    Int
+  collectionId Int
+  product      Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+
+  @@id([productId, collectionId])
+  @@index([collectionId])
 }
 
 model Wishlist {

@@ -12,8 +12,7 @@ type Product = {
   id: number;
   title: string;
   description?: string;
-  category: string;
-  subCategory?: string;
+  collection: string;
   price: number;
   discountPrice?: number;
   stock: number;
@@ -115,8 +114,7 @@ export default function ProductDetail() {
           <h1 className="text-[28px] leading-snug font-serif font-medium">{product.title}</h1>
 
           <p className="mt-2 text-sm tracking-wide text-gray-500">
-            {product.category}
-            {product.subCategory && ` / ${product.subCategory}`}
+            {product.collection}
           </p>
 
           <p className="mt-6 text-2xl font-semibold">Rs {product.discountPrice ?? product.price}</p>
@@ -166,7 +164,7 @@ export default function ProductDetail() {
         </div>
       </div>
 
-      <RelatedProducts subCategory={product.subCategory} currentProductId={product.id} />
+      <RelatedProducts collection={product.collection} currentProductId={product.id} />
     </div>
   );
 }

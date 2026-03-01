@@ -18,13 +18,7 @@ export const ProductModel = {
                 },
               },
               {
-                category: {
-                  contains: search,
-                  mode: "insensitive",
-                },
-              },
-              {
-                subCategory: {
+                collection: {
                   contains: search,
                   mode: "insensitive",
                 },

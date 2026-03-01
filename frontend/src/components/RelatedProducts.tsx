@@ -15,10 +15,10 @@ type Product = {
 };
 
 export default function RelatedProducts({
-  subCategory,
+  collection,
   currentProductId,
 }: {
-  subCategory?: string;
+  collection?: string;
   currentProductId: number;
 }) {
   const [products, setProducts] = useState<Product[]>([]);
@@ -27,15 +27,15 @@ export default function RelatedProducts({
   const { add, remove, isInWishlist } = useWishlist();
 
   useEffect(() => {
-    if (!subCategory) return;
+    if (!collection) return;
 
     api
-      .get(`/products/related/${encodeURIComponent(subCategory)}`, {
+      .get(`/products/related/${encodeURIComponent(collection)}`, {
         params: { excludeId: currentProductId },
       })
       .then((res) => setProducts(res.data || []))
       .catch(() => setProducts([]));
-  }, [subCategory, currentProductId]);
+  }, [collection, currentProductId]);
 
   const handleAddToCart = async (productId: number) => {
     const token = localStorage.getItem("token");

@@ -59,22 +59,22 @@ export default function Footer() {
             <h4 className="font-semibold mb-4">Shop</h4>
             <ul className="space-y-3 text-sm text-green-800">
               <li>
-                <Link to="/products?category=coffee" className="hover:text-green-600 transition">
+                <Link to="/products?collection=coffee" className="hover:text-green-600 transition">
                   Coffee
                 </Link>
               </li>
               <li>
-                <Link to="/products?category=beans" className="hover:text-green-600 transition">
+                <Link to="/products?collection=beans" className="hover:text-green-600 transition">
                   Beans
                 </Link>
               </li>
               <li>
-                <Link to="/products?category=brewing" className="hover:text-green-600 transition">
+                <Link to="/products?collection=brewing" className="hover:text-green-600 transition">
                   Brewing Tools
                 </Link>
               </li>
               <li>
-                <Link to="/products?category=offers" className="hover:text-green-600 transition">
+                <Link to="/products?collection=offers" className="hover:text-green-600 transition">
                   Offers
                 </Link>
               </li>

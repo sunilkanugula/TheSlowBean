@@ -7,9 +7,16 @@ import { ImageUp, Loader2, PencilRuler, Sparkles } from "lucide-react";
 import AdminPanelNav from "../components/admin/AdminPanelNav";
 
 const API_URL = "http://localhost:5000/api/products";
+const COLLECTIONS_API_URL = "http://localhost:5000/api/products/collections";
 
 type ReplaceMap = {
   [index: number]: File;
+};
+
+type CollectionItem = {
+  id: number;
+  name: string;
+  imageUrl: string;
 };
 
 export default function EditProduct() {
@@ -24,12 +31,13 @@ export default function EditProduct() {
   const [form, setForm] = useState({
     title: "",
     description: "",
-    category: "",
-    subCategory: "",
     price: "",
     discountPrice: "",
     stock: "",
+    isBestSelling: false,
   });
+  const [collections, setCollections] = useState<CollectionItem[]>([]);
+  const [selectedCollectionIds, setSelectedCollectionIds] = useState<number[]>([]);
 
   const [currentImages, setCurrentImages] = useState<string[]>([]);
   const [replaceImages, setReplaceImages] = useState<ReplaceMap>({});
@@ -45,6 +53,11 @@ export default function EditProduct() {
     if (!id) return;
 
     axios
+      .get<CollectionItem[]>(COLLECTIONS_API_URL)
+      .then((res) => setCollections(res.data || []))
+      .catch(() => setCollections([]));
+
+    axios
       .get(`${API_URL}/${id}`)
       .then((res) => {
         const p = res.data;
@@ -52,12 +65,12 @@ export default function EditProduct() {
         setForm({
           title: p.title || "",
           description: p.description || "",
-          category: p.category || "",
-          subCategory: p.subCategory || "",
           price: String(p.price),
           discountPrice: p.discountPrice ? String(p.discountPrice) : "",
           stock: String(p.stock),
+          isBestSelling: Boolean(p.isBestSelling),
         });
+        setSelectedCollectionIds(Array.isArray(p.collectionIds) ? p.collectionIds : []);
 
         setCurrentImages(p.images || []);
       })
@@ -85,6 +98,10 @@ export default function EditProduct() {
       setError("Login required");
       return;
     }
+    if (selectedCollectionIds.length === 0) {
+      setError("Select at least one collection");
+      return;
+    }
 
     try {
       setSaving(true);
@@ -93,8 +110,11 @@ export default function EditProduct() {
       const formData = new FormData();
 
       Object.entries(form).forEach(([key, value]) => {
-        formData.append(key, value);
+        formData.append(key, typeof value === "boolean" ? String(value) : value);
       });
+      selectedCollectionIds.forEach((collectionId) =>
+        formData.append("collectionIds", String(collectionId))
+      );
 
       const indexes = Object.keys(replaceImages).map(Number);
       indexes.forEach((index) => {
@@ -158,14 +178,6 @@ export default function EditProduct() {
               <input name="title" value={form.title} onChange={handleChange} className="w-full rounded-xl border border-[#c8d9d0] bg-[#fcfefd] px-3 py-2.5 text-sm text-[#143b2f] outline-none transition focus:border-[#2b6f5c] focus:ring-2 focus:ring-[#c6dfd3]" />
             </Field>
 
-            <Field label="Category">
-              <input name="category" value={form.category} onChange={handleChange} className="w-full rounded-xl border border-[#c8d9d0] bg-[#fcfefd] px-3 py-2.5 text-sm text-[#143b2f] outline-none transition focus:border-[#2b6f5c] focus:ring-2 focus:ring-[#c6dfd3]" />
-            </Field>
-
-            <Field label="Sub Category">
-              <input name="subCategory" value={form.subCategory} onChange={handleChange} className="w-full rounded-xl border border-[#c8d9d0] bg-[#fcfefd] px-3 py-2.5 text-sm text-[#143b2f] outline-none transition focus:border-[#2b6f5c] focus:ring-2 focus:ring-[#c6dfd3]" />
-            </Field>
-
             <Field label="Price (INR)">
               <input name="price" type="number" value={form.price} onChange={handleChange} className="w-full rounded-xl border border-[#c8d9d0] bg-[#fcfefd] px-3 py-2.5 text-sm text-[#143b2f] outline-none transition focus:border-[#2b6f5c] focus:ring-2 focus:ring-[#c6dfd3]" />
             </Field>
@@ -188,6 +200,52 @@ export default function EditProduct() {
               className="w-full min-h-[130px] resize-y rounded-xl border border-[#c8d9d0] bg-[#fcfefd] px-3 py-2.5 text-sm text-[#143b2f] outline-none transition focus:border-[#2b6f5c] focus:ring-2 focus:ring-[#c6dfd3]"
             />
           </Field>
+
+          <Field label="Collections" className="mt-4">
+            {collections.length === 0 ? (
+              <div className="rounded-xl border border-[#d8e5de] bg-[#f7fbf9] px-3 py-2 text-sm text-[#5c7f73]">
+                No collections found. Create from Admin {">"} Collections.
+              </div>
+            ) : (
+              <div className="grid gap-2 sm:grid-cols-2">
+                {collections.map((item) => {
+                  const checked = selectedCollectionIds.includes(item.id);
+                  return (
+                    <label
+                      key={item.id}
+                      className="inline-flex items-center gap-2 rounded-xl border border-[#d8e5de] bg-[#f7fbf9] px-3 py-2 text-sm text-[#1f5d4d]"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedCollectionIds((prev) => Array.from(new Set([...prev, item.id])));
+                          } else {
+                            setSelectedCollectionIds((prev) => prev.filter((id) => id !== item.id));
+                          }
+                        }}
+                        className="h-4 w-4 rounded border-[#93b8a8]"
+                      />
+                      {item.name}
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+          </Field>
+
+          <label className="mt-5 inline-flex items-center gap-3 rounded-2xl border border-[#d8e5de] bg-[#f7fbf9] px-4 py-3 text-sm font-medium text-[#1a5547]">
+            <input
+              type="checkbox"
+              checked={form.isBestSelling}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, isBestSelling: e.target.checked }))
+              }
+              className="h-4 w-4 rounded border-[#93b8a8]"
+            />
+            Mark as Best Selling
+          </label>
         </div>
 
         <div className="rounded-3xl border border-[#d5e1da] bg-white p-5 shadow-[0_22px_55px_-35px_rgba(18,53,44,0.45)] md:p-6">

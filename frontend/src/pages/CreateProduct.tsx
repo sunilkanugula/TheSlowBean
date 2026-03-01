@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import axios from "axios";
 import { ImagePlus, Loader2, Sparkles, UploadCloud } from "lucide-react";
@@ -6,26 +6,41 @@ import { ImagePlus, Loader2, Sparkles, UploadCloud } from "lucide-react";
 import AdminPanelNav from "../components/admin/AdminPanelNav";
 
 const API_URL = "http://localhost:5000/api/products";
+const COLLECTIONS_API_URL = "http://localhost:5000/api/products/collections";
 const MAX_IMAGES = 4;
+
+type CollectionItem = {
+  id: number;
+  name: string;
+  imageUrl: string;
+};
 
 export default function CreateProduct() {
   const [form, setForm] = useState({
     title: "",
     description: "",
-    category: "",
-    subCategory: "",
     price: "",
     discountPrice: "",
     stock: "",
+    weightGrams: "",
     isBestSelling: false,
   });
 
   const [images, setImages] = useState<File[]>([]);
+  const [collections, setCollections] = useState<CollectionItem[]>([]);
+  const [selectedCollectionIds, setSelectedCollectionIds] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
   const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    axios
+      .get<CollectionItem[]>(COLLECTIONS_API_URL)
+      .then((res) => setCollections(res.data || []))
+      .catch(() => setCollections([]));
+  }, []);
 
   const imagePreviews = useMemo(() => {
     return images.map((file) => ({
@@ -61,6 +76,14 @@ export default function CreateProduct() {
       setError("Please select at least one image");
       return;
     }
+    if (!form.weightGrams || Number(form.weightGrams) <= 0) {
+      setError("weightGrams must be a positive number");
+      return;
+    }
+    if (selectedCollectionIds.length === 0) {
+      setError("Select at least one collection");
+      return;
+    }
 
     try {
       setLoading(true);
@@ -71,11 +94,11 @@ export default function CreateProduct() {
 
       formData.append("title", form.title);
       formData.append("description", form.description);
-      formData.append("category", form.category);
-      formData.append("subCategory", form.subCategory);
       formData.append("price", form.price);
       formData.append("stock", form.stock);
+      formData.append("weightGrams", form.weightGrams);
       formData.append("isBestSelling", String(form.isBestSelling));
+      selectedCollectionIds.forEach((id) => formData.append("collectionIds", String(id)));
 
       if (form.discountPrice) {
         formData.append("discountPrice", form.discountPrice);
@@ -95,13 +118,13 @@ export default function CreateProduct() {
       setForm({
         title: "",
         description: "",
-        category: "",
-        subCategory: "",
         price: "",
         discountPrice: "",
         stock: "",
+        weightGrams: "",
         isBestSelling: false,
       });
+      setSelectedCollectionIds([]);
       setImages([]);
     } catch (err: any) {
       setError(err.response?.data?.message || "Something went wrong");
@@ -142,14 +165,6 @@ export default function CreateProduct() {
               <input name="title" placeholder="Dark Almond Bar" value={form.title} onChange={handleChange} className="w-full rounded-xl border border-[#c8d9d0] bg-[#fcfefd] px-3 py-2.5 text-sm text-[#143b2f] outline-none transition focus:border-[#2b6f5c] focus:ring-2 focus:ring-[#c6dfd3]" />
             </Field>
 
-            <Field label="Category">
-              <input name="category" placeholder="Chocolate" value={form.category} onChange={handleChange} className="w-full rounded-xl border border-[#c8d9d0] bg-[#fcfefd] px-3 py-2.5 text-sm text-[#143b2f] outline-none transition focus:border-[#2b6f5c] focus:ring-2 focus:ring-[#c6dfd3]" />
-            </Field>
-
-            <Field label="Sub Category">
-              <input name="subCategory" placeholder="Dark" value={form.subCategory} onChange={handleChange} className="w-full rounded-xl border border-[#c8d9d0] bg-[#fcfefd] px-3 py-2.5 text-sm text-[#143b2f] outline-none transition focus:border-[#2b6f5c] focus:ring-2 focus:ring-[#c6dfd3]" />
-            </Field>
-
             <Field label="Price (INR)">
               <input name="price" type="number" placeholder="249" value={form.price} onChange={handleChange} className="w-full rounded-xl border border-[#c8d9d0] bg-[#fcfefd] px-3 py-2.5 text-sm text-[#143b2f] outline-none transition focus:border-[#2b6f5c] focus:ring-2 focus:ring-[#c6dfd3]" />
             </Field>
@@ -160,6 +175,19 @@ export default function CreateProduct() {
 
             <Field label="Stock">
               <input name="stock" type="number" placeholder="150" value={form.stock} onChange={handleChange} className="w-full rounded-xl border border-[#c8d9d0] bg-[#fcfefd] px-3 py-2.5 text-sm text-[#143b2f] outline-none transition focus:border-[#2b6f5c] focus:ring-2 focus:ring-[#c6dfd3]" />
+            </Field>
+
+            <Field label="Weight (grams)">
+              <input
+                name="weightGrams"
+                type="number"
+                min="1"
+                step="1"
+                placeholder="100"
+                value={form.weightGrams}
+                onChange={handleChange}
+                className="w-full rounded-xl border border-[#c8d9d0] bg-[#fcfefd] px-3 py-2.5 text-sm text-[#143b2f] outline-none transition focus:border-[#2b6f5c] focus:ring-2 focus:ring-[#c6dfd3]"
+              />
             </Field>
           </div>
 
@@ -172,6 +200,40 @@ export default function CreateProduct() {
               rows={5}
               className="w-full min-h-[130px] resize-y rounded-xl border border-[#c8d9d0] bg-[#fcfefd] px-3 py-2.5 text-sm text-[#143b2f] outline-none transition focus:border-[#2b6f5c] focus:ring-2 focus:ring-[#c6dfd3]"
             />
+          </Field>
+
+          <Field label="Collections" className="mt-4">
+            {collections.length === 0 ? (
+              <div className="rounded-xl border border-[#d8e5de] bg-[#f7fbf9] px-3 py-2 text-sm text-[#5c7f73]">
+                No collections found. Create from Admin {">"} Collections.
+              </div>
+            ) : (
+              <div className="grid gap-2 sm:grid-cols-2">
+                {collections.map((item) => {
+                  const checked = selectedCollectionIds.includes(item.id);
+                  return (
+                    <label
+                      key={item.id}
+                      className="inline-flex items-center gap-2 rounded-xl border border-[#d8e5de] bg-[#f7fbf9] px-3 py-2 text-sm text-[#1f5d4d]"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedCollectionIds((prev) => Array.from(new Set([...prev, item.id])));
+                          } else {
+                            setSelectedCollectionIds((prev) => prev.filter((id) => id !== item.id));
+                          }
+                        }}
+                        className="h-4 w-4 rounded border-[#93b8a8]"
+                      />
+                      {item.name}
+                    </label>
+                  );
+                })}
+              </div>
+            )}
           </Field>
 
           <label className="mt-5 inline-flex items-center gap-3 rounded-2xl border border-[#d8e5de] bg-[#f7fbf9] px-4 py-3 text-sm font-medium text-[#1a5547]">

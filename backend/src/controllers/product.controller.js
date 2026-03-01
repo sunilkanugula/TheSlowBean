@@ -10,24 +10,107 @@ const parseNumberParam = (value) => {
   return Number.isFinite(parsed) ? parsed : undefined;
 };
 
+const productInclude = {
+  collections: {
+    include: {
+      collection: true,
+    },
+  },
+};
+
+const asArray = (value) => {
+  if (Array.isArray(value)) return value;
+  if (value === undefined || value === null || value === "") return [];
+  return [value];
+};
+
+const parseCollectionIds = (value) => {
+  const list = asArray(value)
+    .flatMap((entry) => String(entry).split(","))
+    .map((entry) => Number(String(entry).trim()))
+    .filter((entry) => Number.isInteger(entry) && entry > 0);
+
+  return Array.from(new Set(list));
+};
+
+const serializeProduct = (product) => {
+  const collectionNames =
+    product.collections?.map((item) => item.collection.name) || [];
+  const collectionIds =
+    product.collections?.map((item) => item.collection.id) || [];
+
+  const fallbackNames =
+    collectionNames.length === 0 && product.collection
+      ? [product.collection]
+      : collectionNames;
+
+  return {
+    ...product,
+    collectionNames: fallbackNames,
+    collectionIds,
+    collections: undefined,
+  };
+};
+
+const resolveCollectionSelection = async ({ collectionIdsRaw, fallbackName }) => {
+  const collectionIds = parseCollectionIds(collectionIdsRaw);
+
+  if (collectionIds.length > 0) {
+    const linkedCollections = await prisma.collection.findMany({
+      where: { id: { in: collectionIds } },
+      select: { id: true, name: true },
+    });
+
+    if (linkedCollections.length !== collectionIds.length) {
+      throw new Error("INVALID_COLLECTION_SELECTION");
+    }
+
+    const ordered = collectionIds
+      .map((id) => linkedCollections.find((item) => item.id === id))
+      .filter(Boolean);
+
+    return {
+      primaryCollection: ordered[0].name,
+      linkIds: ordered.map((item) => item.id),
+    };
+  }
+
+  const normalizedFallback = String(fallbackName || "").trim();
+  if (!normalizedFallback) {
+    return { primaryCollection: "", linkIds: [] };
+  }
+
+  const matched = await prisma.collection.findFirst({
+    where: { name: { equals: normalizedFallback, mode: "insensitive" } },
+    select: { id: true, name: true },
+  });
+
+  if (!matched) {
+    return { primaryCollection: normalizedFallback, linkIds: [] };
+  }
+
+  return {
+    primaryCollection: matched.name,
+    linkIds: [matched.id],
+  };
+};
+
 /* ================= CREATE PRODUCT (OWNER) ================= */
 export const createProduct = async (req, res) => {
   try {
     const {
       title,
       description,
-      category,
-      subCategory,
+      collection,
+      collectionIds,
       price,
       discountPrice,
       stock,
       weightGrams,
-      isBestSelling, // ⭐ NEW
+      isBestSelling,
     } = req.body;
 
     const createdById = req.user.userId;
-
-    /* ---------- UPLOAD IMAGES TO CLOUDINARY ---------- */
     const imageUrls = [];
 
     if (req.files && req.files.length > 0) {
@@ -47,24 +130,45 @@ export const createProduct = async (req, res) => {
       return res.status(400).json({ message: "weightGrams must be a positive number" });
     }
 
+    const selection = await resolveCollectionSelection({
+      collectionIdsRaw: collectionIds,
+      fallbackName: collection,
+    });
+
+    if (!selection.primaryCollection) {
+      return res.status(400).json({ message: "Select at least one collection" });
+    }
+
     const product = await prisma.product.create({
       data: {
         title,
         description,
-        category,
-        subCategory,
+        collection: selection.primaryCollection,
         price: Number(price),
         discountPrice: discountPrice ? Number(discountPrice) : null,
         stock: Number(stock),
         weightGrams: Number(weightGrams),
         images: imageUrls,
-        isBestSelling: isBestSelling === "true", // ⭐ NEW
+        isBestSelling: isBestSelling === "true",
         createdById,
+        ...(selection.linkIds.length > 0
+          ? {
+              collections: {
+                createMany: {
+                  data: selection.linkIds.map((id) => ({ collectionId: id })),
+                },
+              },
+            }
+          : {}),
       },
+      include: productInclude,
     });
 
-    res.status(201).json(product);
+    res.status(201).json(serializeProduct(product));
   } catch (error) {
+    if (error.message === "INVALID_COLLECTION_SELECTION") {
+      return res.status(400).json({ message: "Invalid collection selection" });
+    }
     console.error("CREATE PRODUCT ERROR:", error);
     res.status(500).json({ message: "Failed to create product" });
   }
@@ -74,8 +178,11 @@ export const createProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
   try {
     const productId = Number(req.params.id);
+    const existing = await prisma.product.findUnique({
+      where: { id: productId },
+      include: productInclude,
+    });
 
-    const existing = await ProductModel.findById(productId);
     if (!existing) {
       return res.status(404).json({ message: "Product not found" });
     }
@@ -83,20 +190,18 @@ export const updateProduct = async (req, res) => {
     const {
       title,
       description,
-      category,
-      subCategory,
+      collection,
+      collectionIds,
       price,
       discountPrice,
       stock,
       weightGrams,
       imageIndexes,
-      isBestSelling, // ⭐ NEW
+      isBestSelling,
     } = req.body;
 
-    // Start with old images
     const images = [...existing.images];
 
-    /* ---------- IMAGE REPLACEMENT ---------- */
     if (req.files && req.files.length > 0) {
       if (!imageIndexes) {
         return res.status(400).json({ message: "imageIndexes required" });
@@ -104,29 +209,26 @@ export const updateProduct = async (req, res) => {
 
       const indexes = JSON.parse(imageIndexes);
 
-      if (indexes.length !== req.files.length) {
+      if (!Array.isArray(indexes) || indexes.length !== req.files.length) {
         return res.status(400).json({
           message: "Images and indexes count mismatch",
         });
       }
 
-      for (let i = 0; i < indexes.length; i++) {
-        const index = indexes[i];
+      for (let i = 0; i < indexes.length; i += 1) {
+        const index = Number(indexes[i]);
         const file = req.files[i];
 
-        if (index < 0 || index > 3) {
+        if (!Number.isInteger(index) || index < 0 || index > 3) {
           return res.status(400).json({ message: "Invalid image index" });
         }
 
         const oldImage = images[index];
-
-        // 🔴 DELETE OLD IMAGE
         if (oldImage) {
           const publicId = getPublicIdFromUrl(oldImage);
           await cloudinary.uploader.destroy(publicId);
         }
 
-        // 🟢 UPLOAD NEW IMAGE
         const result = await cloudinary.uploader.upload(
           `data:${file.mimetype};base64,${file.buffer.toString("base64")}`,
           { folder: "products" }
@@ -140,22 +242,48 @@ export const updateProduct = async (req, res) => {
       return res.status(400).json({ message: "weightGrams must be a positive number" });
     }
 
-    /* ---------- UPDATE PRODUCT ---------- */
-    const updated = await ProductModel.update(productId, {
-      title,
-      description,
-      category,
-      subCategory,
-      price: Number(price),
-      discountPrice: discountPrice ? Number(discountPrice) : null,
-      stock: Number(stock),
-      ...(weightGrams !== undefined ? { weightGrams: Number(weightGrams) } : {}),
-      images,
-      isBestSelling: isBestSelling === "true", // ⭐ NEW
+    const selection = await resolveCollectionSelection({
+      collectionIdsRaw: collectionIds,
+      fallbackName: collection || existing.collection,
     });
 
-    res.json(updated);
+    const updated = await prisma.product.update({
+      where: { id: productId },
+      data: {
+        ...(title !== undefined ? { title } : {}),
+        ...(description !== undefined ? { description } : {}),
+        ...(selection.primaryCollection ? { collection: selection.primaryCollection } : {}),
+        ...(price !== undefined ? { price: Number(price) } : {}),
+        ...(discountPrice !== undefined
+          ? { discountPrice: discountPrice ? Number(discountPrice) : null }
+          : {}),
+        ...(stock !== undefined ? { stock: Number(stock) } : {}),
+        ...(weightGrams !== undefined ? { weightGrams: Number(weightGrams) } : {}),
+        images,
+        ...(isBestSelling !== undefined ? { isBestSelling: isBestSelling === "true" } : {}),
+        ...(collectionIds !== undefined || collection !== undefined
+          ? {
+              collections: {
+                deleteMany: {},
+                ...(selection.linkIds.length > 0
+                  ? {
+                      createMany: {
+                        data: selection.linkIds.map((id) => ({ collectionId: id })),
+                      },
+                    }
+                  : {}),
+              },
+            }
+          : {}),
+      },
+      include: productInclude,
+    });
+
+    res.json(serializeProduct(updated));
   } catch (err) {
+    if (err.message === "INVALID_COLLECTION_SELECTION") {
+      return res.status(400).json({ message: "Invalid collection selection" });
+    }
     console.error("UPDATE PRODUCT ERROR:", err);
     res.status(500).json({ message: "Server error" });
   }
@@ -175,13 +303,31 @@ export const deleteProduct = async (req, res) => {
 export const getAllProducts = async (req, res) => {
   try {
     let { search } = req.query;
+    if (Array.isArray(search)) search = search[0];
 
-    if (Array.isArray(search)) {
-      search = search[0];
-    }
+    const products = await prisma.product.findMany({
+      where: search
+        ? {
+            OR: [
+              { title: { contains: search, mode: "insensitive" } },
+              { collection: { contains: search, mode: "insensitive" } },
+              {
+                collections: {
+                  some: {
+                    collection: {
+                      name: { contains: search, mode: "insensitive" },
+                    },
+                  },
+                },
+              },
+            ],
+          }
+        : undefined,
+      orderBy: { createdAt: "desc" },
+      include: productInclude,
+    });
 
-    const products = await ProductModel.findAll(search);
-    res.json(products);
+    res.json(products.map(serializeProduct));
   } catch (err) {
     console.error("GET PRODUCTS ERROR:", err);
     res.status(500).json({ message: "Server error" });
@@ -191,12 +337,11 @@ export const getAllProducts = async (req, res) => {
 /* ================= ADVANCED PRODUCT CATALOG ================= */
 export const getProductCatalog = async (req, res) => {
   try {
-    let { search, category, subCategory, minPrice, maxPrice, inStock, bestSelling, sort, page, limit } =
+    let { search, collection, minPrice, maxPrice, inStock, bestSelling, sort, page, limit } =
       req.query;
 
     if (Array.isArray(search)) search = search[0];
-    if (Array.isArray(category)) category = category[0];
-    if (Array.isArray(subCategory)) subCategory = subCategory[0];
+    if (Array.isArray(collection)) collection = collection[0];
     if (Array.isArray(minPrice)) minPrice = minPrice[0];
     if (Array.isArray(maxPrice)) maxPrice = maxPrice[0];
     if (Array.isArray(inStock)) inStock = inStock[0];
@@ -217,13 +362,33 @@ export const getProductCatalog = async (req, res) => {
         ? {
             OR: [
               { title: { contains: search, mode: "insensitive" } },
-              { category: { contains: search, mode: "insensitive" } },
-              { subCategory: { contains: search, mode: "insensitive" } },
+              { collection: { contains: search, mode: "insensitive" } },
+              {
+                collections: {
+                  some: {
+                    collection: {
+                      name: { contains: search, mode: "insensitive" },
+                    },
+                  },
+                },
+              },
             ],
           }
         : {}),
-      ...(category ? { category: { equals: category, mode: "insensitive" } } : {}),
-      ...(subCategory ? { subCategory: { equals: subCategory, mode: "insensitive" } } : {}),
+      ...(collection
+        ? {
+            OR: [
+              { collection: { equals: collection, mode: "insensitive" } },
+              {
+                collections: {
+                  some: {
+                    collection: { name: { equals: collection, mode: "insensitive" } },
+                  },
+                },
+              },
+            ],
+          }
+        : {}),
       ...(parsedInStock ? { stock: { gt: 0 } } : {}),
       ...(parsedBestSelling !== undefined ? { isBestSelling: parsedBestSelling } : {}),
       ...((parsedMinPrice !== undefined || parsedMaxPrice !== undefined)
@@ -249,26 +414,25 @@ export const getProductCatalog = async (req, res) => {
     const orderBy = orderByMap[sort] || orderByMap.newest;
     const skip = (parsedPage - 1) * parsedLimit;
 
-    const [items, total, categoriesData, subCategoriesData] = await Promise.all([
-      prisma.product.findMany({ where, orderBy, skip, take: parsedLimit }),
-      prisma.product.count({ where }),
+    const [items, total, collectionsData] = await Promise.all([
       prisma.product.findMany({
-        select: { category: true },
-        distinct: ["category"],
-        orderBy: { category: "asc" },
+        where,
+        orderBy,
+        skip,
+        take: parsedLimit,
+        include: productInclude,
       }),
-      prisma.product.findMany({
-        select: { subCategory: true },
-        where: { subCategory: { not: null } },
-        distinct: ["subCategory"],
-        orderBy: { subCategory: "asc" },
+      prisma.product.count({ where }),
+      prisma.collection.findMany({
+        select: { name: true },
+        orderBy: { name: "asc" },
       }),
     ]);
 
     const totalPages = Math.max(Math.ceil(total / parsedLimit), 1);
 
     res.json({
-      items,
+      items: items.map(serializeProduct),
       meta: {
         page: parsedPage,
         limit: parsedLimit,
@@ -278,10 +442,7 @@ export const getProductCatalog = async (req, res) => {
         hasPrev: parsedPage > 1,
       },
       filters: {
-        categories: categoriesData.map((item) => item.category),
-        subCategories: subCategoriesData
-          .map((item) => item.subCategory)
-          .filter(Boolean),
+        collections: collectionsData.map((item) => item.name),
       },
     });
   } catch (err) {
@@ -293,11 +454,14 @@ export const getProductCatalog = async (req, res) => {
 /* ================= GET PRODUCT BY ID ================= */
 export const getProductById = async (req, res) => {
   try {
-    const product = await ProductModel.findById(Number(req.params.id));
+    const product = await prisma.product.findUnique({
+      where: { id: Number(req.params.id) },
+      include: productInclude,
+    });
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
-    res.json(product);
+    res.json(serializeProduct(product));
   } catch {
     res.status(500).json({ message: "Server error" });
   }
@@ -314,16 +478,53 @@ export const getBestSellingProducts = async (req, res) => {
       orderBy: {
         createdAt: "desc",
       },
+      include: productInclude,
     });
 
-    res.json(products);
+    res.json(products.map(serializeProduct));
   } catch (error) {
     console.error("BEST SELLING PRODUCTS ERROR:", error);
     res.status(500).json({ message: "Failed to fetch best selling products" });
   }
 };
 
+/* ================= RELATED PRODUCTS ================= */
+export const getRelatedProducts = async (req, res) => {
+  try {
+    const { collection } = req.params;
+    const { excludeId } = req.query;
 
+    const products = await prisma.product.findMany({
+      where: {
+        OR: [
+          { collection: { equals: collection, mode: "insensitive" } },
+          {
+            collections: {
+              some: {
+                collection: {
+                  name: { equals: collection, mode: "insensitive" },
+                },
+              },
+            },
+          },
+        ],
+        ...(excludeId && {
+          id: { not: Number(excludeId) },
+        }),
+      },
+      take: 6,
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: productInclude,
+    });
+
+    res.json(products.map(serializeProduct));
+  } catch (error) {
+    console.error("RELATED PRODUCTS ERROR:", error);
+    res.status(500).json({ message: "Failed to fetch related products" });
+  }
+};
 
 /* ================= UTILS ================= */
 const getPublicIdFromUrl = (url) => {
@@ -333,29 +534,3 @@ const getPublicIdFromUrl = (url) => {
   return `products/${name}`;
 };
 
-
-/* ================= RELATED PRODUCTS ================= */
-export const getRelatedProducts = async (req, res) => {
-  try {
-    const { subCategory } = req.params;
-    const { excludeId } = req.query;
-
-    const products = await prisma.product.findMany({
-      where: {
-        subCategory,
-        ...(excludeId && {
-          id: { not: Number(excludeId) },
-        }),
-      },
-      take: 6,
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-
-    res.json(products);
-  } catch (error) {
-    console.error("RELATED PRODUCTS ERROR:", error);
-    res.status(500).json({ message: "Failed to fetch related products" });
-  }
-};

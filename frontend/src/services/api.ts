@@ -1,4 +1,5 @@
 import axios from "axios";
+import { notifyCartUpdated } from "./cartEvents";
 
 export const api = axios.create({
   baseURL: "http://localhost:5000/api",
@@ -13,7 +14,19 @@ api.interceptors.request.use((config) => {
 });
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    const method = response.config?.method?.toLowerCase();
+    const url = response.config?.url || "";
+    const isCartMutation =
+      (method === "post" || method === "put" || method === "delete") &&
+      url.startsWith("/cart");
+
+    if (isCartMutation) {
+      notifyCartUpdated();
+    }
+
+    return response;
+  },
   (error) => {
     const requestAuthHeader =
       error?.config?.headers?.Authorization ||

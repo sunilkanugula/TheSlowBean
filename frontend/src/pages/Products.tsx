@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Check,
   Heart,
   Search,
-  ShoppingCart,
+  ShoppingBag,
   SlidersHorizontal,
 } from "lucide-react";
 import { toast } from "react-toastify";
@@ -17,8 +17,7 @@ import { api } from "../services/api";
 type Product = {
   id: number;
   title: string;
-  category: string;
-  subCategory?: string | null;
+  collection: string;
   price: number;
   discountPrice?: number | null;
   stock: number;
@@ -37,8 +36,7 @@ type CatalogResponse = {
     hasPrev: boolean;
   };
   filters: {
-    categories: string[];
-    subCategories: string[];
+    collections: string[];
   };
 };
 
@@ -61,17 +59,18 @@ export default function Products() {
   const location = useLocation();
   const navigate = useNavigate();
   const { add, remove, isInWishlist } = useWishlist();
+  const syncingFromUrlRef = useRef(false);
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [addedToCart, setAddedToCart] = useState<number | null>(null);
 
-  const [categories, setCategories] = useState<string[]>([]);
+  const [collections, setCollections] = useState<string[]>([]);
 
   const [searchDraft, setSearchDraft] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [category, setCategory] = useState("");
+  const [collection, setCollection] = useState("");
   const [sort, setSort] = useState("newest");
   const [minPrice, setMinPrice] = useState<string>("");
   const [maxPrice, setMaxPrice] = useState<string>("");
@@ -88,10 +87,12 @@ export default function Products() {
   });
 
   useEffect(() => {
+    syncingFromUrlRef.current = true;
+
     const params = new URLSearchParams(location.search);
 
     const urlSearch = params.get("search") || "";
-    const urlCategory = params.get("category") || "";
+    const urlCollection = params.get("collection") || "";
     const urlSort = params.get("sort") || "newest";
     const urlMinPrice = params.get("minPrice") || "";
     const urlMaxPrice = params.get("maxPrice") || "";
@@ -100,7 +101,7 @@ export default function Products() {
 
     setSearchDraft(urlSearch);
     setSearchTerm(urlSearch);
-    setCategory(urlCategory);
+    setCollection(urlCollection);
     setSort(urlSort);
     setMinPrice(urlMinPrice);
     setMaxPrice(urlMaxPrice);
@@ -109,9 +110,14 @@ export default function Products() {
   }, [location.search]);
 
   useEffect(() => {
+    if (syncingFromUrlRef.current) {
+      syncingFromUrlRef.current = false;
+      return;
+    }
+
     const params = new URLSearchParams();
     if (searchTerm) params.set("search", searchTerm);
-    if (category) params.set("category", category);
+    if (collection) params.set("collection", collection);
     if (sort && sort !== "newest") params.set("sort", sort);
     if (minPrice) params.set("minPrice", minPrice);
     if (maxPrice) params.set("maxPrice", maxPrice);
@@ -133,7 +139,7 @@ export default function Products() {
       );
     }
   }, [
-    category,
+    collection,
     inStock,
     location.pathname,
     location.search,
@@ -156,7 +162,7 @@ export default function Products() {
         const response = await api.get<CatalogResponse>("/products/catalog", {
           params: {
             search: searchTerm || undefined,
-            category: category || undefined,
+            collection: collection || undefined,
             sort,
             minPrice: minPrice || undefined,
             maxPrice: maxPrice || undefined,
@@ -169,7 +175,7 @@ export default function Products() {
 
         setProducts(response.data.items);
         setMeta(response.data.meta);
-        setCategories(response.data.filters.categories);
+        setCollections(response.data.filters.collections);
       } catch (err: any) {
         if (err.name === "CanceledError" || err.code === "ERR_CANCELED") {
           return;
@@ -183,7 +189,7 @@ export default function Products() {
     fetchCatalog();
 
     return () => controller.abort();
-  }, [category, inStock, maxPrice, minPrice, page, searchTerm, sort]);
+  }, [collection, inStock, maxPrice, minPrice, page, searchTerm, sort]);
 
   const handleSearchSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -194,7 +200,7 @@ export default function Products() {
   const handleClearFilters = () => {
     setSearchDraft("");
     setSearchTerm("");
-    setCategory("");
+    setCollection("");
     setSort("newest");
     setMinPrice("");
     setMaxPrice("");
@@ -236,10 +242,10 @@ export default function Products() {
     <>
       <ProductsHero />
 
-      <section className="bg-[#F4F7F1] py-12 md:py-14">
+      <section className="bg-[radial-gradient(circle_at_20%_10%,#f3f8ef_0%,#edf4e8_42%,#e6efe2_100%)] py-12 md:py-16">
         <div className="mx-auto max-w-7xl px-4 md:px-6">
-          <div className="mb-6 rounded-3xl border border-green-100 bg-white/90 p-4 shadow-[0_10px_30px_rgba(16,88,43,0.08)] backdrop-blur md:p-5">
-            <div className="grid gap-4 lg:grid-cols-[1.6fr_1fr_1fr_1fr_auto]">
+          <div className="mb-8 rounded-3xl border border-green-100/90 bg-white/90 p-4 shadow-[0_12px_32px_rgba(16,88,43,0.1)] backdrop-blur md:p-6">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1.7fr_1fr_1fr_1fr_auto]">
               <form onSubmit={handleSearchSubmit} className="relative">
                 <Search
                   className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-green-700"
@@ -248,21 +254,21 @@ export default function Products() {
                 <input
                   value={searchDraft}
                   onChange={(e) => setSearchDraft(e.target.value)}
-                  placeholder="Search chocolates, categories..."
-                  className="h-11 w-full rounded-xl border border-green-200 bg-white pl-10 pr-3 text-sm outline-none ring-green-500 transition focus:ring"
+                  placeholder="Search chocolates, collections..."
+                  className="h-12 w-full rounded-xl border border-green-200 bg-white pl-10 pr-3 text-sm outline-none ring-green-500 transition focus:ring"
                 />
               </form>
 
               <select
-                value={category}
+                value={collection}
                 onChange={(e) => {
-                  setCategory(e.target.value);
+                  setCollection(e.target.value);
                   setPage(1);
                 }}
-                className="h-11 rounded-xl border border-green-200 bg-white px-3 text-sm outline-none ring-green-500 transition focus:ring"
+                className="h-12 rounded-xl border border-green-200 bg-white px-3 text-sm outline-none ring-green-500 transition focus:ring"
               >
-                <option value="">All categories</option>
-                {categories.map((item) => (
+                <option value="">All collections</option>
+                {collections.map((item) => (
                   <option key={item} value={item}>
                     {item}
                   </option>
@@ -275,7 +281,7 @@ export default function Products() {
                   setSort(e.target.value);
                   setPage(1);
                 }}
-                className="h-11 rounded-xl border border-green-200 bg-white px-3 text-sm outline-none ring-green-500 transition focus:ring"
+                className="h-12 rounded-xl border border-green-200 bg-white px-3 text-sm outline-none ring-green-500 transition focus:ring"
               >
                 {SORT_OPTIONS.map((item) => (
                   <option key={item.value} value={item.value}>
@@ -294,7 +300,7 @@ export default function Products() {
                     setPage(1);
                   }}
                   placeholder="Min"
-                  className="h-11 rounded-xl border border-green-200 bg-white px-3 text-sm outline-none ring-green-500 transition focus:ring"
+                  className="h-12 rounded-xl border border-green-200 bg-white px-3 text-sm outline-none ring-green-500 transition focus:ring"
                 />
                 <input
                   type="number"
@@ -305,20 +311,20 @@ export default function Products() {
                     setPage(1);
                   }}
                   placeholder="Max"
-                  className="h-11 rounded-xl border border-green-200 bg-white px-3 text-sm outline-none ring-green-500 transition focus:ring"
+                  className="h-12 rounded-xl border border-green-200 bg-white px-3 text-sm outline-none ring-green-500 transition focus:ring"
                 />
               </div>
 
               <button
                 type="button"
                 onClick={handleClearFilters}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-green-200 bg-white px-4 text-sm font-medium text-green-800 transition hover:bg-green-50"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-green-200 bg-white px-4 text-sm font-medium text-green-800 transition hover:bg-green-50"
               >
                 <SlidersHorizontal size={16} /> Reset
               </button>
             </div>
 
-            <label className="mt-4 inline-flex items-center gap-2 text-sm text-green-900">
+            <label className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-green-900">
               <input
                 type="checkbox"
                 checked={inStock}
@@ -332,7 +338,7 @@ export default function Products() {
             </label>
           </div>
 
-          <div className="mb-4 flex items-center justify-between text-sm text-green-900">
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-2 text-sm text-green-900">
             <p>
               Showing {products.length} of {meta.total} products
             </p>
@@ -340,11 +346,11 @@ export default function Products() {
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-5">
+            <div className="grid grid-cols-2 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {Array.from({ length: 10 }).map((_, index) => (
                 <div
                   key={index}
-                  className="h-[360px] animate-pulse rounded-3xl bg-white/70"
+                  className="h-[290px] animate-pulse rounded-2xl bg-white/80 shadow-sm md:h-[360px]"
                 />
               ))}
             </div>
@@ -357,90 +363,146 @@ export default function Products() {
               No products matched your filters.
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-5">
+            <div className="grid grid-cols-2 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {products.map((product) => {
                 const liked = isInWishlist(product.id);
                 const isAdded = addedToCart === product.id;
 
                 const salePrice = product.discountPrice ?? product.price;
-                const discountPercent =
-                  product.discountPrice && product.price > product.discountPrice
-                    ? Math.round(
-                        ((product.price - product.discountPrice) / product.price) *
-                          100
-                      )
-                    : null;
+                const hasDiscount =
+                  product.discountPrice !== undefined &&
+                  product.discountPrice !== null &&
+                  product.discountPrice < product.price;
+                const discountPercent = hasDiscount
+                  ? Math.round(
+                      ((product.price - (product.discountPrice as number)) /
+                        product.price) *
+                        100
+                    )
+                  : null;
 
                 return (
                   <article
                     key={product.id}
-                    className="group overflow-hidden rounded-3xl border border-green-100 bg-white shadow-[0_8px_24px_rgba(16,88,43,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_36px_rgba(16,88,43,0.14)]"
+                    className="group min-w-0 transition duration-300 hover:-translate-y-1.5"
                   >
-                    <Link to={`/products/${product.id}`} className="block">
-                      <div className="relative h-[260px] overflow-hidden bg-green-50">
+                    <Link
+                      to={`/products/${product.id}`}
+                      className="relative block overflow-hidden rounded-2xl border border-white/80 bg-white/70 shadow-[0_14px_32px_rgba(16,56,38,0.14)]"
+                    >
+                      <div className="relative aspect-[1/1] w-full overflow-hidden bg-emerald-50 md:aspect-[4/5]">
                         <img
                           src={product.images?.[0] || "/placeholder.png"}
                           alt={product.title}
-                          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                          className={`h-full w-full object-cover transition-all duration-500 ${
+                            product.images?.[1]
+                              ? "opacity-100 group-hover:opacity-0"
+                              : "group-hover:scale-105"
+                          }`}
                         />
-                        {discountPercent ? (
-                          <span className="absolute left-3 top-3 rounded-full bg-green-800 px-2.5 py-1 text-xs font-semibold text-white">
-                            -{discountPercent}%
-                          </span>
+                        {product.images?.[1] ? (
+                          <img
+                            src={product.images[1]}
+                            alt={`${product.title} alternate view`}
+                            className="absolute inset-0 h-full w-full object-cover opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:scale-105"
+                          />
                         ) : null}
                       </div>
+                      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/40 via-black/5 to-transparent" />
+
+                      <span className="absolute left-3 top-3 rounded-full border border-white/50 bg-white/90 px-2.5 py-1 text-[9px] uppercase tracking-[0.14em] text-slate-800 backdrop-blur">
+                        Best Seller
+                      </span>
+
+                      {discountPercent ? (
+                        <span className="absolute bottom-3 left-3 rounded-full bg-emerald-900 px-2 py-1 text-[9px] font-semibold text-white">
+                          Save {discountPercent}%
+                        </span>
+                      ) : null}
+
+                      <button
+                        onClick={async (event) => {
+                          event.preventDefault();
+                          try {
+                            if (liked) {
+                              await remove(product.id);
+                              toast.info("Removed from wishlist");
+                            } else {
+                              await add(product.id);
+                              toast.success("Added to wishlist");
+                            }
+                          } catch {
+                            toast.error("Wishlist action failed");
+                          }
+                        }}
+                        className="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur transition hover:bg-black/50"
+                      >
+                        <Heart
+                          size={14}
+                          strokeWidth={2}
+                          className={liked ? "fill-rose-500 text-rose-500" : "text-white"}
+                        />
+                      </button>
                     </Link>
 
-                    <div className="p-4">
-                      <p className="text-xs uppercase tracking-wide text-green-700">
-                        {product.category}
+                    <div className="min-w-0 px-1 pb-1 pt-3 text-center md:px-0 md:pt-3">
+                      <p className="text-[9px] uppercase tracking-[0.15em] text-emerald-700 md:text-[10px]">
+                        Signature Craft
                       </p>
-                      <h3 className="mt-1 min-h-[40px] text-[15px] font-semibold leading-snug text-slate-900">
-                        {product.title}
-                      </h3>
 
-                      <div className="mt-3 flex items-end gap-2">
-                        <span className="text-lg font-bold text-green-900">Rs {salePrice}</span>
-                        {product.discountPrice ? (
-                          <span className="text-sm text-slate-400 line-through">
+                      <Link to={`/products/${product.id}`} className="block">
+                        <h3
+                          className="mt-1 h-[2.6em] overflow-hidden text-[13px] font-semibold leading-[1.3] text-slate-900 md:text-[15px]"
+                          style={{
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                          }}
+                        >
+                          {product.title}
+                        </h3>
+                      </Link>
+
+                      <div className="mt-2.5 flex items-end justify-center gap-1">
+                        <span className="text-[20px] font-extrabold leading-none text-emerald-900 md:text-[24px]">
+                          Rs {salePrice}
+                        </span>
+                        {hasDiscount ? (
+                          <span className="mb-0.5 text-[11px] text-slate-400 line-through">
                             Rs {product.price}
                           </span>
                         ) : null}
                       </div>
 
-                      <div className="mt-4 grid grid-cols-2 gap-2">
+                      <div className="mt-3 flex justify-center">
                         <button
                           onClick={() => handleAddToCart(product.id)}
-                          className="inline-flex h-10 items-center justify-center gap-1 rounded-xl bg-green-800 px-3 text-xs font-semibold text-white transition hover:bg-green-900"
-                        >
-                          {isAdded ? <Check size={14} /> : <ShoppingCart size={14} />}
-                          {isAdded ? "Added" : "Cart"}
-                        </button>
-
-                        <button
-                          onClick={async () => {
-                            try {
-                              if (liked) {
-                                await remove(product.id);
-                                toast("Removed from wishlist");
-                              } else {
-                                await add(product.id);
-                                toast.success("Added to wishlist");
-                              }
-                            } catch {
-                              toast.error("Wishlist action failed");
-                            }
-                          }}
-                          className={`inline-flex h-10 items-center justify-center gap-1 rounded-xl border px-3 text-xs font-semibold transition ${
-                            liked
-                              ? "border-green-800 bg-green-50 text-green-800"
-                              : "border-green-200 text-green-800 hover:bg-green-50"
+                          className={`inline-flex h-10 w-[75%] items-center justify-center gap-1.5 whitespace-nowrap  px-3 text-[11px] font-semibold transition md:h-9 md:w-[60%] md:text-[12px] ${
+                            isAdded
+                              ? "bg-emerald-600 text-white"
+                              : "bg-emerald-900 text-white hover:bg-emerald-950"
                           }`}
                         >
-                          <Heart size={14} className={liked ? "fill-green-800" : ""} />
-                          {liked ? "Saved" : "Wishlist"}
+                          {isAdded ? (
+                            <>
+                              <Check size={13} />
+                              Added
+                            </>
+                          ) : (
+                            <>
+                              <ShoppingBag size={13} />
+                              Add to Cart
+                            </>
+                          )}
                         </button>
                       </div>
+
+                      <Link
+                        to={`/products/${product.id}`}
+                        className="mt-2 hidden text-[10px] uppercase tracking-[0.14em] text-slate-500 transition hover:text-slate-800 md:block"
+                      >
+                        View Details
+                      </Link>
                     </div>
                   </article>
                 );

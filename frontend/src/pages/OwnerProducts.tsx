@@ -10,8 +10,7 @@ const API_URL = "http://localhost:5000/api/products";
 type Product = {
   id: number;
   title: string;
-  category: string;
-  subCategory: string;
+  collection: string;
   price: number;
   discountPrice?: number;
   stock: number;
@@ -47,7 +46,7 @@ export default function OwnerProducts() {
     const q = query.trim().toLowerCase();
     if (!q) return products;
     return products.filter((p) =>
-      [p.title, p.category, p.subCategory, String(p.id)].join(" ").toLowerCase().includes(q)
+      [p.title, p.collection, String(p.id)].join(" ").toLowerCase().includes(q)
     );
   }, [products, query]);
 
@@ -87,7 +86,7 @@ export default function OwnerProducts() {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by title, category, subcategory, ID"
+            placeholder="Search by title, collection, ID"
             className="w-full bg-transparent text-sm text-[#184839] outline-none"
           />
         </label>
@@ -97,7 +96,7 @@ export default function OwnerProducts() {
         {filteredProducts.map((p) => (
           <article
             key={p.id}
-            className="grid grid-cols-1 items-center gap-4 rounded-2xl border border-[#d8e4de] bg-white p-4 shadow-[0_14px_30px_-24px_rgba(18,53,44,0.5)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_-24px_rgba(18,53,44,0.6)] md:grid-cols-[72px_1.4fr_1fr_1fr_1fr_auto]"
+            className="grid grid-cols-1 items-center gap-4 rounded-2xl border border-[#d8e4de] bg-white p-4 shadow-[0_14px_30px_-24px_rgba(18,53,44,0.5)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_-24px_rgba(18,53,44,0.6)] md:grid-cols-[72px_1.6fr_1fr_1fr_auto]"
           >
             <img src={p.images[0]} className="h-[72px] w-[72px] rounded-xl border border-[#d1ded8] object-cover" alt={p.title} />
 
@@ -107,13 +106,8 @@ export default function OwnerProducts() {
             </div>
 
             <div>
-              <p className="text-[11px] uppercase tracking-[0.12em] text-[#68887d]">Category</p>
-              <p className="mt-1 text-sm text-[#295f50]">{p.category}</p>
-            </div>
-
-            <div>
-              <p className="text-[11px] uppercase tracking-[0.12em] text-[#68887d]">Subcategory</p>
-              <p className="mt-1 text-sm text-[#295f50]">{p.subCategory || "-"}</p>
+              <p className="text-[11px] uppercase tracking-[0.12em] text-[#68887d]">Collection</p>
+              <p className="mt-1 text-sm text-[#295f50]">{p.collection}</p>
             </div>
 
             <div className="flex items-center justify-between gap-4 md:block">

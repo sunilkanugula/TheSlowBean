@@ -4,6 +4,7 @@ const links = [
   { to: "/owner/dashboard", label: "Dashboard" },
   { to: "/owner/orders", label: "Orders" },
   { to: "/owner/products", label: "Products" },
+  { to: "/owner/collections", label: "Collections" },
   { to: "/owner/products/add", label: "Add Product" },
 ];
 

@@ -1,67 +1,63 @@
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
 
-// Import images from assets
-import darkImg from "../../assets/collections/dark.jpg";
-import jaggeryImg from "../../assets/collections/jaggery.jpg";
-import giftingImg from "../../assets/collections/gifting.jpg";
-import festiveImg from "../../assets/collections/festive.jpg";
-import customImg from "../../assets/collections/custom.jpg";
-import workshopImg from "../../assets/collections/workshop.jpg";
-import factoryImg from "../../assets/collections/factory.jpg";
+type CollectionItem = {
+  id: number;
+  name: string;
+  imageUrl: string;
+};
+
+const COLLECTIONS_API_URL = "http://localhost:5000/api/products/collections";
 
 export default function CollectionsSection() {
-  const navigate = useNavigate();
+  const [collections, setCollections] = useState<CollectionItem[]>([]);
 
-  const collections = [
-    { title: "Dark Chocolates", img: darkImg, link: "/products?category=dark" },
-    { title: "Jaggery Chocolates", img: jaggeryImg, link: "/products?category=jaggery" },
-    { title: "Corporate Gifting", img: giftingImg, link: "/corporate-gifting" },
-    { title: "Festive Collection", img: festiveImg, link: "/products?category=festive" },
-    { title: "Customized Chocolates", img: customImg, link: "/customized" },
-    { title: "Workshops & Events", img: workshopImg, link: "/workshops" },
-    { title: "Factory Visits", img: factoryImg, link: "/factory-visits" },
-  ];
+  useEffect(() => {
+    axios
+      .get<CollectionItem[]>(COLLECTIONS_API_URL)
+      .then((res) => setCollections(res.data || []))
+      .catch(() => setCollections([]));
+  }, []);
+
+  if (!collections.length) return null;
 
   return (
-    <section className="py-24 bg-[#F7F7F7]">
-      <div className="max-w-7xl mx-auto px-6">
-        
-        {/* HEADER */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-serif font-semibold tracking-tight">
-            ALL COLLECTIONS
+    <section className="bg-[#f9f4ea] py-14 md:py-20">
+      <div className="mx-auto max-w-7xl px-4 md:px-6">
+        <div className="mb-8 text-center md:mb-14">
+          <h2 className="text-4xl font-serif font-medium tracking-tight md:text-5xl">
+            All Collections
           </h2>
-          <div className="mt-4 h-[2px] w-16 bg-orange-400 mx-auto" />
+          <div className="mx-auto mt-5 h-[2px] w-16 bg-gray-300" />
+          <p className="mx-auto mt-5 max-w-2xl text-[15px] text-gray-600">
+            Explore every collection curated by our team and jump straight into products.
+          </p>
         </div>
 
-        {/* GRID */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-          {collections.map((item) => (
-            <div
-              key={item.title}
-              onClick={() => navigate(item.link)}
-              className="relative group cursor-pointer overflow-hidden"
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
+          {collections.map((collection) => (
+            <Link
+              key={collection.id}
+              to={`/products?collection=${encodeURIComponent(collection.name)}`}
+              className="group relative overflow-hidden rounded-2xl border border-white/80 bg-white/70 shadow-[0_14px_32px_rgba(16,56,38,0.14)]"
             >
-              {/* IMAGE */}
               <img
-                src={item.img}
-                alt={item.title}
-                className="w-full h-[320px] object-cover transition-transform duration-700 group-hover:scale-105"
+                src={collection.imageUrl}
+                alt={collection.name}
+                className="h-40 w-full object-cover transition-transform duration-500 group-hover:scale-105 md:h-48"
               />
-
-              {/* DARK OVERLAY */}
-              <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition duration-300" />
-
-              {/* TEXT */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <h3 className="text-white text-2xl md:text-3xl font-bold tracking-wide text-center px-4">
-                  {item.title}
-                </h3>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/15 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-3 text-center">
+                <span className="inline-flex rounded-full border border-white/40 bg-white/85 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#173f33] backdrop-blur">
+                  {collection.name}
+                </span>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
     </section>
   );
 }
+

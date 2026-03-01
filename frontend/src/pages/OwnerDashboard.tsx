@@ -45,14 +45,14 @@ type DashboardOverview = {
     title: string;
     stock: number;
     images: string[];
-    category: string;
+    collection: string;
   }>;
   topProducts: Array<{
     id: number;
     title: string;
     stock: number;
     images: string[];
-    category: string;
+    collection: string;
     unitsSold: number;
   }>;
   recentOrders: Array<{
@@ -243,7 +243,7 @@ export default function OwnerDashboard() {
                   />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-green-900">{product.title}</p>
-                    <p className="text-xs text-green-700">{product.category}</p>
+                    <p className="text-xs text-green-700">{product.collection}</p>
                   </div>
                   <span className="rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-700">
                     {product.stock} left
