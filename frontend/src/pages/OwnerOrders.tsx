@@ -9,15 +9,15 @@ const ADMIN_API = "http://localhost:5000/api/admin";
 const PAGE_SIZE = 20;
 
 const STATUS_COLORS: Record<string, string> = {
-  CREATED: "bg-[#edf4ef] text-[#275e4f] border-[#cadbcf]",
-  CONFIRMED: "bg-[#e5f3ea] text-[#1f634f] border-[#c0ddcf]",
-  PICKED_UP: "bg-[#e0f0ec] text-[#205b58] border-[#bcd8d4]",
-  IN_TRANSIT: "bg-[#e2edf7] text-[#1f4f70] border-[#c5d7eb]",
-  OUT_FOR_DELIVERY: "bg-[#e8eefb] text-[#2a4f87] border-[#cdd8f2]",
-  DELIVERED: "bg-[#dff2e5] text-[#1f6946] border-[#badec8]",
-  FAILED: "bg-[#fde8e8] text-[#8a1d1d] border-[#f2c0c0]",
-  RETURN_REQUESTED: "bg-[#fcf2e1] text-[#7f5d1d] border-[#f0ddb8]",
-  RETURNED: "bg-[#ececec] text-[#454545] border-[#d6d6d6]",
+  CREATED: "bg-[#f3f5f3] text-[#6f7277] border-[#d7dad7]",
+  CONFIRMED: "bg-[#f3f5f3] text-[#6f7277] border-[#d7dad7]",
+  PICKED_UP: "bg-[#f3f5f3] text-[#6f7277] border-[#d7dad7]",
+  IN_TRANSIT: "bg-[#f3f5f3] text-[#6f7277] border-[#d7dad7]",
+  OUT_FOR_DELIVERY: "bg-[#f3f5f3] text-[#6f7277] border-[#d7dad7]",
+  DELIVERED: "bg-[#eef2ed] text-[#69b317] border-[#d7dad7]",
+  FAILED: "bg-[#f3f5f3] text-[#6f7277] border-[#d7dad7]",
+  RETURN_REQUESTED: "bg-[#f3f5f3] text-[#6f7277] border-[#d7dad7]",
+  RETURNED: "bg-[#f3f5f3] text-[#6f7277] border-[#d7dad7]",
 };
 
 const ALL_STATUSES = [
@@ -123,9 +123,9 @@ export default function OwnerOrders() {
     <div className="mx-auto max-w-7xl p-6">
       <AdminPanelNav />
 
-      <div className="mb-6 rounded-3xl border border-[#c5d5cc] bg-gradient-to-r from-[#12362c] to-[#1d5c4d] p-6 text-white">
-        <p className="text-xs uppercase tracking-[0.34em] text-[#add3c0]">Admin Fulfillment</p>
-        <h1 className="mt-2 text-3xl font-semibold">Order Operations</h1>
+      <div className="mb-6 rounded-3xl border border-[#d7dad7] bg-gradient-to-r from-[#57595d] via-[#666970] to-[#8d9197] p-6 text-white">
+        <p className="text-xs uppercase tracking-[0.34em] text-[#d7dad7]">Admin Fulfillment</p>
+        <h1 className="mt-2 text-3xl font-semibold text-white">Order Operations</h1>
       </div>
 
       <div className="mb-6 flex flex-wrap gap-2">
@@ -138,8 +138,8 @@ export default function OwnerOrders() {
             }}
             className={`rounded-full border px-3 py-1.5 text-xs font-semibold tracking-wide transition ${
               statusFilter === status
-                ? "border-[#153e32] bg-[#153e32] text-white"
-                : "border-[#c6d8ce] bg-white text-[#245647] hover:bg-[#edf5ef]"
+                ? "border-[#57595d] bg-[#57595d] text-white"
+                : "border-[#d7dad7] bg-white text-[#6f7277] hover:bg-[#f3f5f3]"
             }`}
           >
             {status}
@@ -154,14 +154,14 @@ export default function OwnerOrders() {
           return (
             <article
               key={order.id}
-              className="rounded-3xl border border-[#c8d8cf] bg-white p-6 shadow-[0_22px_55px_-35px_rgba(18,53,44,0.48)]"
+              className="rounded-3xl border border-[#d7dad7] bg-white p-6 shadow-[0_22px_55px_-35px_rgba(18,53,44,0.48)]"
             >
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <p className="text-xl font-semibold text-[#143b2f]">Order #{order.id}</p>
-                  <p className="mt-1 text-xs text-[#5c786f]">{new Date(order.createdAt).toLocaleString()}</p>
-                  <p className="mt-2 text-sm text-[#245647]">
-                    {order.user.name} <span className="text-[#7a948b]">({order.user.email})</span>
+                  <p className="text-xl font-semibold text-[#57595d]">Order #{order.id}</p>
+                  <p className="mt-1 text-xs text-[#8d9197]">{new Date(order.createdAt).toLocaleString()}</p>
+                  <p className="mt-2 text-sm text-[#6f7277]">
+                    {order.user.name} <span className="text-[#a5a8ad]">({order.user.email})</span>
                   </p>
                 </div>
 
@@ -173,7 +173,7 @@ export default function OwnerOrders() {
                         : null
                     }
                     className={`rounded-full border px-3 py-1 text-xs font-semibold ${
-                      STATUS_COLORS[order.deliveryStatus] || "bg-[#edf4ef] text-[#275e4f] border-[#cadbcf]"
+                      STATUS_COLORS[order.deliveryStatus] || "bg-[#f3f5f3] text-[#6f7277] border-[#d7dad7]"
                     } ${nextStatuses.length ? "cursor-pointer" : "cursor-default"}`}
                   >
                     {order.deliveryStatus}
@@ -181,7 +181,7 @@ export default function OwnerOrders() {
                   </button>
 
                   {openStatusMenu === order.id ? (
-                    <div className="absolute right-0 z-20 mt-2 min-w-44 rounded-xl border border-[#d5e2da] bg-white p-1.5 shadow-xl">
+                    <div className="absolute right-0 z-20 mt-2 min-w-44 rounded-xl border border-[#d7dad7] bg-white p-1.5 shadow-xl">
                       {nextStatuses.map((status) => (
                         <button
                           key={status}
@@ -191,7 +191,7 @@ export default function OwnerOrders() {
                             setConfirmOpen(true);
                             setOpenStatusMenu(null);
                           }}
-                          className="block w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-[#1f5445] hover:bg-[#eef6f0]"
+                          className="block w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-[#6f7277] hover:bg-[#f3f5f3]"
                         >
                           {status}
                         </button>
@@ -202,51 +202,51 @@ export default function OwnerOrders() {
               </div>
 
               <div className="mt-5 grid gap-4 md:grid-cols-2">
-                <div className="rounded-2xl border border-[#e2ebe5] bg-[#f9fbfa] p-4 text-sm text-[#355d51]">
-                  <p className="text-xs uppercase tracking-[0.2em] text-[#6f8981]">Delivery Address</p>
-                  <p className="mt-2 font-semibold text-[#143b2f]">{a.name}</p>
+                <div className="rounded-2xl border border-[#d7dad7] bg-[#f5f6f5] p-4 text-sm text-[#6f7277]">
+                  <p className="text-xs uppercase tracking-[0.2em] text-[#8d9197]">Delivery Address</p>
+                  <p className="mt-2 font-semibold text-[#57595d]">{a.name}</p>
                   <p>{a.phone}{a.altPhone ? ` / ${a.altPhone}` : ""}</p>
                   <p>{a.line1}, {a.city}, {a.state} - {a.pincode}</p>
                 </div>
-                <div className="rounded-2xl border border-[#e2ebe5] bg-[#f9fbfa] p-4 text-sm text-[#355d51]">
-                  <p className="text-xs uppercase tracking-[0.2em] text-[#6f8981]">Payment</p>
-                  <p className="mt-2 font-semibold text-[#143b2f]">{order.paymentStatus}</p>
+                <div className="rounded-2xl border border-[#d7dad7] bg-[#f5f6f5] p-4 text-sm text-[#6f7277]">
+                  <p className="text-xs uppercase tracking-[0.2em] text-[#8d9197]">Payment</p>
+                  <p className="mt-2 font-semibold text-[#57595d]">{order.paymentStatus}</p>
                   {order.razorpayPaymentId ? (
-                    <p className="mt-1 break-all text-xs text-[#5f7a71]">Payment ID: {order.razorpayPaymentId}</p>
+                    <p className="mt-1 break-all text-xs text-[#8d9197]">Payment ID: {order.razorpayPaymentId}</p>
                   ) : null}
                 </div>
               </div>
 
-              <div className="mt-5 space-y-3 border-t border-[#e8eeea] pt-4">
+              <div className="mt-5 space-y-3 border-t border-[#d7dad7] pt-4">
                 {order.items.map((item: any) => (
-                  <div key={item.id} className="flex items-center gap-3 rounded-xl border border-[#e8eeea] p-3">
+                  <div key={item.id} className="flex items-center gap-3 rounded-xl border border-[#d7dad7] p-3">
                     <img
                       src={item.product.images[0]}
-                      className="h-14 w-14 rounded-lg border border-[#dbe7df] object-cover"
+                      className="h-14 w-14 rounded-lg border border-[#d7dad7] object-cover"
                       alt={item.product.title}
                     />
                     <div className="flex-1">
-                      <p className="font-medium text-[#143b2f]">{item.product.title}</p>
-                      <p className="text-xs text-[#5b776d]">Qty {item.quantity}</p>
+                      <p className="font-medium text-[#57595d]">{item.product.title}</p>
+                      <p className="text-xs text-[#8d9197]">Qty {item.quantity}</p>
                     </div>
-                    <p className="text-sm font-semibold text-[#173f33]">Rs {item.quantity * item.price}</p>
+                    <p className="text-sm font-semibold text-[#57595d]">Rs {item.quantity * item.price}</p>
                   </div>
                 ))}
               </div>
 
-              <div className="mt-5 flex items-center justify-between border-t border-[#e8eeea] pt-4">
+              <div className="mt-5 flex items-center justify-between border-t border-[#d7dad7] pt-4">
                 <ReceiptButton order={order} />
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => navigate(`/track-order?orderId=${order.id}&scope=admin`)}
-                    className="rounded-lg border border-[#205b58] px-3 py-2 text-xs font-semibold text-[#205b58] hover:bg-[#edf7f5]"
+                    className="rounded-lg border border-[#69b317] px-3 py-2 text-xs font-semibold text-[#6f7277] hover:bg-[#f3f5f3]"
                   >
                     Track Timeline
                   </button>
                   <button
                     onClick={() => downloadShiprocketInvoice(order.id)}
                     disabled={!order.shipment}
-                    className="rounded-lg border border-[#1f4f70] px-3 py-2 text-xs font-semibold text-[#1f4f70] hover:bg-[#edf3f9] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded-lg border border-[#69b317] px-3 py-2 text-xs font-semibold text-[#6f7277] hover:bg-[#f3f5f3] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Download Shiprocket Invoice
                   </button>
@@ -254,13 +254,13 @@ export default function OwnerOrders() {
                     <>
                       <button
                         onClick={() => decideReturn(order.id, "ACCEPT")}
-                        className="rounded-lg bg-[#1b6a4d] px-3 py-2 text-xs font-semibold text-white"
+                        className="rounded-lg bg-[#69b317] px-3 py-2 text-xs font-semibold text-white"
                       >
                         Accept Return
                       </button>
                       <button
                         onClick={() => decideReturn(order.id, "REJECT")}
-                        className="rounded-lg border border-[#8a1d1d] px-3 py-2 text-xs font-semibold text-[#8a1d1d]"
+                        className="rounded-lg border border-[#d7dad7] px-3 py-2 text-xs font-semibold text-[#6f7277]"
                       >
                         Reject Return
                       </button>
@@ -271,12 +271,12 @@ export default function OwnerOrders() {
                       href={order.shipment.trackingUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-xs font-semibold text-[#1f4f70] underline"
+                      className="text-xs font-semibold text-[#6f7277] underline"
                     >
                       Track on Shiprocket
                     </a>
                   ) : null}
-                  <p className="text-lg font-semibold text-[#143b2f]">Total Rs {order.totalAmount}/-</p>
+                  <p className="text-lg font-semibold text-[#57595d]">Total Rs {order.totalAmount}/-</p>
                 </div>
               </div>
             </article>
@@ -288,39 +288,39 @@ export default function OwnerOrders() {
         <button
           disabled={currentPage === 1}
           onClick={() => fetchOrders(currentPage - 1)}
-          className="rounded-lg border border-[#bfd2c7] px-3 py-1 text-sm font-medium text-[#1e5647] disabled:opacity-40"
+          className="rounded-lg border border-[#d7dad7] px-3 py-1 text-sm font-medium text-[#6f7277] disabled:opacity-40"
         >
           Prev
         </button>
-        <span className="text-sm text-[#4f7066]">
+        <span className="text-sm text-[#8d9197]">
           Page {currentPage} of {totalPages}
         </span>
         <button
           disabled={currentPage === totalPages}
           onClick={() => fetchOrders(currentPage + 1)}
-          className="rounded-lg border border-[#bfd2c7] px-3 py-1 text-sm font-medium text-[#1e5647] disabled:opacity-40"
+          className="rounded-lg border border-[#d7dad7] px-3 py-1 text-sm font-medium text-[#6f7277] disabled:opacity-40"
         >
           Next
         </button>
       </div>
 
       {confirmOpen && selectedOrder ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 px-4">
-          <div className="w-full max-w-md rounded-2xl border border-[#cad8d1] bg-white p-6">
-            <h2 className="text-xl font-semibold text-[#143b2f]">Update Delivery Status</h2>
-            <p className="mt-2 text-sm text-[#557167]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#57595d]/45 px-4">
+          <div className="w-full max-w-md rounded-2xl border border-[#d7dad7] bg-white p-6">
+            <h2 className="text-xl font-semibold text-[#57595d]">Update Delivery Status</h2>
+            <p className="mt-2 text-sm text-[#8d9197]">
               Change order #{selectedOrder.id} to <strong>{newStatus}</strong>?
             </p>
             <div className="mt-6 flex justify-end gap-3">
               <button
                 onClick={() => setConfirmOpen(false)}
-                className="rounded-lg border border-[#c7d6cd] px-4 py-2 text-sm text-[#2e5b4f]"
+                className="rounded-lg border border-[#d7dad7] px-4 py-2 text-sm text-[#6f7277]"
               >
                 Cancel
               </button>
               <button
                 onClick={updateStatus}
-                className="rounded-lg bg-[#143b2f] px-4 py-2 text-sm font-semibold text-white"
+                className="rounded-lg bg-[#57595d] px-4 py-2 text-sm font-semibold text-white"
               >
                 Confirm
               </button>
@@ -331,3 +331,7 @@ export default function OwnerOrders() {
     </div>
   );
 }
+
+
+
+

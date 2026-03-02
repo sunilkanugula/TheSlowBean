@@ -5,12 +5,12 @@
 @tailwind utilities;
 
 :root {
-  --ink: #143b2f;
-  --ink-soft: #3c6156;
-  --canvas: #f4efe6;
-  --accent: #1e5f4e;
-  --border: #c8d7ce;
-  --gold: #d39b3f;
+  --ink: #57595d;
+  --ink-soft: #6f7277;
+  --canvas: #f2f3f2;
+  --accent: #69b317;
+  --border: #d7dad7;
+  --gold: #a5a8ad;
 }
 
 html,
@@ -21,7 +21,7 @@ body,
 
 body {
   margin: 0;
-  background: radial-gradient(circle at 10% 10%, #fbf8f2 0%, #f4efe6 38%, #efe9dd 100%);
+  background: radial-gradient(circle at 10% 10%, #f5f6f5 0%, #eff1f0 38%, #e8ebea 100%);
   color: var(--ink);
   font-family: "Manrope", "Segoe UI", sans-serif;
 }

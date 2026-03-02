@@ -46,18 +46,18 @@ const process = [
 
 export default function BeanToBarRoadmap() {
   return (
-    <section className="bg-[#F2F6F1] py-28 text-green-900">
+    <section className="bg-[#eff2ef] py-28 text-[#57595d]">
       <div className="mx-auto max-w-7xl px-6">
 
         {/* Header */}
         <div className="mb-20 text-center">
-          <p className="mb-4 text-xs uppercase tracking-[0.4em] text-green-700">
+          <p className="mb-4 text-xs uppercase tracking-[0.4em] text-[#6f7277]">
             Our Process
           </p>
           <h2 className="mx-auto max-w-2xl text-3xl font-serif font-semibold md:text-4xl">
             From Bean to Bar
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-sm text-green-700">
+          <p className="mx-auto mt-4 max-w-xl text-sm text-[#6f7277]">
             A slow, intentional journey where flavour is shaped patiently at
             every stage.
           </p>
@@ -66,7 +66,7 @@ export default function BeanToBarRoadmap() {
         {/* Timeline */}
         <div className="relative">
           {/* Connector line */}
-          <div className="absolute left-0 right-0 top-16 hidden h-px bg-green-300/60 md:block" />
+          <div className="absolute left-0 right-0 top-16 hidden h-px bg-[#dfe7d7]/60 md:block" />
 
           <div className="grid gap-14 md:grid-cols-7">
             {process.map((step, index) => (
@@ -75,7 +75,7 @@ export default function BeanToBarRoadmap() {
                 className="group relative flex flex-col items-center text-center"
               >
                 {/* Image */}
-                <div className="relative z-10 mb-5 h-28 w-28 overflow-hidden rounded-full border border-green-300 bg-white shadow-sm transition-all duration-300 group-hover:shadow-xl">
+                <div className="relative z-10 mb-5 h-28 w-28 overflow-hidden rounded-full border border-[#d7dad7] bg-white shadow-sm transition-all duration-300 group-hover:shadow-xl">
                   <img
                     src={step.image}
                     alt={step.title}
@@ -84,7 +84,7 @@ export default function BeanToBarRoadmap() {
                 </div>
 
                 {/* Step number */}
-                <span className="mb-2 text-[10px] tracking-[0.3em] text-green-600">
+                <span className="mb-2 text-[10px] tracking-[0.3em] text-[#6f7277]">
                   {String(index + 1).padStart(2, "0")}
                 </span>
 
@@ -92,7 +92,7 @@ export default function BeanToBarRoadmap() {
                 <h3 className="text-sm font-medium tracking-wide">
                   {step.title}
                 </h3>
-                <p className="mt-1 text-xs leading-relaxed text-green-700">
+                <p className="mt-1 text-xs leading-relaxed text-[#6f7277]">
                   {step.description}
                 </p>
               </div>
@@ -104,3 +104,4 @@ export default function BeanToBarRoadmap() {
     </section>
   );
 }
+

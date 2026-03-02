@@ -58,30 +58,41 @@ export default function RelatedProducts({
   if (!products.length) return null;
 
   return (
-    <section className="mt-28">
-      <div className="mb-16 text-center">
-        <h2 className="text-3xl md:text-4xl font-serif font-medium tracking-tight">You may also like</h2>
-        <div className="mt-5 h-[2px] w-16 bg-gray-300 mx-auto" />
+    <section className="mt-16 md:mt-24">
+      <div className="mb-10 text-center md:mb-14">
+        <h2 className="text-3xl font-serif font-medium tracking-tight md:text-4xl">You may also like</h2>
+        <div className="mx-auto mt-5 h-[2px] w-16 bg-[#d7dad7]" />
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-10">
+      <div className="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
         {products.map((product) => {
           const liked = isInWishlist(product.id);
           const isAdded = addedToCart === product.id;
+          const salePrice = product.discountPrice ?? product.price;
+          const hasDiscount =
+            product.discountPrice !== undefined &&
+            product.discountPrice !== null &&
+            product.discountPrice < product.price;
+          const discountPercent = hasDiscount
+            ? Math.round(((product.price - salePrice) / product.price) * 100)
+            : null;
 
           return (
-            <div
+            <article
               key={product.id}
-              className="group h-[360px] flex flex-col rounded-3xl bg-white shadow-sm hover:shadow-lg transition overflow-hidden"
+              className="group min-w-0 transition duration-300 hover:-translate-y-1.5"
             >
-              <div className="relative overflow-hidden h-[160px] sm:h-auto sm:flex-1">
-                <Link to={`/products/${product.id}`}>
+              <Link
+                to={`/products/${product.id}`}
+                className="relative block overflow-hidden rounded-2xl border border-white/80 bg-white/70 shadow-[0_14px_32px_rgba(16,56,38,0.14)]"
+              >
+                <div className="relative aspect-[1/1] w-full overflow-hidden bg-[#f1f3f2] md:aspect-[4/5]">
                   <img
                     src={product.images?.[0] || "/placeholder.png"}
                     alt={product.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
-                </Link>
+                </div>
 
                 <button
                   type="button"
@@ -99,78 +110,99 @@ export default function RelatedProducts({
                       toast.error("Wishlist action failed");
                     }
                   }}
-                  className="absolute top-4 right-4 opacity-0 scale-90 pointer-events-none transition-all duration-300 group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto"
+                  className="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#57595d]/35 text-white backdrop-blur transition hover:bg-[#57595d]/50"
                 >
                   <Heart
-                    size={18}
-                    strokeWidth={1.8}
-                    className={
-                      liked
-                        ? "fill-red-500 text-red-500"
-                        : "text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"
-                    }
+                    size={14}
+                    strokeWidth={2}
+                    className={liked ? "fill-[#69b317] text-[#69b317]" : "text-white"}
                   />
                 </button>
 
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-3 pb-3 pt-10 opacity-100 md:opacity-0 md:translate-y-4 transition-all duration-300 md:group-hover:opacity-100 md:group-hover:translate-y-0">
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleAddToCart(product.id);
-                      }}
-                      className={`group/button relative flex-1 rounded-lg text-xs font-semibold py-2 transition-all duration-300 active:scale-95 ${
-                        isAdded ? "bg-green-600 text-white" : "bg-white text-gray-900 hover:bg-gray-100"
-                      }`}
-                    >
-                      {isAdded ? (
-                        <span className="flex items-center justify-center gap-1">
-                          <Check size={14} /> Added
-                        </span>
-                      ) : (
-                        <span className="relative flex items-center justify-center">
-                          <span className="group-hover/button:opacity-0 transition">Add to Cart</span>
-                          <ShoppingCart size={14} className="absolute opacity-0 group-hover/button:opacity-100 transition" />
-                        </span>
-                      )}
-                    </button>
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#57595d]/40 via-[#57595d]/5 to-transparent" />
 
-                    <Link
-                      to={`/checkout?productId=${product.id}&qty=1`}
-                      className="flex-1 rounded-lg bg-gray-900 text-white text-xs font-semibold py-2 hover:bg-black transition text-center"
-                    >
-                      Buy Now
-                    </Link>
-                  </div>
+                {discountPercent ? (
+                  <span className="absolute bottom-3 left-3 rounded-full bg-[#69b317] px-2 py-1 text-[9px] font-semibold text-white">
+                    Save {discountPercent}%
+                  </span>
+                ) : null}
+              </Link>
+
+              <div className="min-w-0 px-1 pb-1 pt-3 text-center md:px-0 md:pt-3">
+                <p className="text-[9px] uppercase tracking-[0.15em] text-[#69b317] md:text-[10px]">
+                  Related Pick
+                </p>
+
+                <Link to={`/products/${product.id}`} className="block">
+                  <h3
+                    className="mt-1 h-[2.6em] overflow-hidden text-[13px] font-semibold leading-[1.3] text-[#57595d] md:text-[15px]"
+                    style={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                    }}
+                  >
+                    {product.title}
+                  </h3>
+                </Link>
+
+                <div className="mt-2.5 flex items-end justify-center gap-1">
+                  <span className="text-[20px] font-extrabold leading-none text-[#57595d] md:text-[24px]">
+                    Rs {salePrice}
+                  </span>
+                  {hasDiscount ? (
+                    <span className="mb-0.5 text-[11px] text-[#9fa3a8] line-through">
+                      Rs {product.price}
+                    </span>
+                  ) : null}
                 </div>
-              </div>
 
-              <div className="px-5 py-4">
-                <h3 className="text-[14px] font-medium line-clamp-2">{product.title}</h3>
-
-                <div className="mt-4 flex items-center justify-between">
-                  {product.discountPrice ? (
-                    <div className="flex gap-2">
-                      <span className="font-semibold">Rs {product.discountPrice}</span>
-                      <span className="text-xs text-gray-400 line-through">Rs {product.price}</span>
-                    </div>
-                  ) : (
-                    <span className="font-semibold">Rs {product.price}</span>
-                  )}
+                <div className="mt-3 grid w-[90%] grid-cols-1 gap-2 sm:w-[86%] sm:grid-cols-2 mx-auto">
+                  <button
+                    type="button"
+                    onClick={() => handleAddToCart(product.id)}
+                    className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-xl px-3 text-[11px] font-semibold transition ${
+                      isAdded
+                        ? "bg-[#84c83a] text-white"
+                        : "bg-[#69b317] text-white hover:bg-[#5aa10f]"
+                    }`}
+                  >
+                    {isAdded ? (
+                      <>
+                        <Check size={13} />
+                        Added
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingCart size={13} />
+                        Add to Cart
+                      </>
+                    )}
+                  </button>
 
                   <Link
-                    to={`/products/${product.id}`}
-                    className="text-[11px] uppercase tracking-widest text-gray-500 hover:text-gray-900"
+                    to={`/checkout?productId=${product.id}&qty=1`}
+                    className="inline-flex h-9 items-center justify-center rounded-xl bg-[#57595d] px-3 text-[11px] font-semibold text-white transition hover:bg-[#6f7277]"
                   >
-                    View &gt;
+                    Buy Now
                   </Link>
                 </div>
+
+                <Link
+                  to={`/products/${product.id}`}
+                  className="mt-2 block text-[10px] uppercase tracking-[0.14em] text-[#8d9197] transition hover:text-[#57595d]"
+                >
+                  View Details
+                </Link>
               </div>
-            </div>
+            </article>
           );
         })}
       </div>
     </section>
   );
 }
+
+
+
+

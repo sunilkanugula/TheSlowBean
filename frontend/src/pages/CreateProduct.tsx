@@ -137,44 +137,44 @@ export default function CreateProduct() {
     <div className="mx-auto max-w-7xl p-6">
       <AdminPanelNav />
 
-      <section className="mb-6 rounded-3xl border border-[#c5d5cc] bg-gradient-to-r from-[#12362c] via-[#194e40] to-[#1d5c4d] p-6 text-white md:p-8">
-        <p className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#d6efe3]">
+      <section className="mb-6 rounded-3xl border border-[#d7dad7] bg-gradient-to-r from-[#57595d] via-[#666970] to-[#8d9197] p-6 text-white md:p-8">
+        <p className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#eef2ed]">
           <Sparkles size={14} /> Product Studio
         </p>
-        <h1 className="mt-4 text-3xl font-semibold md:text-4xl">Create Premium Product Listing</h1>
-        <p className="mt-2 max-w-2xl text-sm text-[#d4e8df] md:text-base">
+        <h1 className="mt-4 text-3xl font-semibold text-white md:text-4xl">Create Premium Product Listing</h1>
+        <p className="mt-2 max-w-2xl text-sm text-[#eef2ed] md:text-base">
           Add polished product details and image set in one flow. This panel is optimized for fast catalog publishing.
         </p>
       </section>
 
       {error ? (
-        <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{error}</div>
+        <div className="mb-4 rounded-2xl border border-[#d7dad7] bg-[#f3f5f3] px-4 py-3 text-sm font-medium text-[#6f7277]">{error}</div>
       ) : null}
 
       {success ? (
-        <div className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{success}</div>
+        <div className="mb-4 rounded-2xl border border-[#d7dad7] bg-[#f1f3f2] px-4 py-3 text-sm font-medium text-[#69b317]">{success}</div>
       ) : null}
 
       <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-        <div className="rounded-3xl border border-[#d5e1da] bg-white p-5 shadow-[0_22px_55px_-35px_rgba(18,53,44,0.45)] md:p-6">
-          <h2 className="text-lg font-semibold text-[#153d31]">Product Information</h2>
-          <p className="mt-1 text-sm text-[#607c73]">Enter details exactly as customers should see them.</p>
+        <div className="rounded-3xl border border-[#d7dad7] bg-white p-5 shadow-[0_22px_55px_-35px_rgba(18,53,44,0.45)] md:p-6">
+          <h2 className="text-lg font-semibold text-[#57595d]">Product Information</h2>
+          <p className="mt-1 text-sm text-[#8d9197]">Enter details exactly as customers should see them.</p>
 
           <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
             <Field label="Title">
-              <input name="title" placeholder="Dark Almond Bar" value={form.title} onChange={handleChange} className="w-full rounded-xl border border-[#c8d9d0] bg-[#fcfefd] px-3 py-2.5 text-sm text-[#143b2f] outline-none transition focus:border-[#2b6f5c] focus:ring-2 focus:ring-[#c6dfd3]" />
+              <input name="title" placeholder="Dark Almond Bar" value={form.title} onChange={handleChange} className="w-full rounded-xl border border-[#d7dad7] bg-[#f5f6f5] px-3 py-2.5 text-sm text-[#57595d] outline-none transition focus:border-[#69b317] focus:ring-2 focus:ring-[#dfe7d7]" />
             </Field>
 
             <Field label="Price (INR)">
-              <input name="price" type="number" placeholder="249" value={form.price} onChange={handleChange} className="w-full rounded-xl border border-[#c8d9d0] bg-[#fcfefd] px-3 py-2.5 text-sm text-[#143b2f] outline-none transition focus:border-[#2b6f5c] focus:ring-2 focus:ring-[#c6dfd3]" />
+              <input name="price" type="number" placeholder="249" value={form.price} onChange={handleChange} className="w-full rounded-xl border border-[#d7dad7] bg-[#f5f6f5] px-3 py-2.5 text-sm text-[#57595d] outline-none transition focus:border-[#69b317] focus:ring-2 focus:ring-[#dfe7d7]" />
             </Field>
 
             <Field label="Discount Price (optional)">
-              <input name="discountPrice" type="number" placeholder="199" value={form.discountPrice} onChange={handleChange} className="w-full rounded-xl border border-[#c8d9d0] bg-[#fcfefd] px-3 py-2.5 text-sm text-[#143b2f] outline-none transition focus:border-[#2b6f5c] focus:ring-2 focus:ring-[#c6dfd3]" />
+              <input name="discountPrice" type="number" placeholder="199" value={form.discountPrice} onChange={handleChange} className="w-full rounded-xl border border-[#d7dad7] bg-[#f5f6f5] px-3 py-2.5 text-sm text-[#57595d] outline-none transition focus:border-[#69b317] focus:ring-2 focus:ring-[#dfe7d7]" />
             </Field>
 
             <Field label="Stock">
-              <input name="stock" type="number" placeholder="150" value={form.stock} onChange={handleChange} className="w-full rounded-xl border border-[#c8d9d0] bg-[#fcfefd] px-3 py-2.5 text-sm text-[#143b2f] outline-none transition focus:border-[#2b6f5c] focus:ring-2 focus:ring-[#c6dfd3]" />
+              <input name="stock" type="number" placeholder="150" value={form.stock} onChange={handleChange} className="w-full rounded-xl border border-[#d7dad7] bg-[#f5f6f5] px-3 py-2.5 text-sm text-[#57595d] outline-none transition focus:border-[#69b317] focus:ring-2 focus:ring-[#dfe7d7]" />
             </Field>
 
             <Field label="Weight (grams)">
@@ -186,7 +186,7 @@ export default function CreateProduct() {
                 placeholder="100"
                 value={form.weightGrams}
                 onChange={handleChange}
-                className="w-full rounded-xl border border-[#c8d9d0] bg-[#fcfefd] px-3 py-2.5 text-sm text-[#143b2f] outline-none transition focus:border-[#2b6f5c] focus:ring-2 focus:ring-[#c6dfd3]"
+                className="w-full rounded-xl border border-[#d7dad7] bg-[#f5f6f5] px-3 py-2.5 text-sm text-[#57595d] outline-none transition focus:border-[#69b317] focus:ring-2 focus:ring-[#dfe7d7]"
               />
             </Field>
           </div>
@@ -198,13 +198,13 @@ export default function CreateProduct() {
               value={form.description}
               onChange={handleChange}
               rows={5}
-              className="w-full min-h-[130px] resize-y rounded-xl border border-[#c8d9d0] bg-[#fcfefd] px-3 py-2.5 text-sm text-[#143b2f] outline-none transition focus:border-[#2b6f5c] focus:ring-2 focus:ring-[#c6dfd3]"
+              className="w-full min-h-[130px] resize-y rounded-xl border border-[#d7dad7] bg-[#f5f6f5] px-3 py-2.5 text-sm text-[#57595d] outline-none transition focus:border-[#69b317] focus:ring-2 focus:ring-[#dfe7d7]"
             />
           </Field>
 
           <Field label="Collections" className="mt-4">
             {collections.length === 0 ? (
-              <div className="rounded-xl border border-[#d8e5de] bg-[#f7fbf9] px-3 py-2 text-sm text-[#5c7f73]">
+              <div className="rounded-xl border border-[#d7dad7] bg-[#f3f5f3] px-3 py-2 text-sm text-[#8d9197]">
                 No collections found. Create from Admin {">"} Collections.
               </div>
             ) : (
@@ -214,7 +214,7 @@ export default function CreateProduct() {
                   return (
                     <label
                       key={item.id}
-                      className="inline-flex items-center gap-2 rounded-xl border border-[#d8e5de] bg-[#f7fbf9] px-3 py-2 text-sm text-[#1f5d4d]"
+                      className="inline-flex items-center gap-2 rounded-xl border border-[#d7dad7] bg-[#f3f5f3] px-3 py-2 text-sm text-[#69b317]"
                     >
                       <input
                         type="checkbox"
@@ -226,7 +226,7 @@ export default function CreateProduct() {
                             setSelectedCollectionIds((prev) => prev.filter((id) => id !== item.id));
                           }
                         }}
-                        className="h-4 w-4 rounded border-[#93b8a8]"
+                        className="h-4 w-4 rounded border-[#b5bab6]"
                       />
                       {item.name}
                     </label>
@@ -236,40 +236,40 @@ export default function CreateProduct() {
             )}
           </Field>
 
-          <label className="mt-5 inline-flex items-center gap-3 rounded-2xl border border-[#d8e5de] bg-[#f7fbf9] px-4 py-3 text-sm font-medium text-[#1a5547]">
+          <label className="mt-5 inline-flex items-center gap-3 rounded-2xl border border-[#d7dad7] bg-[#f3f5f3] px-4 py-3 text-sm font-medium text-[#6f7277]">
             <input
               type="checkbox"
               checked={form.isBestSelling}
               onChange={(e) => setForm((prev) => ({ ...prev, isBestSelling: e.target.checked }))}
-              className="h-4 w-4 rounded border-[#93b8a8]"
+              className="h-4 w-4 rounded border-[#b5bab6]"
             />
             Mark as Best Selling
           </label>
         </div>
 
-        <div className="rounded-3xl border border-[#d5e1da] bg-white p-5 shadow-[0_22px_55px_-35px_rgba(18,53,44,0.45)] md:p-6">
-          <h2 className="text-lg font-semibold text-[#153d31]">Image Set</h2>
-          <p className="mt-1 text-sm text-[#607c73]">Upload up to {MAX_IMAGES} images. First image will be cover.</p>
+        <div className="rounded-3xl border border-[#d7dad7] bg-white p-5 shadow-[0_22px_55px_-35px_rgba(18,53,44,0.45)] md:p-6">
+          <h2 className="text-lg font-semibold text-[#57595d]">Image Set</h2>
+          <p className="mt-1 text-sm text-[#8d9197]">Upload up to {MAX_IMAGES} images. First image will be cover.</p>
 
-          <label className="mt-5 flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-[#a8c3b7] bg-[#f7fbf9] px-4 py-8 text-center transition hover:bg-[#eff7f3]">
-            <UploadCloud size={24} className="text-[#2a6f5b]" />
-            <span className="mt-2 text-sm font-medium text-[#1f5d4d]">Choose Product Images</span>
-            <span className="mt-1 text-xs text-[#6b887f]">PNG, JPG, WEBP supported</span>
+          <label className="mt-5 flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-[#a8c3b7] bg-[#f3f5f3] px-4 py-8 text-center transition hover:bg-[#f3f5f3]">
+            <UploadCloud size={24} className="text-[#69b317]" />
+            <span className="mt-2 text-sm font-medium text-[#69b317]">Choose Product Images</span>
+            <span className="mt-1 text-xs text-[#8d9197]">PNG, JPG, WEBP supported</span>
             <input type="file" multiple accept="image/*" onChange={handleImageChange} className="hidden" />
           </label>
 
-          <div className="mt-4 rounded-xl bg-[#f3f8f5] px-3 py-2 text-xs font-medium text-[#436a5f]">
+          <div className="mt-4 rounded-xl bg-[#f3f8f5] px-3 py-2 text-xs font-medium text-[#6f7277]">
             {images.length} / {MAX_IMAGES} selected
           </div>
 
           <div className="mt-4 grid grid-cols-2 gap-3">
             {imagePreviews.map((preview, idx) => (
-              <div key={`${preview.file.name}-${idx}`} className="overflow-hidden rounded-xl border border-[#d9e6df]">
+              <div key={`${preview.file.name}-${idx}`} className="overflow-hidden rounded-xl border border-[#d7dad7]">
                 <img src={preview.url} alt={preview.file.name} className="h-28 w-full object-cover" />
               </div>
             ))}
             {images.length === 0 ? (
-              <div className="col-span-2 flex min-h-[120px] items-center justify-center rounded-xl border border-dashed border-[#c7d9d0] text-sm text-[#6f8d83]">
+              <div className="col-span-2 flex min-h-[120px] items-center justify-center rounded-xl border border-dashed border-[#d7dad7] text-sm text-[#8d9197]">
                 <ImagePlus size={16} className="mr-2" /> No images selected
               </div>
             ) : null}
@@ -278,7 +278,7 @@ export default function CreateProduct() {
           <button
             onClick={submit}
             disabled={loading}
-            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#153d31] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#102f26] disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#57595d] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#5aa10f] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? <Loader2 size={16} className="animate-spin" /> : null}
             {loading ? "Publishing Product..." : "Create Product"}
@@ -300,8 +300,11 @@ function Field({
 }) {
   return (
     <label className={`block ${className}`}>
-      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-[#55776b]">{label}</span>
+      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-[#8d9197]">{label}</span>
       {children}
     </label>
   );
 }
+
+
+

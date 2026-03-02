@@ -78,9 +78,9 @@ const currency = (value: number) =>
   }).format(value);
 
 const ORDER_HEALTH_COLORS: Record<string, string> = {
-  Paid: "#15803d",
-  Pending: "#d97706",
-  "Return Requested": "#b91c1c",
+  Paid: "#69b317",
+  Pending: "#84c83a",
+  "Return Requested": "#6f7277",
 };
 
 export default function OwnerDashboard() {
@@ -128,7 +128,7 @@ export default function OwnerDashboard() {
     return (
       <div className="mx-auto max-w-7xl p-6">
         <AdminPanelNav />
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-red-700">
+        <div className="rounded-2xl border border-[#d7dad7] bg-[#f3f5f3] p-5 text-[#6f7277]">
           {error || "Unable to load dashboard"}
         </div>
       </div>
@@ -141,10 +141,12 @@ export default function OwnerDashboard() {
     <div className="mx-auto max-w-7xl p-6">
       <AdminPanelNav />
 
-      <div className="mb-6 rounded-3xl bg-gradient-to-r from-green-900 to-green-700 p-6 text-white md:p-8">
-        <p className="text-xs uppercase tracking-[0.3em] text-green-100">Admin Control Center</p>
-        <h1 className="mt-2 text-2xl font-semibold md:text-3xl">Advanced Commerce Command Panel</h1>
-        <p className="mt-2 text-sm text-green-100 md:text-base">
+      <div className="relative mb-6 overflow-hidden rounded-3xl bg-gradient-to-r from-[#57595d] via-[#666970] to-[#6f7277] p-6 text-white md:p-8">
+        <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#84c83a]/15 blur-2xl" />
+        <div className="pointer-events-none absolute -left-14 bottom-0 h-36 w-36 rounded-full bg-white/10 blur-2xl" />
+        <p className="text-xs uppercase tracking-[0.3em] text-[#eef2ed]">Admin Control Center</p>
+        <h1 className="mt-2 text-2xl font-semibold text-white md:text-3xl">Advanced Commerce Command Panel</h1>
+        <p className="mt-2 text-sm text-[#eef2ed] md:text-base">
           Monitor revenue, orders, stock risk, and fulfillment from one place.
         </p>
       </div>
@@ -157,15 +159,15 @@ export default function OwnerDashboard() {
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
-        <div className="rounded-3xl border border-green-100 bg-white p-5 shadow-sm lg:col-span-2">
-          <h2 className="text-lg font-semibold text-green-900">Revenue Trend (Last 7 Days)</h2>
+        <div className="rounded-3xl border border-[#d7dad7] bg-white p-5 shadow-sm lg:col-span-2">
+          <h2 className="text-lg font-semibold text-[#57595d]">Revenue Trend (Last 7 Days)</h2>
           <div className="mt-4 h-[280px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={salesTrend}>
                 <defs>
                   <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#166534" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#166534" stopOpacity={0.02} />
+                    <stop offset="5%" stopColor="#69b317" stopOpacity={0.4} />
+                    <stop offset="95%" stopColor="#69b317" stopOpacity={0.02} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="4 4" />
@@ -175,7 +177,7 @@ export default function OwnerDashboard() {
                 <Area
                   type="monotone"
                   dataKey="revenue"
-                  stroke="#166534"
+                  stroke="#69b317"
                   fill="url(#trendFill)"
                   strokeWidth={2}
                 />
@@ -184,8 +186,8 @@ export default function OwnerDashboard() {
           </div>
         </div>
 
-        <div className="rounded-3xl border border-green-100 bg-white p-5 shadow-sm">
-          <h2 className="text-lg font-semibold text-green-900">Order Health</h2>
+        <div className="rounded-3xl border border-[#d7dad7] bg-white p-5 shadow-sm">
+          <h2 className="text-lg font-semibold text-[#57595d]">Order Health</h2>
           <div className="mt-4 h-[240px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -200,7 +202,7 @@ export default function OwnerDashboard() {
                   {statusPieData.map((entry) => (
                     <Cell
                       key={entry.name}
-                      fill={ORDER_HEALTH_COLORS[entry.name] || "#166534"}
+                      fill={ORDER_HEALTH_COLORS[entry.name] || "#69b317"}
                     />
                   ))}
                 </Pie>
@@ -209,14 +211,14 @@ export default function OwnerDashboard() {
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <div className="mt-4 flex flex-wrap gap-2 rounded-xl bg-slate-50 p-3 text-xs font-semibold">
-            <span className="rounded-full bg-green-100 px-3 py-1 text-green-800">
+          <div className="mt-4 flex flex-wrap gap-2 rounded-xl bg-[#f3f5f3] p-3 text-xs font-semibold">
+            <span className="rounded-full bg-[#69b317] px-3 py-1 text-white">
               Paid: {kpis.paidOrders}
             </span>
-            <span className="rounded-full bg-amber-100 px-3 py-1 text-amber-800">
+            <span className="rounded-full bg-[#dfe7d7] px-3 py-1 text-[#57595d]">
               Pending: {kpis.pendingOrders}
             </span>
-            <span className="rounded-full bg-red-100 px-3 py-1 text-red-800">
+            <span className="rounded-full bg-[#f3f5f3] px-3 py-1 text-[#57595d]">
               Return Requested: {kpis.returnRequestedOrders}
             </span>
           </div>
@@ -224,28 +226,28 @@ export default function OwnerDashboard() {
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <div className="rounded-3xl border border-green-100 bg-white p-5 shadow-sm">
+        <div className="rounded-3xl border border-[#d7dad7] bg-white p-5 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-green-900">Low Stock Alerts</h2>
-            <AlertTriangle className="text-amber-600" size={18} />
+            <h2 className="text-lg font-semibold text-[#57595d]">Low Stock Alerts</h2>
+            <AlertTriangle className="text-[#69b317]" size={18} />
           </div>
 
           {lowStockProducts.length === 0 ? (
-            <p className="text-sm text-green-700">No low stock products right now.</p>
+            <p className="text-sm text-[#6f7277]">No low stock products right now.</p>
           ) : (
             <div className="space-y-3">
               {lowStockProducts.map((product) => (
-                <div key={product.id} className="flex items-center gap-3 rounded-xl border border-green-100 p-3">
+                <div key={product.id} className="flex items-center gap-3 rounded-xl border border-[#d7dad7] p-3">
                   <img
                     src={product.images[0]}
                     alt={product.title}
                     className="h-12 w-12 rounded-lg object-cover"
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-green-900">{product.title}</p>
-                    <p className="text-xs text-green-700">{product.collection}</p>
+                    <p className="truncate text-sm font-medium text-[#57595d]">{product.title}</p>
+                    <p className="text-xs text-[#6f7277]">{product.collection}</p>
                   </div>
-                  <span className="rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-700">
+                  <span className="rounded-full bg-[#eef2ed] px-3 py-1 text-xs font-semibold text-[#57595d]">
                     {product.stock} left
                   </span>
                 </div>
@@ -254,28 +256,28 @@ export default function OwnerDashboard() {
           )}
         </div>
 
-        <div className="rounded-3xl border border-green-100 bg-white p-5 shadow-sm">
+        <div className="rounded-3xl border border-[#d7dad7] bg-white p-5 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-green-900">Top Products</h2>
-            <PackageSearch className="text-green-700" size={18} />
+            <h2 className="text-lg font-semibold text-[#57595d]">Top Products</h2>
+            <PackageSearch className="text-[#6f7277]" size={18} />
           </div>
 
           {topProducts.length === 0 ? (
-            <p className="text-sm text-green-700">Not enough order data yet.</p>
+            <p className="text-sm text-[#6f7277]">Not enough order data yet.</p>
           ) : (
             <div className="space-y-3">
               {topProducts.map((product) => (
-                <div key={product.id} className="flex items-center gap-3 rounded-xl border border-green-100 p-3">
+                <div key={product.id} className="flex items-center gap-3 rounded-xl border border-[#d7dad7] p-3">
                   <img
                     src={product.images[0]}
                     alt={product.title}
                     className="h-12 w-12 rounded-lg object-cover"
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-green-900">{product.title}</p>
-                    <p className="text-xs text-green-700">Stock: {product.stock}</p>
+                    <p className="truncate text-sm font-medium text-[#57595d]">{product.title}</p>
+                    <p className="text-xs text-[#6f7277]">Stock: {product.stock}</p>
                   </div>
-                  <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-800">
+                  <span className="rounded-full bg-[#f3f5f3] px-3 py-1 text-xs font-semibold text-[#57595d]">
                     {product.unitsSold} sold
                   </span>
                 </div>
@@ -285,12 +287,12 @@ export default function OwnerDashboard() {
         </div>
       </div>
 
-      <div className="mt-6 rounded-3xl border border-green-100 bg-white p-5 shadow-sm">
+      <div className="mt-6 rounded-3xl border border-[#d7dad7] bg-white p-5 shadow-sm">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-green-900">Recent Orders</h2>
+          <h2 className="text-lg font-semibold text-[#57595d]">Recent Orders</h2>
           <Link
             to="/owner/orders"
-            className="inline-flex items-center gap-1 text-sm font-medium text-green-700 hover:text-green-900"
+            className="inline-flex items-center gap-1 text-sm font-medium text-[#6f7277] hover:text-[#57595d]"
           >
             View all <ArrowUpRight size={14} />
           </Link>
@@ -299,7 +301,7 @@ export default function OwnerDashboard() {
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
             <thead>
-              <tr className="border-b border-green-100 text-left text-xs uppercase tracking-wide text-green-600">
+              <tr className="border-b border-[#d7dad7] text-left text-xs uppercase tracking-wide text-[#6f7277]">
                 <th className="py-2 pr-3">Order</th>
                 <th className="py-2 pr-3">Customer</th>
                 <th className="py-2 pr-3">Items</th>
@@ -310,14 +312,14 @@ export default function OwnerDashboard() {
             </thead>
             <tbody>
               {recentOrders.map((order) => (
-                <tr key={order.id} className="border-b border-green-50 text-green-900">
+                <tr key={order.id} className="border-b border-[#eef2ed] text-[#57595d]">
                   <td className="py-3 pr-3 font-medium">#{order.id}</td>
                   <td className="py-3 pr-3">{order.user.name}</td>
                   <td className="py-3 pr-3">{order.itemsCount}</td>
                   <td className="py-3 pr-3">{currency(order.totalAmount)}</td>
                   <td className="py-3 pr-3">{order.paymentStatus}</td>
                   <td className="py-3">
-                    <span className="rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-800">
+                    <span className="rounded-full bg-[#f3f5f3] px-2.5 py-1 text-xs font-medium text-[#57595d]">
                       {order.deliveryStatus}
                     </span>
                   </td>
@@ -347,10 +349,10 @@ function KpiCard({
   icon: ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-green-100 bg-white p-4 shadow-sm">
-      <div className="mb-3 inline-flex rounded-lg bg-green-50 p-2 text-green-700">{icon}</div>
-      <p className="text-sm text-green-700">{title}</p>
-      <p className="mt-1 text-2xl font-semibold text-green-900">{value}</p>
+    <div className="rounded-2xl border border-[#d7dad7] bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-[0_14px_26px_-20px_rgba(87,89,93,0.5)]">
+      <div className="mb-3 inline-flex rounded-lg bg-[#eef2ed] p-2 text-[#69b317]">{icon}</div>
+      <p className="text-sm text-[#6f7277]">{title}</p>
+      <p className="mt-1 text-2xl font-semibold text-[#57595d]">{value}</p>
     </div>
   );
 }
@@ -367,10 +369,14 @@ function QuickAction({
   return (
     <Link
       to={to}
-      className="inline-flex items-center justify-between rounded-2xl border border-green-100 bg-white px-4 py-3 text-sm font-medium text-green-800 shadow-sm transition hover:bg-green-50"
+      className="inline-flex items-center justify-between rounded-2xl border border-[#d7dad7] bg-white px-4 py-3 text-sm font-medium text-[#57595d] shadow-sm transition hover:bg-[#f3f5f3]"
     >
       {title}
       {icon}
     </Link>
   );
 }
+
+
+
+

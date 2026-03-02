@@ -52,23 +52,23 @@ export default function ChangePassword() {
       <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl p-8">
         {/* Header */}
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-semibold text-gray-800">
+          <h1 className="text-3xl font-semibold text-[#57595d]">
             Change Password
           </h1>
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-sm text-[#8d9197] mt-2">
             Keep your account secure by updating your password
           </p>
         </div>
 
         {/* Alerts */}
         {error && (
-          <div className="mb-4 rounded-lg bg-red-50 border border-red-200 text-red-700 px-4 py-2 text-sm">
+          <div className="mb-4 rounded-lg bg-[#f3f5f3] border border-[#d7dad7] text-[#6f7277] px-4 py-2 text-sm">
             {error}
           </div>
         )}
 
         {success && (
-          <div className="mb-4 rounded-lg bg-green-50 border border-green-200 text-green-700 px-4 py-2 text-sm">
+          <div className="mb-4 rounded-lg bg-[#f3f5f3] border border-[#d7dad7] text-[#6f7277] px-4 py-2 text-sm">
             {success}
           </div>
         )}
@@ -76,7 +76,7 @@ export default function ChangePassword() {
         {/* Form */}
         <div className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-[#6f7277] mb-1">
               Current Password
             </label>
             <input
@@ -84,13 +84,13 @@ export default function ChangePassword() {
               value={oldPassword}
               onChange={(e) => setOldPassword(e.target.value)}
               disabled={loading}
-              className="w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#69b317]"
               placeholder="Enter current password"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-[#6f7277] mb-1">
               New Password
             </label>
             <input
@@ -98,16 +98,16 @@ export default function ChangePassword() {
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               disabled={loading}
-              className="w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#69b317]"
               placeholder="Create a new password"
             />
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-[#9fa3a8] mt-1">
               Must be at least 8 characters
             </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-[#6f7277] mb-1">
               Confirm New Password
             </label>
             <input
@@ -115,7 +115,7 @@ export default function ChangePassword() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               disabled={loading}
-              className="w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#69b317]"
               placeholder="Re-enter new password"
             />
           </div>
@@ -124,14 +124,14 @@ export default function ChangePassword() {
           <button
             onClick={submit}
             disabled={loading}
-            className="w-full rounded-lg bg-blue-600 text-white py-2.5 font-medium hover:bg-blue-700 transition disabled:opacity-60"
+            className="w-full rounded-lg bg-[#69b317] text-white py-2.5 font-medium hover:bg-[#5aa10f] transition disabled:opacity-60"
           >
             {loading ? "Updating..." : "Update Password"}
           </button>
 
           <button
             onClick={() => navigate("/my-account")}
-            className="w-full text-sm text-gray-500 hover:text-gray-800 transition"
+            className="w-full text-sm text-[#8d9197] hover:text-[#57595d] transition"
           >
             ← Back to My Account
           </button>
@@ -140,3 +140,6 @@ export default function ChangePassword() {
     </div>
   );
 }
+
+
+

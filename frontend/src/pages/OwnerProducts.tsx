@@ -56,18 +56,18 @@ export default function OwnerProducts() {
     <div className="mx-auto max-w-7xl p-6">
       <AdminPanelNav />
 
-      <section className="mb-6 rounded-3xl border border-[#c5d5cc] bg-gradient-to-r from-[#12362c] via-[#194e40] to-[#1d5c4d] p-6 text-white md:p-8">
-        <p className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#d6efe3]">
+      <section className="mb-6 rounded-3xl border border-[#d7dad7] bg-gradient-to-r from-[#57595d] via-[#666970] to-[#8d9197] p-6 text-white md:p-8">
+        <p className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#eef2ed]">
           <Sparkles size={14} /> Catalog Manager
         </p>
         <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-semibold md:text-4xl">Premium Product Operations</h1>
-            <p className="mt-2 text-sm text-[#d4e8df] md:text-base">Control pricing, stock, and product content from one elevated workspace.</p>
+            <h1 className="text-3xl font-semibold text-white md:text-4xl">Premium Product Operations</h1>
+            <p className="mt-2 text-sm text-[#eef2ed] md:text-base">Control pricing, stock, and product content from one elevated workspace.</p>
           </div>
           <button
             onClick={() => navigate("/owner/products/add")}
-            className="inline-flex items-center gap-2 rounded-2xl bg-white px-4 py-2.5 text-sm font-semibold text-[#123d31] transition hover:bg-[#edf5ef]"
+            className="inline-flex items-center gap-2 rounded-2xl bg-white px-4 py-2.5 text-sm font-semibold text-[#57595d] transition hover:bg-[#f3f5f3]"
           >
             <Plus size={16} /> Add Product
           </button>
@@ -80,14 +80,14 @@ export default function OwnerProducts() {
         <StatCard label="Visible Rows" value={String(filteredProducts.length)} />
       </div>
 
-      <div className="mb-4 rounded-2xl border border-[#d6e3dc] bg-white p-3 shadow-sm">
-        <label className="flex items-center gap-2 rounded-xl border border-[#d1dfd8] bg-[#f8fbf9] px-3 py-2">
-          <Search size={15} className="text-[#557b6e]" />
+      <div className="mb-4 rounded-2xl border border-[#d7dad7] bg-white p-3 shadow-sm">
+        <label className="flex items-center gap-2 rounded-xl border border-[#d1dfd8] bg-[#f3f5f3] px-3 py-2">
+          <Search size={15} className="text-[#8d9197]" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search by title, collection, ID"
-            className="w-full bg-transparent text-sm text-[#184839] outline-none"
+            className="w-full bg-transparent text-sm text-[#57595d] outline-none"
           />
         </label>
       </div>
@@ -96,26 +96,26 @@ export default function OwnerProducts() {
         {filteredProducts.map((p) => (
           <article
             key={p.id}
-            className="grid grid-cols-1 items-center gap-4 rounded-2xl border border-[#d8e4de] bg-white p-4 shadow-[0_14px_30px_-24px_rgba(18,53,44,0.5)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_-24px_rgba(18,53,44,0.6)] md:grid-cols-[72px_1.6fr_1fr_1fr_auto]"
+            className="grid grid-cols-1 items-center gap-4 rounded-2xl border border-[#d7dad7] bg-white p-4 shadow-[0_14px_30px_-24px_rgba(18,53,44,0.5)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_-24px_rgba(18,53,44,0.6)] md:grid-cols-[72px_1.6fr_1fr_1fr_auto]"
           >
-            <img src={p.images[0]} className="h-[72px] w-[72px] rounded-xl border border-[#d1ded8] object-cover" alt={p.title} />
+            <img src={p.images[0]} className="h-[72px] w-[72px] rounded-xl border border-[#d7dad7] object-cover" alt={p.title} />
 
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#68887d]">ID #{p.id}</p>
-              <p className="mt-1 text-sm font-semibold text-[#163f32]">{p.title}</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#8d9197]">ID #{p.id}</p>
+              <p className="mt-1 text-sm font-semibold text-[#57595d]">{p.title}</p>
             </div>
 
             <div>
-              <p className="text-[11px] uppercase tracking-[0.12em] text-[#68887d]">Collection</p>
-              <p className="mt-1 text-sm text-[#295f50]">{p.collection}</p>
+              <p className="text-[11px] uppercase tracking-[0.12em] text-[#8d9197]">Collection</p>
+              <p className="mt-1 text-sm text-[#6f7277]">{p.collection}</p>
             </div>
 
             <div className="flex items-center justify-between gap-4 md:block">
               <div>
-                <p className="text-[11px] uppercase tracking-[0.12em] text-[#68887d]">Price</p>
-                <p className="mt-1 text-sm font-semibold text-[#163f32]">Rs {p.discountPrice ?? p.price}</p>
+                <p className="text-[11px] uppercase tracking-[0.12em] text-[#8d9197]">Price</p>
+                <p className="mt-1 text-sm font-semibold text-[#57595d]">Rs {p.discountPrice ?? p.price}</p>
               </div>
-              <span className={`rounded-full px-3 py-1 text-xs font-semibold ${p.stock < 10 ? "bg-red-50 text-red-700" : "bg-emerald-50 text-emerald-700"}`}>
+              <span className={`rounded-full px-3 py-1 text-xs font-semibold ${p.stock < 10 ? "bg-[#f3f5f3] text-[#6f7277]" : "bg-[#f1f3f2] text-[#69b317]"}`}>
                 Stock {p.stock}
               </span>
             </div>
@@ -123,13 +123,13 @@ export default function OwnerProducts() {
             <div className="flex items-center justify-end gap-2">
               <button
                 onClick={() => navigate(`/owner/products/edit/${p.id}`)}
-                className="inline-flex items-center gap-1 rounded-xl border border-[#bfd3c9] px-3 py-2 text-xs font-semibold text-[#1a5848] transition hover:bg-[#edf5ef]"
+                className="inline-flex items-center gap-1 rounded-xl border border-[#d7dad7] px-3 py-2 text-xs font-semibold text-[#6f7277] transition hover:bg-[#f3f5f3]"
               >
                 <PencilLine size={14} /> Edit
               </button>
               <button
                 onClick={() => deleteProduct(p.id)}
-                className="inline-flex items-center gap-1 rounded-xl border border-red-200 px-3 py-2 text-xs font-semibold text-red-700 transition hover:bg-red-50"
+                className="inline-flex items-center gap-1 rounded-xl border border-[#d7dad7] px-3 py-2 text-xs font-semibold text-[#6f7277] transition hover:bg-[#f3f5f3]"
               >
                 <Trash2 size={14} /> Delete
               </button>
@@ -138,7 +138,7 @@ export default function OwnerProducts() {
         ))}
 
         {filteredProducts.length === 0 ? (
-          <div className="rounded-2xl border border-[#d6e3dc] bg-white p-8 text-center text-[#4a6f63]">No products found for this search.</div>
+          <div className="rounded-2xl border border-[#d7dad7] bg-white p-8 text-center text-[#8d9197]">No products found for this search.</div>
         ) : null}
       </div>
     </div>
@@ -147,9 +147,13 @@ export default function OwnerProducts() {
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-[#d6e3dc] bg-white p-4 shadow-sm">
-      <p className="text-xs uppercase tracking-[0.12em] text-[#6a877d]">{label}</p>
-      <p className="mt-2 text-2xl font-semibold text-[#143b2f]">{value}</p>
+    <div className="rounded-2xl border border-[#d7dad7] bg-white p-4 shadow-sm">
+      <p className="text-xs uppercase tracking-[0.12em] text-[#8d9197]">{label}</p>
+      <p className="mt-2 text-2xl font-semibold text-[#57595d]">{value}</p>
     </div>
   );
 }
+
+
+
+

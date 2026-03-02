@@ -25,7 +25,7 @@ export default function AdminRoute() {
   }, []);
 
   if (state === "loading") {
-    return <div className="p-6 text-sm text-[#4b6f63]">Validating admin access...</div>;
+    return <div className="p-6 text-sm text-[#8d9197]">Validating admin access...</div>;
   }
 
   if (state === "forbidden") {
@@ -34,3 +34,4 @@ export default function AdminRoute() {
 
   return <Outlet />;
 }
+

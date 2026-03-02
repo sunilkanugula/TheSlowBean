@@ -9,7 +9,7 @@ export default function Hero() {
   const [flipped, setFlipped] = useState(false);
 
   return (
-    <section className="bg-[#EAF2E8] relative min-h-[80vh] overflow-hidden flex items-center">
+    <section className="bg-[#eef2ed] relative min-h-[80vh] overflow-hidden flex items-center">
       
       {/* Background Video */}
      <video
@@ -24,23 +24,23 @@ export default function Hero() {
 
 
       {/* Overlay */}
-      <div className="absolute inset-0 bg-[#EAF2E8]/60 backdrop-blur-[2px]" />
+      <div className="absolute inset-0 bg-[#eef2ed]/60 backdrop-blur-[2px]" />
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
         
         {/* LEFT TEXT */}
         <div className="max-w-xl">
-          <span className="inline-block mb-4 px-4 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">
+          <span className="inline-block mb-4 px-4 py-1 rounded-full bg-[#eef2ed] text-[#6f7277] text-sm font-medium">
             Premium • Handcrafted • Natural
           </span>
 
-          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6 text-green-900">
+          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6 text-[#57595d]">
             Brewed Slow. <br />
-            <span className="text-green-600">Served Perfect.</span>
+            <span className="text-[#6f7277]">Served Perfect.</span>
           </h1>
 
-          <p className="text-lg text-slate-600 mb-8">
+          <p className="text-lg text-[#6f7277] mb-8">
             Discover premium coffee blends crafted with care and patience.
             Experience the true taste of slow brewing.
           </p>
@@ -48,14 +48,14 @@ export default function Hero() {
           <div className="flex gap-4">
             <button
               onClick={() => navigate("/products")}
-              className="bg-green-600 text-white font-semibold px-7 py-3 rounded-xl shadow-lg hover:bg-green-700 transition"
+              className="bg-[#84c83a] text-white font-semibold px-7 py-3 rounded-xl shadow-lg hover:bg-[#69b317] transition"
             >
               Shop Coffee
             </button>
 
             <button
               onClick={() => navigate("/about")}
-              className="border border-green-300 text-green-700 font-semibold px-7 py-3 rounded-xl hover:bg-green-50 transition"
+              className="border border-[#d7dad7] text-[#6f7277] font-semibold px-7 py-3 rounded-xl hover:bg-[#f3f5f3] transition"
             >
               Learn More
             </button>
@@ -105,7 +105,7 @@ export default function Hero() {
             </div>
 
             {/* Flip Hint */}
-            <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-3 py-1 rounded-full">
+            <div className="absolute bottom-3 right-3 bg-[#57595d]/60 text-white text-xs px-3 py-1 rounded-full">
               Click to flip
             </div>
           </div>
@@ -114,3 +114,6 @@ export default function Hero() {
     </section>
   );
 }
+
+
+

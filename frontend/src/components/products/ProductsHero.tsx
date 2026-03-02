@@ -10,22 +10,22 @@ export default function ProductsHero() {
         style={{ backgroundImage: `url(${heroBg})` }}
       />
 
-      {/* Green Overlay */}
-      <div className="absolute inset-0 bg-[#EAF2E8]/60" />
+      {/* Logo Palette Overlay */}
+      <div className="absolute inset-0 bg-[#eef2ed]/68" />
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 text-center py-16">
         
-        <span className="inline-block mb-6 px-5 py-2 rounded-full bg-green-100 text-green-700 text-sm font-medium tracking-wide">
+        <span className="inline-block mb-6 rounded-full bg-[#e9efe2] px-5 py-2 text-sm font-medium tracking-wide text-[#69b317]">
           Explore Our Collection
         </span>
 
-        <h1 className="text-4xl md:text-6xl font-serif font-semibold text-green-900 leading-tight">
+        <h1 className="text-4xl font-serif font-semibold leading-tight text-[#57595d] md:text-6xl">
           Crafted with Care. <br />
-          <span className="text-green-600">Loved by Many.</span>
+          <span className="text-[#69b317]">Loved by Many.</span>
         </h1>
 
-        <p className="mt-6 text-lg text-slate-700 max-w-2xl mx-auto">
+        <p className="mx-auto mt-6 max-w-2xl text-lg text-[#6f7277]">
           Discover our thoughtfully curated range of premium, handcrafted
           products designed to bring quality and sustainability together.
         </p>
@@ -34,3 +34,4 @@ export default function ProductsHero() {
     </section>
   );
 }
+

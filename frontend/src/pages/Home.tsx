@@ -10,7 +10,7 @@ import { CraftDeepDive } from "../components/home/CraftDeepDive";
 
 export default function Home() {
   return (
-    <div className="bg-[linear-gradient(180deg,#f8f4ec_0%,#f3efe5_38%,#eef2e8_100%)]">
+    <div className="bg-[linear-gradient(180deg,#f5f6f5_0%,#eff1f0_38%,#e8ebea_100%)]">
       <HeroCarousel />
       <WhyChooseUs />
       <CollectionsSection />
@@ -23,3 +23,4 @@ export default function Home() {
     </div>
   );
 }
+

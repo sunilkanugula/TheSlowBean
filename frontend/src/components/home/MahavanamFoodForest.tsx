@@ -13,13 +13,13 @@ export default function MahavanamFoodForest() {
       }}
     >
       {/* Dark Overlay */}
-      <div className="absolute inset-0 bg-black/60" />
+      <div className="absolute inset-0 bg-[#57595d]/60" />
 
       <div className="relative mx-auto max-w-6xl px-6">
 
         {/* Header */}
         <div className="mb-10 max-w-3xl">
-          <p className="mb-3 text-xs uppercase tracking-[0.35em] text-[#9BE15D]">
+          <p className="mb-3 text-xs uppercase tracking-[0.35em] text-[#84c83a]">
             Our Impact
           </p>
 
@@ -27,7 +27,7 @@ export default function MahavanamFoodForest() {
             Mahavanam Food Forest
           </h2>
 
-          <p className="mt-4 text-base leading-relaxed text-gray-200">
+          <p className="mt-4 text-base leading-relaxed text-[#d7dad7]">
             Every bar supports something larger than chocolate —
             the restoration of land, biodiversity, and long-term food security.
           </p>
@@ -37,7 +37,7 @@ export default function MahavanamFoodForest() {
         <div className="grid gap-10 md:grid-cols-2 items-start">
 
           {/* Left Content */}
-          <div className="space-y-5 text-gray-200">
+          <div className="space-y-5 text-[#d7dad7]">
             <p className="text-base leading-relaxed">
               Mahavanam is our living commitment to the future — a regenerating
               food forest where native trees, fruit crops, medicinal plants,
@@ -99,17 +99,18 @@ function ImpactCard({
 }) {
   return (
     <div className="rounded-2xl bg-white/90 backdrop-blur-md p-5 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
-      <p className="text-[11px] uppercase tracking-wider text-[#6FB21E]">
+      <p className="text-[11px] uppercase tracking-wider text-[#69b317]">
         {title}
       </p>
 
-      <p className="mt-2 text-2xl font-semibold text-[#3A3A3A]">
+      <p className="mt-2 text-2xl font-semibold text-[#57595d]">
         {value}
       </p>
 
-      <p className="mt-1 text-sm text-[#7A7A7A]">
+      <p className="mt-1 text-sm text-[#8d9197]">
         {subtitle}
       </p>
     </div>
   );
 }
+

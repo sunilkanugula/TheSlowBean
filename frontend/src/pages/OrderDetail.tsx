@@ -119,7 +119,7 @@ export default function OrderDetail() {
   }, [order?.deliveryStatus, shipment?.status]);
 
   if (loading) {
-    return <div className="mx-auto max-w-5xl p-6 text-green-700">Loading order details...</div>;
+    return <div className="mx-auto max-w-5xl p-6 text-[#6f7277]">Loading order details...</div>;
   }
 
   if (!order) {
@@ -131,39 +131,39 @@ export default function OrderDetail() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-6">
-      <h1 className="text-2xl font-semibold text-green-800">Order #{order.id}</h1>
+      <h1 className="text-2xl font-semibold text-[#57595d]">Order #{order.id}</h1>
 
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-green-100 bg-white p-5 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[#d7dad7] bg-white p-5 shadow-sm">
         <div>
-          <p className="text-sm text-green-600">Placed on</p>
-          <p className="font-medium text-green-900">{new Date(order.createdAt).toLocaleString()}</p>
+          <p className="text-sm text-[#6f7277]">Placed on</p>
+          <p className="font-medium text-[#57595d]">{new Date(order.createdAt).toLocaleString()}</p>
         </div>
 
         <div>
-          <p className="text-sm text-green-600">Current status</p>
-          <span className="inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-800">
+          <p className="text-sm text-[#6f7277]">Current status</p>
+          <span className="inline-block rounded-full bg-[#eef2ed] px-3 py-1 text-xs font-semibold text-[#57595d]">
             {shipment?.status || order.deliveryStatus}
           </span>
         </div>
 
         <div>
-          <p className="text-sm text-green-600">Delivery partner</p>
-          <p className="font-medium text-green-900">Shiprocket</p>
+          <p className="text-sm text-[#6f7277]">Delivery partner</p>
+          <p className="font-medium text-[#57595d]">Shiprocket</p>
         </div>
 
         <div className="text-right">
-          <p className="text-sm text-green-600">Order Total (Incl. GST)</p>
-          <p className="text-xl font-bold text-green-800">Rs {order.totalAmount.toFixed(2)}</p>
-          <p className="text-xs text-green-700">Subtotal: Rs {subtotal.toFixed(2)}</p>
-          <p className="text-xs text-green-700">GST (5%): Rs {gstAmount.toFixed(2)}</p>
+          <p className="text-sm text-[#6f7277]">Order Total (Incl. GST)</p>
+          <p className="text-xl font-bold text-[#57595d]">Rs {order.totalAmount.toFixed(2)}</p>
+          <p className="text-xs text-[#6f7277]">Subtotal: Rs {subtotal.toFixed(2)}</p>
+          <p className="text-xs text-[#6f7277]">GST (5%): Rs {gstAmount.toFixed(2)}</p>
         </div>
       </div>
 
-      <div className="rounded-2xl border border-green-100 bg-white p-5 shadow-sm">
+      <div className="rounded-2xl border border-[#d7dad7] bg-white p-5 shadow-sm">
         <div className="mb-5 flex items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold text-green-800">Live Tracking</h2>
+          <h2 className="text-lg font-semibold text-[#57595d]">Live Tracking</h2>
           {shipment?.trackingUrl ? (
-            <a href={shipment.trackingUrl} target="_blank" rel="noreferrer" className="text-sm font-medium text-green-700 underline">
+            <a href={shipment.trackingUrl} target="_blank" rel="noreferrer" className="text-sm font-medium text-[#6f7277] underline">
               Open carrier tracking
             </a>
           ) : null}
@@ -174,8 +174,8 @@ export default function OrderDetail() {
             const done = index <= currentStepIndex;
             return (
               <div key={step} className="flex items-center gap-2">
-                <div className={`h-3 w-3 rounded-full ${done ? "bg-green-700" : "bg-green-200"}`} />
-                <p className={`text-xs font-medium ${done ? "text-green-800" : "text-green-500"}`}>
+                <div className={`h-3 w-3 rounded-full ${done ? "bg-[#69b317]" : "bg-[#e9eee6]"}`} />
+                <p className={`text-xs font-medium ${done ? "text-[#57595d]" : "text-[#8d9197]"}`}>
                   {step.replaceAll("_", " ")}
                 </p>
               </div>
@@ -185,20 +185,20 @@ export default function OrderDetail() {
 
         <div className="space-y-3">
           {events.length === 0 ? (
-            <p className="text-sm text-green-700">Tracking events will appear once shipment updates begin.</p>
+            <p className="text-sm text-[#6f7277]">Tracking events will appear once shipment updates begin.</p>
           ) : (
             events.map((event) => (
-              <div key={event.id} className="rounded-xl border border-green-100 bg-green-50/40 p-3">
+              <div key={event.id} className="rounded-xl border border-[#d7dad7] bg-[#f3f5f3]/40 p-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="text-sm font-semibold text-green-900">{event.title}</p>
-                  <p className="text-xs text-green-700">{new Date(event.eventTime).toLocaleString()}</p>
+                  <p className="text-sm font-semibold text-[#57595d]">{event.title}</p>
+                  <p className="text-xs text-[#6f7277]">{new Date(event.eventTime).toLocaleString()}</p>
                 </div>
-                <p className="mt-1 text-xs text-green-700">
+                <p className="mt-1 text-xs text-[#6f7277]">
                   {event.status}
                   {event.location ? ` | ${event.location}` : ""}
                   {event.source ? ` | ${event.source}` : ""}
                 </p>
-                {event.description ? <p className="mt-1 text-sm text-green-800">{event.description}</p> : null}
+                {event.description ? <p className="mt-1 text-sm text-[#57595d]">{event.description}</p> : null}
               </div>
             ))
           )}
@@ -206,36 +206,37 @@ export default function OrderDetail() {
       </div>
 
       {order.address ? (
-        <div className="rounded-2xl border border-green-100 bg-white p-5 shadow-sm">
-          <h3 className="mb-3 text-lg font-semibold text-green-800">Delivery Address</h3>
-          <p className="font-semibold text-green-900">{order.address.name}</p>
-          <p className="text-sm text-green-800">{order.address.line1}</p>
-          <p className="text-sm text-green-800">
+        <div className="rounded-2xl border border-[#d7dad7] bg-white p-5 shadow-sm">
+          <h3 className="mb-3 text-lg font-semibold text-[#57595d]">Delivery Address</h3>
+          <p className="font-semibold text-[#57595d]">{order.address.name}</p>
+          <p className="text-sm text-[#57595d]">{order.address.line1}</p>
+          <p className="text-sm text-[#57595d]">
             {order.address.city}, {order.address.state} - {order.address.pincode}
           </p>
-          <p className="mt-2 text-sm text-green-700">Phone: {order.address.phone}</p>
-          {order.address.altPhone ? <p className="text-sm text-green-700">Alternate: {order.address.altPhone}</p> : null}
+          <p className="mt-2 text-sm text-[#6f7277]">Phone: {order.address.phone}</p>
+          {order.address.altPhone ? <p className="text-sm text-[#6f7277]">Alternate: {order.address.altPhone}</p> : null}
         </div>
       ) : null}
 
-      <div className="space-y-4 rounded-2xl border border-green-100 bg-white p-5 shadow-sm">
-        <h3 className="text-lg font-semibold text-green-800">Items in this order</h3>
+      <div className="space-y-4 rounded-2xl border border-[#d7dad7] bg-white p-5 shadow-sm">
+        <h3 className="text-lg font-semibold text-[#57595d]">Items in this order</h3>
 
         {order.items.map((item) => (
-          <div key={item.id} className="flex items-center gap-4 border-b border-green-100 pb-4 last:border-none last:pb-0">
-            <img src={item.product.images[0]} className="h-20 w-20 rounded-lg border border-green-200 object-cover" alt={item.product.title} />
+          <div key={item.id} className="flex items-center gap-4 border-b border-[#d7dad7] pb-4 last:border-none last:pb-0">
+            <img src={item.product.images[0]} className="h-20 w-20 rounded-lg border border-[#d7dad7] object-cover" alt={item.product.title} />
 
             <div className="flex-1">
-              <p className="font-medium text-green-900">{item.product.title}</p>
-              <p className="text-sm text-green-600">
+              <p className="font-medium text-[#57595d]">{item.product.title}</p>
+              <p className="text-sm text-[#6f7277]">
                 Qty: {item.quantity} x Rs {item.price}
               </p>
             </div>
 
-            <div className="font-semibold text-green-800">Rs {item.quantity * item.price}</div>
+            <div className="font-semibold text-[#57595d]">Rs {item.quantity * item.price}</div>
           </div>
         ))}
       </div>
     </div>
   );
 }
+

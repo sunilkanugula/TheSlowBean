@@ -47,10 +47,10 @@ export default function ResetPassword() {
     <AuthWrapper title="Reset Password" error={error}>
       {success ? (
         <div className="text-center space-y-4">
-          <p className="text-green-600 font-medium">{success}</p>
+          <p className="text-[#6f7277] font-medium">{success}</p>
           <button
             onClick={() => navigate("/login")}
-            className="text-blue-600 font-medium hover:underline"
+            className="text-[#69b317] font-medium hover:underline"
           >
             Go to Login
           </button>
@@ -69,3 +69,5 @@ export default function ResetPassword() {
     </AuthWrapper>
   );
 }
+
+

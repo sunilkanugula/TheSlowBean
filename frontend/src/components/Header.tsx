@@ -115,15 +115,15 @@ export default function Header() {
   }, [debouncedSearch, location.pathname, location.search, navigate]);
 
   return (
-    <header className="bg-white border-b border-gray-200">
+    <header className="bg-white border-b border-[#d7dad7]">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* LOGO */}
-        <Link to="/" className="text-xl font-bold text-gray-800">
+        <Link to="/" className="text-xl font-bold text-[#57595d]">
           <img src={logo} alt="The Slow Bean Logo" className="h-10 w-auto" />
         </Link>
 
         {/* NAV LINKS */}
-        <nav className="hidden md:flex gap-6 text-sm font-medium text-gray-600">
+        <nav className="hidden md:flex gap-6 text-sm font-medium text-[#6f7277]">
           <Link to="/">Home</Link>
           <Link to="/products">Products</Link>
 
@@ -138,7 +138,7 @@ export default function Header() {
             <>
               <Link
                 to="/owner/dashboard"
-                className="flex items-center gap-1 text-blue-600 font-semibold"
+                className="flex items-center gap-1 text-[#69b317] font-semibold"
               >
                 <LayoutDashboard size={16} />
                 Dashboard
@@ -146,7 +146,7 @@ export default function Header() {
 
               <Link
                 to="/owner/orders"
-                className="flex items-center gap-1 text-blue-600 font-semibold"
+                className="flex items-center gap-1 text-[#69b317] font-semibold"
               >
                 <Package size={16} />
                 Orders
@@ -154,7 +154,7 @@ export default function Header() {
 
               <Link
                 to="/owner/products"
-                className="flex items-center gap-1 text-blue-600 font-semibold"
+                className="flex items-center gap-1 text-[#69b317] font-semibold"
               >
                 <Tag size={16} />
                 Products
@@ -171,7 +171,7 @@ export default function Header() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search products..."
-            className="hidden sm:block border border-gray-300 rounded-lg px-3 py-1 text-sm"
+            className="hidden sm:block border border-[#d7dad7] rounded-lg px-3 py-1 text-sm"
           />
 
           {/* WHEN LOGGED IN */}
@@ -179,7 +179,7 @@ export default function Header() {
             <>
               <button
                 onClick={() => navigate("/wishlist")}
-                className="text-gray-700 hover:text-red-500"
+                className="text-[#6f7277] hover:text-[#6f7277]"
                 title="Wishlist"
               >
                 <Heart size={22} />
@@ -187,12 +187,12 @@ export default function Header() {
 
               <button
                 onClick={() => navigate("/cart")}
-                className="relative text-gray-700 hover:text-black"
+                className="relative text-[#6f7277] hover:text-[#57595d]"
                 title="Cart"
               >
                 <ShoppingCart size={22} />
                 {cartCount > 0 ? (
-                  <span className="absolute -right-2 -top-2 inline-flex min-h-[18px] min-w-[18px] items-center justify-center rounded-full bg-emerald-700 px-1 text-[10px] font-semibold leading-none text-white">
+                  <span className="absolute -right-2 -top-2 inline-flex min-h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#69b317] px-1 text-[10px] font-semibold leading-none text-white">
                     {cartCount > 99 ? "99+" : cartCount}
                   </span>
                 ) : null}
@@ -200,7 +200,7 @@ export default function Header() {
 
               <button
                 onClick={() => navigate("/my-account")}
-                className="flex items-center gap-1 text-sm text-gray-700 hover:text-black"
+                className="flex items-center gap-1 text-sm text-[#6f7277] hover:text-[#57595d]"
               >
                 <User size={20} />
                 <span className="hidden sm:inline">My Account</span>
@@ -208,7 +208,7 @@ export default function Header() {
 
               <button
                 onClick={logout}
-                className="flex items-center gap-1 text-sm text-red-600 hover:text-red-700"
+                className="flex items-center gap-1 text-sm text-[#6f7277] hover:text-[#6f7277]"
               >
                 <LogOut size={20} />
                 <span className="hidden sm:inline">Logout</span>
@@ -219,7 +219,7 @@ export default function Header() {
             <>
               <button
                 onClick={() => navigate("/login")}
-                className="flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-black"
+                className="flex items-center gap-1 text-sm font-medium text-[#6f7277] hover:text-[#57595d]"
               >
                 <LogIn size={20} />
                 <span className="hidden sm:inline">Login</span>
@@ -227,7 +227,7 @@ export default function Header() {
 
               <button
                 onClick={() => navigate("/register")}
-                className="text-sm font-medium bg-black text-white px-4 py-1.5 rounded-lg hover:bg-gray-800"
+                className="text-sm font-medium bg-[#57595d] text-white px-4 py-1.5 rounded-lg hover:bg-[#6f7277]"
               >
                 Register
               </button>
@@ -238,3 +238,7 @@ export default function Header() {
     </header>
   );
 }
+
+
+
+

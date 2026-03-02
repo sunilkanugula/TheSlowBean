@@ -68,7 +68,7 @@ export default function BestSellingProducts() {
 
   if (loading) {
     return (
-      <section className="bg-[#f6f1e8] py-16 md:py-24">
+      <section className="bg-[#f3f4f3] py-16 md:py-24">
         <div className="mx-auto grid max-w-7xl grid-cols-2 gap-2.5 px-2.5 md:grid-cols-3 md:gap-5 md:px-6 xl:grid-cols-4">
           {[...Array(4)].map((_, i) => (
             <div
@@ -85,7 +85,7 @@ export default function BestSellingProducts() {
 
   return (
     <>
-      <section className="bg-[#f9f4ea] py-14 md:py-20">
+      <section className="bg-[#f3f4f3] py-14 md:py-20">
         <div className="mx-auto max-w-7xl px-4 md:px-6">
           <div className="grid grid-cols-2 gap-x-6 gap-y-10 text-center sm:grid-cols-3 lg:grid-cols-5">
             {[
@@ -97,12 +97,12 @@ export default function BestSellingProducts() {
             ].map(({ img, label }, index) => (
               <div key={label} className="relative flex flex-col items-center">
                 <img src={img} alt={label} className="h-11 w-11 opacity-85" />
-                <p className="mt-6 text-[11px] tracking-[0.28em] uppercase text-gray-600">
+                <p className="mt-6 text-[11px] tracking-[0.28em] uppercase text-[#6f7277]">
                   {label}
                 </p>
-                <span className="mt-4 h-[1px] w-6 bg-black/10" />
+                <span className="mt-4 h-[1px] w-6 bg-[#57595d]/10" />
                 {index !== 4 && (
-                  <span className="absolute right-[-22px] top-1/2 hidden h-12 w-px bg-black/10 lg:block" />
+                  <span className="absolute right-[-22px] top-1/2 hidden h-12 w-px bg-[#57595d]/10 lg:block" />
                 )}
               </div>
             ))}
@@ -110,20 +110,20 @@ export default function BestSellingProducts() {
         </div>
       </section>
 
-      <section className="bg-[radial-gradient(circle_at_20%_10%,#eef7eb_0%,#e7f0e4_35%,#e1ebde_100%)] py-14 md:py-22">
+      <section className="bg-[radial-gradient(circle_at_20%_10%,#f3f4f3_0%,#eceeed_45%,#e5e7e6_100%)] py-14 md:py-22">
         <div className="mx-auto max-w-7xl px-4 md:px-6">
           <div className="mb-8 text-center md:mb-14">
             <h2 className="text-4xl font-serif font-medium tracking-tight md:text-5xl">
               Best Sellers
             </h2>
             <div className="mx-auto mt-5 h-[2px] w-16 bg-gray-300" />
-            <p className="mx-auto mt-5 max-w-2xl text-[15px] text-gray-600">
+            <p className="mx-auto mt-5 max-w-2xl text-[15px] text-[#6f7277]">
               Crafted favourites trusted by our customers - timeless, refined,
               and consistently loved.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-2 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {products.map((product) => {
               const liked = isInWishlist(product.id);
               const isAdded = addedToCart === product.id;
@@ -148,7 +148,7 @@ export default function BestSellingProducts() {
                     to={`/products/${product.id}`}
                     className="relative block overflow-hidden rounded-2xl border border-white/80 bg-white/70 shadow-[0_14px_32px_rgba(16,56,38,0.14)]"
                   >
-                    <div className="relative aspect-[1/1] w-full overflow-hidden bg-emerald-50 md:aspect-[4/5]">
+                    <div className="relative aspect-[1/1] w-full overflow-hidden bg-[#f1f3f2] md:aspect-[4/5]">
                       <img
                         src={product.images[0]}
                         alt={product.title}
@@ -166,14 +166,14 @@ export default function BestSellingProducts() {
                         />
                       ) : null}
                     </div>
-                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/40 via-black/5 to-transparent" />
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#57595d]/40 via-[#57595d]/5 to-transparent" />
 
-                    <span className="absolute left-3 top-3 rounded-full border border-white/50 bg-white/90 px-2.5 py-1 text-[9px] uppercase tracking-[0.14em] text-slate-800 backdrop-blur">
+                    <span className="absolute left-3 top-3 rounded-full border border-white/50 bg-white/90 px-2.5 py-1 text-[9px] uppercase tracking-[0.14em] text-[#57595d] backdrop-blur">
                       Best Seller
                     </span>
 
                     {discountPercent ? (
-                      <span className="absolute bottom-3 left-3 rounded-full bg-emerald-900 px-2 py-1 text-[9px] font-semibold text-white">
+                      <span className="absolute bottom-3 left-3 rounded-full bg-[#69b317] px-2 py-1 text-[9px] font-semibold text-white">
                         Save {discountPercent}%
                       </span>
                     ) : null}
@@ -193,24 +193,24 @@ export default function BestSellingProducts() {
                           toast.error("Wishlist action failed");
                         }
                       }}
-                      className="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur transition hover:bg-black/50"
+                      className="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#57595d]/35 text-white backdrop-blur transition hover:bg-[#57595d]/50"
                     >
                       <Heart
                         size={14}
                         strokeWidth={2}
-                        className={liked ? "fill-rose-500 text-rose-500" : "text-white"}
+                        className={liked ? "fill-[#69b317] text-[#69b317]" : "text-white"}
                       />
                     </button>
                   </Link>
 
                   <div className="min-w-0 px-1 pb-1 pt-3 text-center md:px-0 md:pt-3">
-                    <p className="text-[9px] uppercase tracking-[0.15em] text-emerald-700 md:text-[10px]">
+                    <p className="text-[9px] uppercase tracking-[0.15em] text-[#69b317] md:text-[10px]">
                       Signature Craft
                     </p>
 
                     <Link to={`/products/${product.id}`} className="block">
                       <h3
-                        className="mt-1 h-[2.6em] overflow-hidden text-[13px] font-semibold leading-[1.3] text-slate-900 md:text-[15px]"
+                        className="mt-1 h-[2.6em] overflow-hidden text-[13px] font-semibold leading-[1.3] text-[#57595d] md:text-[15px]"
                         style={{
                           display: "-webkit-box",
                           WebkitLineClamp: 2,
@@ -222,11 +222,11 @@ export default function BestSellingProducts() {
                     </Link>
 
                     <div className="mt-2.5 flex items-end justify-center gap-1">
-                      <span className="text-[20px] font-extrabold leading-none text-emerald-900 md:text-[24px]">
+                      <span className="text-[20px] font-extrabold leading-none text-[#57595d] md:text-[24px]">
                         Rs {salePrice}
                       </span>
                       {hasDiscount ? (
-                        <span className="mb-0.5 text-[11px] text-slate-400 line-through">
+                        <span className="mb-0.5 text-[11px] text-[#9fa3a8] line-through">
                           Rs {product.price}
                         </span>
                       ) : null}
@@ -236,8 +236,8 @@ export default function BestSellingProducts() {
                       onClick={() => handleAddToCart(product.id)}
                       className={`mt-3 inline-flex h-10 w-full items-center justify-center gap-1.5 whitespace-nowrap self-center rounded-xl px-3 text-[11px] font-semibold transition md:h-9 md:w-[86%] md:text-[12px] ${
                         isAdded
-                          ? "bg-emerald-600 text-white"
-                          : "bg-emerald-900 text-white hover:bg-emerald-950"
+                          ? "bg-[#84c83a] text-white"
+                          : "bg-[#69b317] text-white hover:bg-[#5aa10f]"
                       }`}
                     >
                       {isAdded ? (
@@ -255,7 +255,7 @@ export default function BestSellingProducts() {
 
                     <Link
                       to={`/products/${product.id}`}
-                      className="mt-2 hidden text-[10px] uppercase tracking-[0.14em] text-slate-500 transition hover:text-slate-800 md:block"
+                      className="mt-2 hidden text-[10px] uppercase tracking-[0.14em] text-[#8d9197] transition hover:text-[#57595d] md:block"
                     >
                       View Details
                     </Link>
@@ -269,3 +269,7 @@ export default function BestSellingProducts() {
     </>
   );
 }
+
+
+
+

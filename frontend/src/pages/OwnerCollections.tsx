@@ -110,41 +110,41 @@ export default function OwnerCollections() {
     <div className="mx-auto max-w-7xl p-6">
       <AdminPanelNav />
 
-      <section className="mb-6 rounded-3xl border border-[#c5d5cc] bg-gradient-to-r from-[#12362c] via-[#194e40] to-[#1d5c4d] p-6 text-white md:p-8">
-        <p className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#d6efe3]">
+      <section className="mb-6 rounded-3xl border border-[#d7dad7] bg-gradient-to-r from-[#57595d] via-[#666970] to-[#8d9197] p-6 text-white md:p-8">
+        <p className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#eef2ed]">
           <Sparkles size={14} /> Collection Studio
         </p>
-        <h1 className="mt-4 text-3xl font-semibold md:text-4xl">Manage Collections</h1>
-        <p className="mt-2 max-w-2xl text-sm text-[#d4e8df] md:text-base">
+        <h1 className="mt-4 text-3xl font-semibold text-white md:text-4xl">Manage Collections</h1>
+        <p className="mt-2 max-w-2xl text-sm text-[#eef2ed] md:text-base">
           Create collection names with hero images and use them while publishing products.
         </p>
       </section>
 
       {error ? (
-        <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{error}</div>
+        <div className="mb-4 rounded-2xl border border-[#d7dad7] bg-[#f3f5f3] px-4 py-3 text-sm font-medium text-[#6f7277]">{error}</div>
       ) : null}
       {success ? (
-        <div className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{success}</div>
+        <div className="mb-4 rounded-2xl border border-[#d7dad7] bg-[#f1f3f2] px-4 py-3 text-sm font-medium text-[#69b317]">{success}</div>
       ) : null}
 
       <section className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-        <div className="rounded-3xl border border-[#d5e1da] bg-white p-5 shadow-[0_22px_55px_-35px_rgba(18,53,44,0.45)] md:p-6">
-          <h2 className="text-lg font-semibold text-[#153d31]">Create Collection</h2>
-          <p className="mt-1 text-sm text-[#607c73]">Add a unique collection card image and title.</p>
+        <div className="rounded-3xl border border-[#d7dad7] bg-white p-5 shadow-[0_22px_55px_-35px_rgba(18,53,44,0.45)] md:p-6">
+          <h2 className="text-lg font-semibold text-[#57595d]">Create Collection</h2>
+          <p className="mt-1 text-sm text-[#8d9197]">Add a unique collection card image and title.</p>
 
           <label className="mt-5 block">
-            <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-[#55776b]">Name</span>
+            <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-[#8d9197]">Name</span>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Dark Chocolates"
-              className="w-full rounded-xl border border-[#c8d9d0] bg-[#fcfefd] px-3 py-2.5 text-sm text-[#143b2f] outline-none transition focus:border-[#2b6f5c] focus:ring-2 focus:ring-[#c6dfd3]"
+              className="w-full rounded-xl border border-[#d7dad7] bg-[#f5f6f5] px-3 py-2.5 text-sm text-[#57595d] outline-none transition focus:border-[#69b317] focus:ring-2 focus:ring-[#dfe7d7]"
             />
           </label>
 
-          <label className="mt-4 flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-[#a8c3b7] bg-[#f7fbf9] px-4 py-8 text-center transition hover:bg-[#eff7f3]">
-            <ImagePlus size={24} className="text-[#2a6f5b]" />
-            <span className="mt-2 text-sm font-medium text-[#1f5d4d]">
+          <label className="mt-4 flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-[#a8c3b7] bg-[#f3f5f3] px-4 py-8 text-center transition hover:bg-[#f3f5f3]">
+            <ImagePlus size={24} className="text-[#69b317]" />
+            <span className="mt-2 text-sm font-medium text-[#69b317]">
               {image ? image.name : "Choose Collection Image"}
             </span>
             <input
@@ -159,28 +159,28 @@ export default function OwnerCollections() {
             <img
               src={previewUrl}
               alt="Collection preview"
-              className="mt-4 h-44 w-full rounded-2xl border border-[#d9e6df] object-cover"
+              className="mt-4 h-44 w-full rounded-2xl border border-[#d7dad7] object-cover"
             />
           ) : null}
 
           <button
             onClick={handleCreate}
             disabled={saving}
-            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#153d31] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#102f26] disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#57595d] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#5aa10f] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {saving ? <Loader2 size={16} className="animate-spin" /> : null}
             {saving ? "Creating..." : "Create Collection"}
           </button>
         </div>
 
-        <div className="rounded-3xl border border-[#d5e1da] bg-white p-5 shadow-[0_22px_55px_-35px_rgba(18,53,44,0.45)] md:p-6">
-          <h2 className="text-lg font-semibold text-[#153d31]">Existing Collections</h2>
-          <p className="mt-1 text-sm text-[#607c73]">These appear on the homepage and product forms.</p>
+        <div className="rounded-3xl border border-[#d7dad7] bg-white p-5 shadow-[0_22px_55px_-35px_rgba(18,53,44,0.45)] md:p-6">
+          <h2 className="text-lg font-semibold text-[#57595d]">Existing Collections</h2>
+          <p className="mt-1 text-sm text-[#8d9197]">These appear on the homepage and product forms.</p>
 
           {loading ? (
-            <div className="mt-6 text-sm text-[#5e7e73]">Loading collections...</div>
+            <div className="mt-6 text-sm text-[#8d9197]">Loading collections...</div>
           ) : collections.length === 0 ? (
-            <div className="mt-6 rounded-2xl border border-[#d6e3dc] bg-[#f7fbf9] p-5 text-sm text-[#4a6f63]">
+            <div className="mt-6 rounded-2xl border border-[#d7dad7] bg-[#f3f5f3] p-5 text-sm text-[#8d9197]">
               No collections yet.
             </div>
           ) : (
@@ -188,20 +188,20 @@ export default function OwnerCollections() {
               {collections.map((collection) => (
                 <article
                   key={collection.id}
-                  className="overflow-hidden rounded-2xl border border-[#d8e5de] bg-[#f9fcfa]"
+                  className="overflow-hidden rounded-2xl border border-[#d7dad7] bg-[#f9fcfa]"
                 >
                   <img
                     src={collection.imageUrl}
                     alt={collection.name}
                     className="h-28 w-full object-cover"
                   />
-                  <p className="px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-[#1f5d4d]">
+                  <p className="px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-[#69b317]">
                     {collection.name}
                   </p>
                   <div className="px-3 pb-3">
                     <button
                       onClick={() => handleDelete(collection.id)}
-                      className="inline-flex w-full items-center justify-center rounded-lg border border-red-200 bg-red-50 px-2 py-1.5 text-xs font-semibold text-red-700 transition hover:bg-red-100"
+                      className="inline-flex w-full items-center justify-center rounded-lg border border-[#d7dad7] bg-[#f3f5f3] px-2 py-1.5 text-xs font-semibold text-[#6f7277] transition hover:bg-[#f3f5f3]"
                     >
                       Delete
                     </button>
@@ -215,3 +215,6 @@ export default function OwnerCollections() {
     </div>
   );
 }
+
+
+

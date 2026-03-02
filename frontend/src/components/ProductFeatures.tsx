@@ -54,10 +54,10 @@ export default function ProductFeatures() {
             >
               <div
                 className="
-                  w-16 h-16 rounded-full border border-gray-300
+                  w-16 h-16 rounded-full border border-[#d7dad7]
                   flex items-center justify-center
                   transition-all duration-300
-                  group-hover:border-black
+                  group-hover:border-[#57595d]
                   group-hover:shadow-md
                 "
               >
@@ -72,7 +72,7 @@ export default function ProductFeatures() {
                 />
               </div>
 
-              <p className="mt-3 text-[11px] tracking-wide font-medium text-gray-700">
+              <p className="mt-3 text-[11px] tracking-wide font-medium text-[#6f7277]">
                 {feature.label}
               </p>
             </div>
@@ -82,3 +82,4 @@ export default function ProductFeatures() {
     </div>
   );
 }
+

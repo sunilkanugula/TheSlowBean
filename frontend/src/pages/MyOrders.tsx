@@ -27,15 +27,15 @@ type Order = {
 };
 
 const statusClasses: Record<string, string> = {
-  CREATED: "bg-[#edf4ef] text-[#275e4f]",
-  CONFIRMED: "bg-[#e5f3ea] text-[#1f634f]",
-  PICKED_UP: "bg-[#e0f0ec] text-[#205b58]",
-  IN_TRANSIT: "bg-[#e2edf7] text-[#1f4f70]",
-  OUT_FOR_DELIVERY: "bg-[#e8eefb] text-[#2a4f87]",
-  DELIVERED: "bg-[#dff2e5] text-[#1f6946]",
-  FAILED: "bg-[#fde8e8] text-[#8a1d1d]",
-  RETURN_REQUESTED: "bg-[#fcf2e1] text-[#7f5d1d]",
-  RETURNED: "bg-[#ececec] text-[#454545]",
+  CREATED: "bg-[#f3f5f3] text-[#6f7277]",
+  CONFIRMED: "bg-[#f3f5f3] text-[#6f7277]",
+  PICKED_UP: "bg-[#f3f5f3] text-[#6f7277]",
+  IN_TRANSIT: "bg-[#f3f5f3] text-[#6f7277]",
+  OUT_FOR_DELIVERY: "bg-[#f3f5f3] text-[#6f7277]",
+  DELIVERED: "bg-[#eef2ed] text-[#69b317]",
+  FAILED: "bg-[#f3f5f3] text-[#6f7277]",
+  RETURN_REQUESTED: "bg-[#f3f5f3] text-[#6f7277]",
+  RETURNED: "bg-[#f3f5f3] text-[#6f7277]",
 };
 
 export default function MyOrders() {
@@ -59,22 +59,22 @@ export default function MyOrders() {
   }, [navigate]);
 
   if (loading) {
-    return <div className="mx-auto max-w-6xl p-6 text-[#38594f]">Loading orders...</div>;
+    return <div className="mx-auto max-w-6xl p-6 text-[#8d9197]">Loading orders...</div>;
   }
 
   if (orders.length === 0) {
     return (
       <div className="mx-auto max-w-6xl p-6">
-        <h1 className="text-3xl font-semibold text-[#143b2f]">My Orders</h1>
-        <p className="mt-2 text-[#58756c]">You have not placed any orders yet.</p>
+        <h1 className="text-3xl font-semibold text-[#57595d]">My Orders</h1>
+        <p className="mt-2 text-[#8d9197]">You have not placed any orders yet.</p>
       </div>
     );
   }
 
   return (
     <div className="mx-auto max-w-6xl p-6">
-      <div className="mb-6 rounded-3xl border border-[#c6d7ce] bg-gradient-to-r from-[#12362c] to-[#1d5c4d] p-6 text-white">
-        <p className="text-xs uppercase tracking-[0.34em] text-[#afd6c2]">Customer Center</p>
+      <div className="mb-6 rounded-3xl border border-[#d7dad7] bg-gradient-to-r from-[#57595d] to-[#8d9197] p-6 text-white">
+        <p className="text-xs uppercase tracking-[0.34em] text-[#d7dad7]">Customer Center</p>
         <h1 className="mt-2 text-3xl font-semibold">My Orders</h1>
       </div>
 
@@ -84,23 +84,23 @@ export default function MyOrders() {
           return (
             <article
               key={order.id}
-              className="overflow-hidden rounded-3xl border border-[#c7d8ce] bg-white shadow-[0_22px_55px_-35px_rgba(18,53,44,0.48)]"
+              className="overflow-hidden rounded-3xl border border-[#d7dad7] bg-white shadow-[0_22px_55px_-35px_rgba(18,53,44,0.48)]"
             >
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e4ece6] bg-[#f8fbf9] px-6 py-4">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e4ece6] bg-[#f3f5f3] px-6 py-4">
                 <button onClick={() => navigate(`/orders/${order.id}`)} className="text-left">
-                  <p className="text-lg font-semibold text-[#153a2f]">Order #{order.id}</p>
-                  <p className="text-xs text-[#58756c]">Placed on {new Date(order.createdAt).toLocaleDateString()}</p>
+                  <p className="text-lg font-semibold text-[#57595d]">Order #{order.id}</p>
+                  <p className="text-xs text-[#8d9197]">Placed on {new Date(order.createdAt).toLocaleDateString()}</p>
                 </button>
                 <span
                   className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                    statusClasses[order.deliveryStatus] || "bg-[#edf4ef] text-[#275e4f]"
+                    statusClasses[order.deliveryStatus] || "bg-[#f3f5f3] text-[#6f7277]"
                   }`}
                 >
                   {order.deliveryStatus}
                 </span>
               </div>
 
-              <div className="grid gap-3 border-b border-[#ecf2ee] px-6 py-3 text-sm text-[#365c50] md:grid-cols-3">
+              <div className="grid gap-3 border-b border-[#d7dad7] px-6 py-3 text-sm text-[#365c50] md:grid-cols-3">
                 <p>
                   Items: <strong>{totalItems}</strong>
                 </p>
@@ -114,28 +114,28 @@ export default function MyOrders() {
 
               <div className="space-y-3 px-6 py-4">
                 {order.items.map((item) => (
-                  <div key={item.id} className="flex items-center gap-3 rounded-xl border border-[#e6ede8] p-3">
+                  <div key={item.id} className="flex items-center gap-3 rounded-xl border border-[#d7dad7] p-3">
                     <img
                       src={item.product.images[0]}
-                      className="h-16 w-16 rounded-lg border border-[#dbe7df] object-cover"
+                      className="h-16 w-16 rounded-lg border border-[#d7dad7] object-cover"
                       alt={item.product.title}
                     />
                     <div className="flex-1">
-                      <p className="font-medium text-[#143b2f]">{item.product.title}</p>
-                      <p className="text-xs text-[#5a776d]">
+                      <p className="font-medium text-[#57595d]">{item.product.title}</p>
+                      <p className="text-xs text-[#8d9197]">
                         Qty: {item.quantity} x Rs {item.price}
                       </p>
                     </div>
-                    <p className="text-sm font-semibold text-[#173f33]">Rs {item.quantity * item.price}</p>
+                    <p className="text-sm font-semibold text-[#57595d]">Rs {item.quantity * item.price}</p>
                   </div>
                 ))}
               </div>
 
-              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#ecf2ee] bg-[#f9fbfa] px-6 py-4">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#d7dad7] bg-[#f5f6f5] px-6 py-4">
                 <div>
                   <button
                     onClick={() => navigate(`/orders/${order.id}/tracking`)}
-                    className="mr-2 rounded-lg border border-[#153a2f] px-4 py-2 text-sm font-semibold text-[#153a2f] transition hover:bg-[#153a2f] hover:text-white"
+                    className="mr-2 rounded-lg border border-[#57595d] px-4 py-2 text-sm font-semibold text-[#57595d] transition hover:bg-[#6f7277] hover:text-white"
                   >
                     Track Order
                   </button>
@@ -162,13 +162,13 @@ export default function MyOrders() {
                           toast.error("Failed to request return");
                         }
                       }}
-                      className="rounded-lg border border-[#143b2f] px-4 py-2 text-sm font-semibold text-[#143b2f] transition hover:bg-[#143b2f] hover:text-white"
+                      className="rounded-lg border border-[#57595d] px-4 py-2 text-sm font-semibold text-[#57595d] transition hover:bg-[#57595d] hover:text-white"
                     >
                       Request Return
                     </button>
                   ) : null}
                 </div>
-                <p className="text-lg font-semibold text-[#143b2f]">Total Rs {order.totalAmount}</p>
+                <p className="text-lg font-semibold text-[#57595d]">Total Rs {order.totalAmount}</p>
               </div>
             </article>
           );
@@ -177,3 +177,7 @@ export default function MyOrders() {
     </div>
   );
 }
+
+
+
+

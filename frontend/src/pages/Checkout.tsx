@@ -157,7 +157,7 @@ export default function Checkout() {
             navigate("/orders");
           }
         },
-        theme: { color: "#000000" },
+        theme: { color: "#69b317" },
       });
 
       razorpay.open();
@@ -217,13 +217,13 @@ export default function Checkout() {
           className="border p-3 rounded"
         />
 
-        <input placeholder="City" value={city} disabled className="border p-3 rounded bg-gray-100" />
+        <input placeholder="City" value={city} disabled className="border p-3 rounded bg-[#f3f5f3]" />
 
-        <input placeholder="State" value={state} disabled className="border p-3 rounded bg-gray-100" />
+        <input placeholder="State" value={state} disabled className="border p-3 rounded bg-[#f3f5f3]" />
       </div>
 
-      {pinLoading && <p className="text-xs text-gray-500">Fetching city and state...</p>}
-      {pinError && <p className="text-xs text-red-500">{pinError}</p>}
+      {pinLoading && <p className="text-xs text-[#8d9197]">Fetching city and state...</p>}
+      {pinError && <p className="text-xs text-[#6f7277]">{pinError}</p>}
 
       <div className="rounded-lg border p-4 text-sm">
         <div className="flex justify-between py-1">
@@ -243,10 +243,12 @@ export default function Checkout() {
       <button
         onClick={payNow}
         disabled={loading}
-        className="w-full bg-black text-white py-3 rounded-lg font-semibold disabled:opacity-50"
+        className="w-full bg-[#57595d] text-white py-3 rounded-lg font-semibold disabled:opacity-50"
       >
         {loading ? "Processing Payment..." : "Pay with Razorpay"}
       </button>
     </div>
   );
 }
+
+

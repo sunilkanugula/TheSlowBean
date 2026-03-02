@@ -99,7 +99,7 @@ export default function HeroCarousel() {
 
   return (
     <section
-      className="relative h-[60vh] md:h-[70vh] w-full overflow-hidden bg-black"
+      className="relative h-[60vh] md:h-[70vh] w-full overflow-hidden bg-[#57595d]"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -121,7 +121,7 @@ export default function HeroCarousel() {
             />
 
             {/* Clean dark overlay */}
-            <div className="absolute inset-0 bg-black/50" />
+            <div className="absolute inset-0 bg-[#57595d]/50" />
 
             {/* Content */}
             <div className="relative z-20 flex h-full items-center">
@@ -138,7 +138,7 @@ export default function HeroCarousel() {
                   <div className="flex flex-wrap gap-4">
                     <a
                       href={slide.ctaLink}
-                      className="rounded-md bg-white px-7 py-3 text-sm font-semibold text-black transition hover:bg-gray-200"
+                      className="rounded-md bg-white px-7 py-3 text-sm font-semibold text-[#57595d] transition hover:bg-[#eef2ed]"
                     >
                       {slide.ctaText}
                     </a>
@@ -146,7 +146,7 @@ export default function HeroCarousel() {
                     {slide.secondaryCta && (
                       <a
                         href={slide.ctaLink}
-                        className="rounded-md border border-white/60 px-7 py-3 text-sm font-medium text-white transition hover:bg-white hover:text-black"
+                        className="rounded-md border border-white/60 px-7 py-3 text-sm font-medium text-white transition hover:bg-white hover:text-[#57595d]"
                       >
                         {slide.secondaryCta}
                       </a>
@@ -176,3 +176,4 @@ export default function HeroCarousel() {
     </section>
   );
 }
+

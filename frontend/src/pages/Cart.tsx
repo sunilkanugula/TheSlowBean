@@ -77,7 +77,7 @@ export default function Cart() {
     return (
       <div className="max-w-4xl mx-auto p-6">
         <h1 className="text-2xl font-bold mb-4">My Cart</h1>
-        <p className="text-gray-500">Your cart is empty.</p>
+        <p className="text-[#8d9197]">Your cart is empty.</p>
       </div>
     );
   }
@@ -103,10 +103,10 @@ export default function Cart() {
                   onDecrease={() => updateQuantity(item.product.id, item.quantity - 1)}
                 />
 
-                <p className="font-bold text-green-600 mt-2">Rs {price * item.quantity}</p>
+                <p className="font-bold text-[#6f7277] mt-2">Rs {price * item.quantity}</p>
               </div>
 
-              <button onClick={() => removeItem(item.product.id)} className="text-red-600 font-semibold">
+              <button onClick={() => removeItem(item.product.id)} className="text-[#6f7277] font-semibold">
                 Remove
               </button>
             </div>
@@ -117,12 +117,12 @@ export default function Cart() {
       <div className="mt-6 border-t pt-4 space-y-4">
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-bold">Total</h2>
-          <h2 className="text-xl font-bold text-green-600">Rs {total}</h2>
+          <h2 className="text-xl font-bold text-[#6f7277]">Rs {total}</h2>
         </div>
 
         <button
           onClick={() => navigate("/checkout")}
-          className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-900"
+          className="w-full bg-[#57595d] text-white py-3 rounded-lg font-semibold hover:bg-[#57595d]"
         >
           Proceed to Checkout
         </button>
@@ -130,3 +130,5 @@ export default function Cart() {
     </div>
   );
 }
+
+

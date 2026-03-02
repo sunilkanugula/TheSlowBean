@@ -102,7 +102,7 @@ export default function ProductDetail() {
                 src={img}
                 onClick={() => setActiveImage(img)}
                 className={`w-20 h-20 object-cover rounded cursor-pointer border ${
-                  activeImage === img ? "border-black" : "border-gray-200"
+                  activeImage === img ? "border-[#57595d]" : "border-[#d7dad7]"
                 }`}
                 alt={product.title}
               />
@@ -113,20 +113,20 @@ export default function ProductDetail() {
         <div>
           <h1 className="text-[28px] leading-snug font-serif font-medium">{product.title}</h1>
 
-          <p className="mt-2 text-sm tracking-wide text-gray-500">
+          <p className="mt-2 text-sm tracking-wide text-[#8d9197]">
             {product.collection}
           </p>
 
           <p className="mt-6 text-2xl font-semibold">Rs {product.discountPrice ?? product.price}</p>
 
-          {product.description && <p className="mt-6 text-[15px] leading-relaxed text-gray-700">{product.description}</p>}
+          {product.description && <p className="mt-6 text-[15px] leading-relaxed text-[#6f7277]">{product.description}</p>}
 
           <div className="mt-10 flex gap-4">
             <button
               onClick={addToCart}
               disabled={adding}
               className={`group relative flex-1 py-3 rounded text-sm tracking-wide font-medium transition-all duration-300 active:scale-95 ${
-                added ? "bg-green-600 text-white" : "bg-black text-white hover:bg-gray-900"
+                added ? "bg-[#84c83a] text-white" : "bg-[#57595d] text-white hover:bg-[#57595d]"
               }`}
             >
               {adding ? (
@@ -150,11 +150,11 @@ export default function ProductDetail() {
             <button
               onClick={toggleWishlist}
               className={`group flex-1 py-3 rounded border text-sm tracking-wide font-medium transition-all duration-300 active:scale-95 ${
-                wished ? "border-red-500 text-red-600" : "border-black text-black"
+                wished ? "border-[#69b317] text-[#6f7277]" : "border-[#57595d] text-[#57595d]"
               }`}
             >
               <span className={`flex items-center justify-center gap-2 ${wishAnimating ? "animate-pulse" : ""}`}>
-                <Heart size={16} className={wished ? "fill-red-500" : ""} />
+                <Heart size={16} className={wished ? "fill-[#69b317]" : ""} />
                 {wished ? "Wishlisted" : "Add to wishlist"}
               </span>
             </button>
@@ -168,3 +168,6 @@ export default function ProductDetail() {
     </div>
   );
 }
+
+
+

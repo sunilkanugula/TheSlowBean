@@ -23,14 +23,14 @@ export default function CollectionsSection() {
   if (!collections.length) return null;
 
   return (
-    <section className="bg-[#f9f4ea] py-14 md:py-20">
+    <section className="bg-[#f3f4f3] py-14 md:py-20">
       <div className="mx-auto max-w-7xl px-4 md:px-6">
         <div className="mb-8 text-center md:mb-14">
           <h2 className="text-4xl font-serif font-medium tracking-tight md:text-5xl">
             All Collections
           </h2>
           <div className="mx-auto mt-5 h-[2px] w-16 bg-gray-300" />
-          <p className="mx-auto mt-5 max-w-2xl text-[15px] text-gray-600">
+          <p className="mx-auto mt-5 max-w-2xl text-[15px] text-[#6f7277]">
             Explore every collection curated by our team and jump straight into products.
           </p>
         </div>
@@ -47,9 +47,9 @@ export default function CollectionsSection() {
                 alt={collection.name}
                 className="h-40 w-full object-cover transition-transform duration-500 group-hover:scale-105 md:h-48"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/15 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#57595d]/50 via-[#57595d]/15 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-3 text-center">
-                <span className="inline-flex rounded-full border border-white/40 bg-white/85 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#173f33] backdrop-blur">
+                <span className="inline-flex rounded-full border border-white/40 bg-white/85 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#57595d] backdrop-blur">
                   {collection.name}
                 </span>
               </div>
@@ -60,4 +60,6 @@ export default function CollectionsSection() {
     </section>
   );
 }
+
+
 

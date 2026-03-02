@@ -242,20 +242,20 @@ export default function Products() {
     <>
       <ProductsHero />
 
-      <section className="bg-[radial-gradient(circle_at_20%_10%,#f3f8ef_0%,#edf4e8_42%,#e6efe2_100%)] py-12 md:py-16">
+      <section className="bg-[radial-gradient(circle_at_20%_10%,#f3f4f3_0%,#eceeed_45%,#e5e7e6_100%)] py-12 md:py-16">
         <div className="mx-auto max-w-7xl px-4 md:px-6">
-          <div className="mb-8 rounded-3xl border border-green-100/90 bg-white/90 p-4 shadow-[0_12px_32px_rgba(16,88,43,0.1)] backdrop-blur md:p-6">
+          <div className="mb-8 rounded-3xl border border-[#d7dad7]/90 bg-white/90 p-4 shadow-[0_12px_32px_rgba(87,89,93,0.1)] backdrop-blur md:p-6">
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1.7fr_1fr_1fr_1fr_auto]">
               <form onSubmit={handleSearchSubmit} className="relative">
                 <Search
-                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-green-700"
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#6f7277]"
                   size={16}
                 />
                 <input
                   value={searchDraft}
                   onChange={(e) => setSearchDraft(e.target.value)}
                   placeholder="Search chocolates, collections..."
-                  className="h-12 w-full rounded-xl border border-green-200 bg-white pl-10 pr-3 text-sm outline-none ring-green-500 transition focus:ring"
+                  className="h-12 w-full rounded-xl border border-[#d7dad7] bg-white pl-10 pr-3 text-sm text-[#57595d] outline-none ring-[#69b317] transition focus:ring"
                 />
               </form>
 
@@ -265,7 +265,7 @@ export default function Products() {
                   setCollection(e.target.value);
                   setPage(1);
                 }}
-                className="h-12 rounded-xl border border-green-200 bg-white px-3 text-sm outline-none ring-green-500 transition focus:ring"
+                className="h-12 rounded-xl border border-[#d7dad7] bg-white px-3 text-sm text-[#57595d] outline-none ring-[#69b317] transition focus:ring"
               >
                 <option value="">All collections</option>
                 {collections.map((item) => (
@@ -281,7 +281,7 @@ export default function Products() {
                   setSort(e.target.value);
                   setPage(1);
                 }}
-                className="h-12 rounded-xl border border-green-200 bg-white px-3 text-sm outline-none ring-green-500 transition focus:ring"
+                className="h-12 rounded-xl border border-[#d7dad7] bg-white px-3 text-sm text-[#57595d] outline-none ring-[#69b317] transition focus:ring"
               >
                 {SORT_OPTIONS.map((item) => (
                   <option key={item.value} value={item.value}>
@@ -300,7 +300,7 @@ export default function Products() {
                     setPage(1);
                   }}
                   placeholder="Min"
-                  className="h-12 rounded-xl border border-green-200 bg-white px-3 text-sm outline-none ring-green-500 transition focus:ring"
+                  className="h-12 rounded-xl border border-[#d7dad7] bg-white px-3 text-sm text-[#57595d] outline-none ring-[#69b317] transition focus:ring"
                 />
                 <input
                   type="number"
@@ -311,20 +311,20 @@ export default function Products() {
                     setPage(1);
                   }}
                   placeholder="Max"
-                  className="h-12 rounded-xl border border-green-200 bg-white px-3 text-sm outline-none ring-green-500 transition focus:ring"
+                  className="h-12 rounded-xl border border-[#d7dad7] bg-white px-3 text-sm text-[#57595d] outline-none ring-[#69b317] transition focus:ring"
                 />
               </div>
 
               <button
                 type="button"
                 onClick={handleClearFilters}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-green-200 bg-white px-4 text-sm font-medium text-green-800 transition hover:bg-green-50"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-[#d7dad7] bg-white px-4 text-sm font-medium text-[#57595d] transition hover:bg-[#f3f5f3]"
               >
                 <SlidersHorizontal size={16} /> Reset
               </button>
             </div>
 
-            <label className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-green-900">
+            <label className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-[#57595d]">
               <input
                 type="checkbox"
                 checked={inStock}
@@ -332,13 +332,13 @@ export default function Products() {
                   setInStock(e.target.checked);
                   setPage(1);
                 }}
-                className="h-4 w-4 rounded border-green-300 text-green-700"
+                className="h-4 w-4 rounded border-[#b5bab6] text-[#69b317]"
               />
               In stock only
             </label>
           </div>
 
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-2 text-sm text-green-900">
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-2 text-sm text-[#57595d]">
             <p>
               Showing {products.length} of {meta.total} products
             </p>
@@ -355,11 +355,11 @@ export default function Products() {
               ))}
             </div>
           ) : error ? (
-            <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700">
+            <div className="rounded-2xl border border-[#d7dad7] bg-[#f3f5f3] p-6 text-[#6f7277]">
               {error}
             </div>
           ) : products.length === 0 ? (
-            <div className="rounded-2xl border border-green-200 bg-white p-8 text-center text-green-900">
+            <div className="rounded-2xl border border-[#d7dad7] bg-white p-8 text-center text-[#57595d]">
               No products matched your filters.
             </div>
           ) : (
@@ -390,7 +390,7 @@ export default function Products() {
                       to={`/products/${product.id}`}
                       className="relative block overflow-hidden rounded-2xl border border-white/80 bg-white/70 shadow-[0_14px_32px_rgba(16,56,38,0.14)]"
                     >
-                      <div className="relative aspect-[1/1] w-full overflow-hidden bg-emerald-50 md:aspect-[4/5]">
+                      <div className="relative aspect-[1/1] w-full overflow-hidden bg-[#f1f3f2] md:aspect-[4/5]">
                         <img
                           src={product.images?.[0] || "/placeholder.png"}
                           alt={product.title}
@@ -408,14 +408,14 @@ export default function Products() {
                           />
                         ) : null}
                       </div>
-                      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/40 via-black/5 to-transparent" />
+                      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#57595d]/40 via-[#57595d]/5 to-transparent" />
 
-                      <span className="absolute left-3 top-3 rounded-full border border-white/50 bg-white/90 px-2.5 py-1 text-[9px] uppercase tracking-[0.14em] text-slate-800 backdrop-blur">
+                      <span className="absolute left-3 top-3 rounded-full border border-white/50 bg-white/90 px-2.5 py-1 text-[9px] uppercase tracking-[0.14em] text-[#57595d] backdrop-blur">
                         Best Seller
                       </span>
 
                       {discountPercent ? (
-                        <span className="absolute bottom-3 left-3 rounded-full bg-emerald-900 px-2 py-1 text-[9px] font-semibold text-white">
+                        <span className="absolute bottom-3 left-3 rounded-full bg-[#69b317] px-2 py-1 text-[9px] font-semibold text-white">
                           Save {discountPercent}%
                         </span>
                       ) : null}
@@ -435,24 +435,24 @@ export default function Products() {
                             toast.error("Wishlist action failed");
                           }
                         }}
-                        className="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur transition hover:bg-black/50"
+                        className="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#57595d]/35 text-white backdrop-blur transition hover:bg-[#57595d]/50"
                       >
                         <Heart
                           size={14}
                           strokeWidth={2}
-                          className={liked ? "fill-rose-500 text-rose-500" : "text-white"}
+                          className={liked ? "fill-[#69b317] text-[#69b317]" : "text-white"}
                         />
                       </button>
                     </Link>
 
                     <div className="min-w-0 px-1 pb-1 pt-3 text-center md:px-0 md:pt-3">
-                      <p className="text-[9px] uppercase tracking-[0.15em] text-emerald-700 md:text-[10px]">
+                      <p className="text-[9px] uppercase tracking-[0.15em] text-[#69b317] md:text-[10px]">
                         Signature Craft
                       </p>
 
                       <Link to={`/products/${product.id}`} className="block">
                         <h3
-                          className="mt-1 h-[2.6em] overflow-hidden text-[13px] font-semibold leading-[1.3] text-slate-900 md:text-[15px]"
+                          className="mt-1 h-[2.6em] overflow-hidden text-[13px] font-semibold leading-[1.3] text-[#57595d] md:text-[15px]"
                           style={{
                             display: "-webkit-box",
                             WebkitLineClamp: 2,
@@ -464,11 +464,11 @@ export default function Products() {
                       </Link>
 
                       <div className="mt-2.5 flex items-end justify-center gap-1">
-                        <span className="text-[20px] font-extrabold leading-none text-emerald-900 md:text-[24px]">
+                        <span className="text-[20px] font-extrabold leading-none text-[#57595d] md:text-[24px]">
                           Rs {salePrice}
                         </span>
                         {hasDiscount ? (
-                          <span className="mb-0.5 text-[11px] text-slate-400 line-through">
+                          <span className="mb-0.5 text-[11px] text-[#9fa3a8] line-through">
                             Rs {product.price}
                           </span>
                         ) : null}
@@ -479,8 +479,8 @@ export default function Products() {
                           onClick={() => handleAddToCart(product.id)}
                           className={`inline-flex h-10 w-[75%] items-center justify-center gap-1.5 whitespace-nowrap  px-3 text-[11px] font-semibold transition md:h-9 md:w-[60%] md:text-[12px] ${
                             isAdded
-                              ? "bg-emerald-600 text-white"
-                              : "bg-emerald-900 text-white hover:bg-emerald-950"
+                              ? "bg-[#84c83a] text-white"
+                              : "bg-[#69b317] text-white hover:bg-[#5aa10f]"
                           }`}
                         >
                           {isAdded ? (
@@ -499,7 +499,7 @@ export default function Products() {
 
                       <Link
                         to={`/products/${product.id}`}
-                        className="mt-2 hidden text-[10px] uppercase tracking-[0.14em] text-slate-500 transition hover:text-slate-800 md:block"
+                        className="mt-2 hidden text-[10px] uppercase tracking-[0.14em] text-[#8d9197] transition hover:text-[#57595d] md:block"
                       >
                         View Details
                       </Link>
@@ -515,7 +515,7 @@ export default function Products() {
               <button
                 onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
                 disabled={!meta.hasPrev}
-                className="rounded-xl border border-green-200 bg-white px-3 py-2 text-sm text-green-900 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-xl border border-[#d7dad7] bg-white px-3 py-2 text-sm text-[#57595d] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Prev
               </button>
@@ -526,8 +526,8 @@ export default function Products() {
                   onClick={() => setPage(pageNumber)}
                   className={`rounded-xl px-3 py-2 text-sm ${
                     page === pageNumber
-                      ? "bg-green-800 text-white"
-                      : "border border-green-200 bg-white text-green-900"
+                      ? "bg-[#69b317] text-white"
+                      : "border border-[#d7dad7] bg-white text-[#57595d]"
                   }`}
                 >
                   {pageNumber}
@@ -537,7 +537,7 @@ export default function Products() {
               <button
                 onClick={() => setPage((prev) => Math.min(prev + 1, meta.totalPages))}
                 disabled={!meta.hasNext}
-                className="rounded-xl border border-green-200 bg-white px-3 py-2 text-sm text-green-900 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-xl border border-[#d7dad7] bg-white px-3 py-2 text-sm text-[#57595d] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Next
               </button>
@@ -548,3 +548,4 @@ export default function Products() {
     </>
   );
 }
+

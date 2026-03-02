@@ -96,35 +96,35 @@ export default function MyAccount() {
       <div className="max-w-6xl mx-auto grid md:grid-cols-[280px_1fr] gap-6">
         <div className="bg-white rounded-2xl shadow p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="h-12 w-12 rounded-full bg-blue-600 text-white flex items-center justify-center text-xl font-semibold">
+            <div className="h-12 w-12 rounded-full bg-[#69b317] text-white flex items-center justify-center text-xl font-semibold">
               {user.name.charAt(0).toUpperCase() || "U"}
             </div>
             <div>
-              <p className="font-semibold text-gray-800">{user.name}</p>
-              <p className="text-sm text-gray-500">{user.email}</p>
+              <p className="font-semibold text-[#57595d]">{user.name}</p>
+              <p className="text-sm text-[#8d9197]">{user.email}</p>
             </div>
           </div>
 
           <div className="space-y-3 text-sm">
             <div className="flex items-center gap-2">
               {user.emailVerified ? (
-                <ShieldCheck className="w-4 h-4 text-green-600" />
+                <ShieldCheck className="w-4 h-4 text-[#6f7277]" />
               ) : (
-                <ShieldAlert className="w-4 h-4 text-yellow-600" />
+                <ShieldAlert className="w-4 h-4 text-[#69b317]" />
               )}
-              <span className="text-gray-700">
+              <span className="text-[#6f7277]">
                 {user.emailVerified ? "Email Verified" : "Email Not Verified"}
               </span>
             </div>
 
             {!user.emailVerified && (
-              <button onClick={verifyEmail} disabled={loading} className="text-blue-600 hover:underline">
+              <button onClick={verifyEmail} disabled={loading} className="text-[#69b317] hover:underline">
                 Verify Email
               </button>
             )}
 
             {user.role === "ADMIN" && (
-              <span className="inline-block mt-3 bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">
+              <span className="inline-block mt-3 bg-[#eef2ed] text-[#69b317] text-xs font-semibold px-3 py-1 rounded-full">
                 ADMIN
               </span>
             )}
@@ -132,14 +132,14 @@ export default function MyAccount() {
         </div>
 
         <div className="bg-white rounded-2xl shadow p-6">
-          <h1 className="text-2xl font-semibold text-gray-800 mb-6">Account Overview</h1>
+          <h1 className="text-2xl font-semibold text-[#57595d] mb-6">Account Overview</h1>
 
           {error && (
-            <div className="mb-4 text-sm text-red-600 bg-red-50 border rounded px-3 py-2">{error}</div>
+            <div className="mb-4 text-sm text-[#6f7277] bg-[#f3f5f3] border rounded px-3 py-2">{error}</div>
           )}
 
           <div className="mb-6 rounded-xl border p-4">
-            <h2 className="font-semibold text-gray-800 mb-3">Profile</h2>
+            <h2 className="font-semibold text-[#57595d] mb-3">Profile</h2>
             <div className="flex flex-col sm:flex-row gap-3">
               <input
                 value={nameDraft}
@@ -149,7 +149,7 @@ export default function MyAccount() {
               />
               <button
                 onClick={saveProfile}
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#57595d] px-4 py-2 text-sm font-semibold text-white"
               >
                 <Save size={14} /> Save
               </button>
@@ -188,11 +188,16 @@ function Tile({
     <div
       onClick={onClick}
       className={`cursor-pointer rounded-xl border p-5 flex items-center gap-4 hover:shadow-md transition ${
-        danger ? "border-red-200 text-red-600 hover:bg-red-50" : "hover:bg-gray-50"
+        danger ? "border-[#d7dad7] text-[#6f7277] hover:bg-[#f3f5f3]" : "hover:bg-[#f3f5f3]"
       }`}
     >
-      <div className={`p-3 rounded-lg ${danger ? "bg-red-100" : "bg-gray-100"}`}>{icon}</div>
+      <div className={`p-3 rounded-lg ${danger ? "bg-[#f3f5f3]" : "bg-[#f3f5f3]"}`}>{icon}</div>
       <p className="font-medium">{title}</p>
     </div>
   );
 }
+
+
+
+
+

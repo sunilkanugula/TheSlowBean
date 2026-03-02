@@ -1,13 +1,15 @@
 export function Input({ label, ...props }: any) {
   return (
     <div>
-      <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.16em] text-[#6c7f77]">
+      <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.16em] text-[#8d9197]">
         {label}
       </label>
       <input
         {...props}
-        className="w-full rounded-xl border border-[#c8d6c4] bg-[#fcfdfb] px-4 py-2.5 text-sm text-[#143b2f] transition placeholder:text-[#97a8a1] focus:border-[#1d6e5a] focus:bg-white focus:outline-none"
+        className="w-full rounded-xl border border-[#d7dad7] bg-[#f5f6f5] px-4 py-2.5 text-sm text-[#57595d] transition placeholder:text-[#a5a8ad] focus:border-[#69b317] focus:bg-white focus:outline-none"
       />
     </div>
   );
 }
+
+
