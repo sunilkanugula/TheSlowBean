@@ -7,16 +7,9 @@ import { ImageUp, Loader2, PencilRuler, Sparkles } from "lucide-react";
 import AdminPanelNav from "../components/admin/AdminPanelNav";
 
 const API_URL = "http://localhost:5000/api/products";
-const COLLECTIONS_API_URL = "http://localhost:5000/api/products/collections";
 
 type ReplaceMap = {
   [index: number]: File;
-};
-
-type CollectionItem = {
-  id: number;
-  name: string;
-  imageUrl: string;
 };
 
 export default function EditProduct() {
@@ -36,9 +29,6 @@ export default function EditProduct() {
     stock: "",
     isBestSelling: false,
   });
-  const [collections, setCollections] = useState<CollectionItem[]>([]);
-  const [selectedCollectionIds, setSelectedCollectionIds] = useState<number[]>([]);
-
   const [currentImages, setCurrentImages] = useState<string[]>([]);
   const [replaceImages, setReplaceImages] = useState<ReplaceMap>({});
 
@@ -53,11 +43,6 @@ export default function EditProduct() {
     if (!id) return;
 
     axios
-      .get<CollectionItem[]>(COLLECTIONS_API_URL)
-      .then((res) => setCollections(res.data || []))
-      .catch(() => setCollections([]));
-
-    axios
       .get(`${API_URL}/${id}`)
       .then((res) => {
         const p = res.data;
@@ -70,8 +55,6 @@ export default function EditProduct() {
           stock: String(p.stock),
           isBestSelling: Boolean(p.isBestSelling),
         });
-        setSelectedCollectionIds(Array.isArray(p.collectionIds) ? p.collectionIds : []);
-
         setCurrentImages(p.images || []);
       })
       .catch(() => {
@@ -98,11 +81,6 @@ export default function EditProduct() {
       setError("Login required");
       return;
     }
-    if (selectedCollectionIds.length === 0) {
-      setError("Select at least one collection");
-      return;
-    }
-
     try {
       setSaving(true);
       setError("");
@@ -112,9 +90,6 @@ export default function EditProduct() {
       Object.entries(form).forEach(([key, value]) => {
         formData.append(key, typeof value === "boolean" ? String(value) : value);
       });
-      selectedCollectionIds.forEach((collectionId) =>
-        formData.append("collectionIds", String(collectionId))
-      );
 
       const indexes = Object.keys(replaceImages).map(Number);
       indexes.forEach((index) => {
@@ -143,7 +118,7 @@ export default function EditProduct() {
     return (
       <div className="mx-auto max-w-7xl p-6">
         <AdminPanelNav />
-        <div className="rounded-2xl border border-[#d7dad7] bg-white p-6 text-[#6f7277]">Loading product...</div>
+        <div className="rounded-lg border border-[#d9dfd8] bg-white p-6 text-[#5f6568]">Loading product...</div>
       </div>
     );
   }
@@ -152,42 +127,42 @@ export default function EditProduct() {
     <div className="mx-auto max-w-7xl p-6">
       <AdminPanelNav />
 
-      <section className="mb-6 rounded-3xl border border-[#d7dad7] bg-gradient-to-r from-[#57595d] via-[#666970] to-[#8d9197] p-6 text-white md:p-8">
-        <p className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#eef2ed]">
+      <section className="mb-6 rounded-lg border border-[#d9dfd8] bg-gradient-to-r from-[#202326] via-[#666970] to-[#8b9290] p-6 text-white md:p-8">
+        <p className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#edf2ee]">
           <Sparkles size={14} /> Product Studio
         </p>
         <h1 className="mt-4 text-3xl font-semibold text-white md:text-4xl">Edit Product Experience</h1>
-        <p className="mt-2 max-w-2xl text-sm text-[#eef2ed] md:text-base">
+        <p className="mt-2 max-w-2xl text-sm text-[#edf2ee] md:text-base">
           Refine product narrative, pricing, and image stack with controlled updates.
         </p>
       </section>
 
       {error ? (
-        <div className="mb-4 rounded-2xl border border-[#d7dad7] bg-[#f3f5f3] px-4 py-3 text-sm font-medium text-[#6f7277]">{error}</div>
+        <div className="mb-4 rounded-lg border border-[#d9dfd8] bg-[#edf2ee] px-4 py-3 text-sm font-medium text-[#5f6568]">{error}</div>
       ) : null}
 
       <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-        <div className="rounded-3xl border border-[#d7dad7] bg-white p-5 shadow-[0_22px_55px_-35px_rgba(18,53,44,0.45)] md:p-6">
-          <h2 className="inline-flex items-center gap-2 text-lg font-semibold text-[#57595d]">
+        <div className="rounded-lg border border-[#d9dfd8] bg-white p-5 shadow-[0_22px_55px_-35px_rgba(18,53,44,0.45)] md:p-6">
+          <h2 className="inline-flex items-center gap-2 text-lg font-semibold text-[#202326]">
             <PencilRuler size={18} /> Core Details
           </h2>
-          <p className="mt-1 text-sm text-[#8d9197]">Update text and commerce attributes for this SKU.</p>
+          <p className="mt-1 text-sm text-[#8b9290]">Update text and commerce attributes for this SKU.</p>
 
           <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
             <Field label="Title">
-              <input name="title" value={form.title} onChange={handleChange} className="w-full rounded-xl border border-[#d7dad7] bg-[#f5f6f5] px-3 py-2.5 text-sm text-[#57595d] outline-none transition focus:border-[#69b317] focus:ring-2 focus:ring-[#dfe7d7]" />
+              <input name="title" value={form.title} onChange={handleChange} className="w-full rounded-lg border border-[#d9dfd8] bg-[#f6f7f4] px-3 py-2.5 text-sm text-[#202326] outline-none transition focus:border-[#287a55] focus:ring-2 focus:ring-[#dfe7d7]" />
             </Field>
 
             <Field label="Price (INR)">
-              <input name="price" type="number" value={form.price} onChange={handleChange} className="w-full rounded-xl border border-[#d7dad7] bg-[#f5f6f5] px-3 py-2.5 text-sm text-[#57595d] outline-none transition focus:border-[#69b317] focus:ring-2 focus:ring-[#dfe7d7]" />
+              <input name="price" type="number" value={form.price} onChange={handleChange} className="w-full rounded-lg border border-[#d9dfd8] bg-[#f6f7f4] px-3 py-2.5 text-sm text-[#202326] outline-none transition focus:border-[#287a55] focus:ring-2 focus:ring-[#dfe7d7]" />
             </Field>
 
             <Field label="Discount Price">
-              <input name="discountPrice" type="number" value={form.discountPrice} onChange={handleChange} className="w-full rounded-xl border border-[#d7dad7] bg-[#f5f6f5] px-3 py-2.5 text-sm text-[#57595d] outline-none transition focus:border-[#69b317] focus:ring-2 focus:ring-[#dfe7d7]" />
+              <input name="discountPrice" type="number" value={form.discountPrice} onChange={handleChange} className="w-full rounded-lg border border-[#d9dfd8] bg-[#f6f7f4] px-3 py-2.5 text-sm text-[#202326] outline-none transition focus:border-[#287a55] focus:ring-2 focus:ring-[#dfe7d7]" />
             </Field>
 
             <Field label="Stock">
-              <input name="stock" type="number" value={form.stock} onChange={handleChange} className="w-full rounded-xl border border-[#d7dad7] bg-[#f5f6f5] px-3 py-2.5 text-sm text-[#57595d] outline-none transition focus:border-[#69b317] focus:ring-2 focus:ring-[#dfe7d7]" />
+              <input name="stock" type="number" value={form.stock} onChange={handleChange} className="w-full rounded-lg border border-[#d9dfd8] bg-[#f6f7f4] px-3 py-2.5 text-sm text-[#202326] outline-none transition focus:border-[#287a55] focus:ring-2 focus:ring-[#dfe7d7]" />
             </Field>
           </div>
 
@@ -197,45 +172,11 @@ export default function EditProduct() {
               value={form.description}
               onChange={handleChange}
               rows={5}
-              className="w-full min-h-[130px] resize-y rounded-xl border border-[#d7dad7] bg-[#f5f6f5] px-3 py-2.5 text-sm text-[#57595d] outline-none transition focus:border-[#69b317] focus:ring-2 focus:ring-[#dfe7d7]"
+              className="w-full min-h-[130px] resize-y rounded-lg border border-[#d9dfd8] bg-[#f6f7f4] px-3 py-2.5 text-sm text-[#202326] outline-none transition focus:border-[#287a55] focus:ring-2 focus:ring-[#dfe7d7]"
             />
           </Field>
 
-          <Field label="Collections" className="mt-4">
-            {collections.length === 0 ? (
-              <div className="rounded-xl border border-[#d7dad7] bg-[#f3f5f3] px-3 py-2 text-sm text-[#8d9197]">
-                No collections found. Create from Admin {">"} Collections.
-              </div>
-            ) : (
-              <div className="grid gap-2 sm:grid-cols-2">
-                {collections.map((item) => {
-                  const checked = selectedCollectionIds.includes(item.id);
-                  return (
-                    <label
-                      key={item.id}
-                      className="inline-flex items-center gap-2 rounded-xl border border-[#d7dad7] bg-[#f3f5f3] px-3 py-2 text-sm text-[#69b317]"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={checked}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setSelectedCollectionIds((prev) => Array.from(new Set([...prev, item.id])));
-                          } else {
-                            setSelectedCollectionIds((prev) => prev.filter((id) => id !== item.id));
-                          }
-                        }}
-                        className="h-4 w-4 rounded border-[#b5bab6]"
-                      />
-                      {item.name}
-                    </label>
-                  );
-                })}
-              </div>
-            )}
-          </Field>
-
-          <label className="mt-5 inline-flex items-center gap-3 rounded-2xl border border-[#d7dad7] bg-[#f3f5f3] px-4 py-3 text-sm font-medium text-[#6f7277]">
+          <label className="mt-5 inline-flex items-center gap-3 rounded-lg border border-[#d9dfd8] bg-[#edf2ee] px-4 py-3 text-sm font-medium text-[#5f6568]">
             <input
               type="checkbox"
               checked={form.isBestSelling}
@@ -248,25 +189,25 @@ export default function EditProduct() {
           </label>
         </div>
 
-        <div className="rounded-3xl border border-[#d7dad7] bg-white p-5 shadow-[0_22px_55px_-35px_rgba(18,53,44,0.45)] md:p-6">
-          <h2 className="inline-flex items-center gap-2 text-lg font-semibold text-[#57595d]">
+        <div className="rounded-lg border border-[#d9dfd8] bg-white p-5 shadow-[0_22px_55px_-35px_rgba(18,53,44,0.45)] md:p-6">
+          <h2 className="inline-flex items-center gap-2 text-lg font-semibold text-[#202326]">
             <ImageUp size={18} /> Image Replacements
           </h2>
-          <p className="mt-1 text-sm text-[#8d9197]">Replace individual images without disturbing the rest.</p>
+          <p className="mt-1 text-sm text-[#8b9290]">Replace individual images without disturbing the rest.</p>
 
           <div className="mt-5 space-y-4">
             {currentImages.map((img, index) => (
-              <div key={index} className="rounded-2xl border border-[#d7dad7] bg-[#f5f6f5] p-3">
+              <div key={index} className="rounded-lg border border-[#d9dfd8] bg-[#f6f7f4] p-3">
                 <div className="grid grid-cols-[88px_1fr] gap-3">
                   <img
                     src={replacePreviews[index] || img}
                     alt={`Image ${index + 1}`}
-                    className="h-20 w-20 rounded-xl border border-[#d7dad7] object-cover"
+                    className="h-20 w-20 rounded-lg border border-[#d9dfd8] object-cover"
                   />
 
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#8d9197]">Image Slot {index + 1}</p>
-                    <label className="mt-2 inline-flex cursor-pointer items-center gap-2 rounded-xl border border-[#d7dad7] bg-white px-3 py-2 text-xs font-semibold text-[#69b317] hover:bg-[#f3f8f5]">
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#8b9290]">Image Slot {index + 1}</p>
+                    <label className="mt-2 inline-flex cursor-pointer items-center gap-2 rounded-lg border border-[#d9dfd8] bg-white px-3 py-2 text-xs font-semibold text-[#287a55] hover:bg-[#f3f8f5]">
                       <ImageUp size={14} /> Replace
                       <input
                         type="file"
@@ -276,9 +217,9 @@ export default function EditProduct() {
                       />
                     </label>
                     {replaceImages[index] ? (
-                      <p className="mt-2 text-xs text-[#69b317]">New image selected</p>
+                      <p className="mt-2 text-xs text-[#287a55]">New image selected</p>
                     ) : (
-                      <p className="mt-2 text-xs text-[#8d9197]">No replacement selected</p>
+                      <p className="mt-2 text-xs text-[#8b9290]">No replacement selected</p>
                     )}
                   </div>
                 </div>
@@ -289,7 +230,7 @@ export default function EditProduct() {
           <button
             onClick={submit}
             disabled={saving}
-            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#57595d] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#5aa10f] disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#202326] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#319164] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {saving ? <Loader2 size={16} className="animate-spin" /> : null}
             {saving ? "Updating Product..." : "Update Product"}
@@ -311,7 +252,7 @@ function Field({
 }) {
   return (
     <label className={`block ${className}`}>
-      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-[#8d9197]">{label}</span>
+      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-[#8b9290]">{label}</span>
       {children}
     </label>
   );

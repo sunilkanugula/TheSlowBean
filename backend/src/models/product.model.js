@@ -5,7 +5,6 @@ export const ProductModel = {
     return prisma.product.create({ data });
   },
 
-  // 🔥 UPDATED: supports search
   findAll: (search) => {
     return prisma.product.findMany({
       where: search
@@ -13,12 +12,6 @@ export const ProductModel = {
             OR: [
               {
                 title: {
-                  contains: search,
-                  mode: "insensitive",
-                },
-              },
-              {
-                collection: {
                   contains: search,
                   mode: "insensitive",
                 },

@@ -3,110 +3,68 @@ import { Facebook, Instagram, Twitter } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="bg-[#e6ebe4] text-[#57595d] pt-16 pb-8">
-      <div className="max-w-7xl mx-auto px-6">
-        
-        {/* TOP GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 pb-12 border-b border-[#d7dad7]">
-          
-          {/* BRAND */}
+    <footer className="border-t border-black/10 bg-[#202326] pb-8 pt-16 text-white">
+      <div className="mx-auto max-w-7xl px-6">
+        <div className="grid grid-cols-1 gap-12 border-b border-white/10 pb-12 md:grid-cols-4">
           <div>
-            <h3 className="text-2xl font-serif font-semibold mb-4">
+            <h3 className="mb-4 text-2xl font-serif font-semibold text-white">
               TheSlowBean
             </h3>
-            <p className="text-sm text-[#57595d] leading-relaxed">
-              Premium handcrafted coffee blends made with patience and care.
-              Bringing warmth and authenticity to every cup.
+            <p className="text-sm leading-relaxed text-white/70">
+              Handcrafted bean-to-bar chocolate made with patience, precision,
+              and a deep respect for cacao.
             </p>
 
-            {/* SOCIALS */}
-            <div className="flex gap-4 mt-6">
-              <Facebook className="w-5 h-5 cursor-pointer hover:text-[#6f7277] transition" />
-              <Instagram className="w-5 h-5 cursor-pointer hover:text-[#6f7277] transition" />
-              <Twitter className="w-5 h-5 cursor-pointer hover:text-[#6f7277] transition" />
+            <div className="mt-6 flex gap-4">
+              <Facebook className="h-5 w-5 cursor-pointer text-white/70 transition hover:text-[#b6e27c]" />
+              <Instagram className="h-5 w-5 cursor-pointer text-white/70 transition hover:text-[#b6e27c]" />
+              <Twitter className="h-5 w-5 cursor-pointer text-white/70 transition hover:text-[#b6e27c]" />
             </div>
           </div>
 
-          {/* QUICK LINKS */}
           <div>
-            <h4 className="font-semibold mb-4">Quick Links</h4>
-            <ul className="space-y-3 text-sm text-[#57595d]">
-              <li>
-                <Link to="/" className="hover:text-[#6f7277] transition">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link to="/products" className="hover:text-[#6f7277] transition">
-                  Products
-                </Link>
-              </li>
-              <li>
-                <Link to="/about" className="hover:text-[#6f7277] transition">
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className="hover:text-[#6f7277] transition">
-                  Contact
-                </Link>
-              </li>
+            <h4 className="mb-4 font-semibold text-white">Quick Links</h4>
+            <ul className="space-y-3 text-sm">
+              <li><Link to="/" className="text-white/70 transition hover:text-white">Home</Link></li>
+              <li><Link to="/products" className="text-white/70 transition hover:text-white">Products</Link></li>
+              <li><Link to="/orders" className="text-white/70 transition hover:text-white">My Orders</Link></li>
+              <li><Link to="/track-order" className="text-white/70 transition hover:text-white">Track Order</Link></li>
             </ul>
           </div>
 
-          {/* SHOP */}
           <div>
-            <h4 className="font-semibold mb-4">Shop</h4>
-            <ul className="space-y-3 text-sm text-[#57595d]">
-              <li>
-                <Link to="/products?collection=coffee" className="hover:text-[#6f7277] transition">
-                  Coffee
-                </Link>
-              </li>
-              <li>
-                <Link to="/products?collection=beans" className="hover:text-[#6f7277] transition">
-                  Beans
-                </Link>
-              </li>
-              <li>
-                <Link to="/products?collection=brewing" className="hover:text-[#6f7277] transition">
-                  Brewing Tools
-                </Link>
-              </li>
-              <li>
-                <Link to="/products?collection=offers" className="hover:text-[#6f7277] transition">
-                  Offers
-                </Link>
-              </li>
+            <h4 className="mb-4 font-semibold text-white">Shop</h4>
+            <ul className="space-y-3 text-sm">
+              <li><Link to="/products" className="text-white/70 transition hover:text-white">All Products</Link></li>
+              <li><Link to="/products?sort=newest" className="text-white/70 transition hover:text-white">New Arrivals</Link></li>
+              <li><Link to="/products?inStock=true" className="text-white/70 transition hover:text-white">In Stock</Link></li>
+              <li><Link to="/products?sort=price_asc" className="text-white/70 transition hover:text-white">Offers</Link></li>
             </ul>
           </div>
 
-          {/* NEWSLETTER */}
           <div>
-            <h4 className="font-semibold mb-4">Stay Updated</h4>
-            <p className="text-sm text-[#57595d] mb-4">
-              Subscribe to receive special offers and updates.
+            <h4 className="mb-4 font-semibold text-white">Stay Updated</h4>
+            <p className="mb-4 text-sm text-white/70">
+              Receive new releases and small-batch updates.
             </p>
 
-            <div className="flex">
+            <div className="grid gap-2 sm:flex">
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 px-4 py-2 rounded-l-xl border border-[#d7dad7] focus:outline-none"
+                className="min-w-0 flex-1 rounded-lg border border-white/10 bg-white/10 px-4 py-2 text-sm text-white outline-none placeholder:text-white/50 focus:border-[#b6e27c] sm:rounded-l-lg sm:rounded-r-none"
               />
-              <button className="bg-[#69b317] text-white px-5 py-2 rounded-r-xl hover:bg-[#69b317] transition">
+              <button className="rounded-lg bg-[#287a55] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#319164] sm:rounded-l-none sm:rounded-r-lg">
                 Subscribe
               </button>
             </div>
           </div>
         </div>
 
-        {/* BOTTOM */}
-        <div className="mt-8 text-center text-sm text-[#6f7277]">
-          © {new Date().getFullYear()} TheSlowBean. All rights reserved.
+        <div className="mt-8 text-center text-sm text-white/55">
+          Copyright {new Date().getFullYear()} TheSlowBean. All rights reserved.
         </div>
       </div>
     </footer>
   );
 }
-

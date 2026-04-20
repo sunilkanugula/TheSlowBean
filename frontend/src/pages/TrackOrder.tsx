@@ -108,15 +108,15 @@ export default function TrackOrder() {
 
   return (
     <div className="mx-auto max-w-4xl p-6">
-      <h1 className="text-2xl font-semibold text-[#57595d]">Track My Order</h1>
-      <p className="mt-2 text-sm text-[#6f7277]">Live shipment timeline for your selected order.</p>
+      <h1 className="text-2xl font-semibold text-[#202326]">Track My Order</h1>
+      <p className="mt-2 text-sm text-[#5f6568]">Live shipment timeline for your selected order.</p>
 
       {!orderId ? (
-        <div className="mt-5 rounded-2xl border border-[#d7dad7] bg-white p-5 shadow-sm">
-          <p className="text-sm text-[#57595d]">Open this page from the `Track Order` button under an order.</p>
+        <div className="mt-5 rounded-lg border border-[#d9dfd8] bg-white p-5 shadow-sm">
+          <p className="text-sm text-[#202326]">Open this page from the `Track Order` button under an order.</p>
           <button
             onClick={() => navigate("/orders")}
-            className="mt-4 rounded-lg bg-[#69b317] px-4 py-2 text-sm font-medium text-white hover:bg-[#69b317]"
+            className="mt-4 rounded-lg bg-[#287a55] px-4 py-2 text-sm font-medium text-white hover:bg-[#287a55]"
           >
             Go To My Orders
           </button>
@@ -124,31 +124,31 @@ export default function TrackOrder() {
       ) : null}
 
       {loading ? (
-        <div className="mt-5 rounded-2xl border border-[#d7dad7] bg-white p-5 shadow-sm text-sm text-[#6f7277]">
+        <div className="mt-5 rounded-lg border border-[#d9dfd8] bg-white p-5 shadow-sm text-sm text-[#5f6568]">
           Loading live status...
         </div>
       ) : null}
 
       {error ? (
-        <div className="mt-5 rounded-2xl border border-[#d7dad7] bg-white p-5 shadow-sm">
-          <p className="text-sm text-[#6f7277]">{error}</p>
+        <div className="mt-5 rounded-lg border border-[#d9dfd8] bg-white p-5 shadow-sm">
+          <p className="text-sm text-[#5f6568]">{error}</p>
         </div>
       ) : null}
 
       {data ? (
-        <div className="mt-6 space-y-4 rounded-2xl border border-[#d7dad7] bg-white p-5 shadow-sm">
+        <div className="mt-6 space-y-4 rounded-lg border border-[#d9dfd8] bg-white p-5 shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-sm text-[#6f7277]">Order</p>
-              <p className="font-semibold text-[#57595d]">#{data.orderId}</p>
+              <p className="text-sm text-[#5f6568]">Order</p>
+              <p className="font-semibold text-[#202326]">#{data.orderId}</p>
             </div>
             <div>
-              <p className="text-sm text-[#6f7277]">Status</p>
-              <p className="font-semibold text-[#57595d]">{data.deliveryStatus.replaceAll("_", " ")}</p>
+              <p className="text-sm text-[#5f6568]">Status</p>
+              <p className="font-semibold text-[#202326]">{data.deliveryStatus.replaceAll("_", " ")}</p>
             </div>
             <div>
-              <p className="text-sm text-[#6f7277]">Last Updated</p>
-              <p className="font-semibold text-[#57595d]">
+              <p className="text-sm text-[#5f6568]">Last Updated</p>
+              <p className="font-semibold text-[#202326]">
                 {new Date(data.lastUpdatedAt || data.shipment?.lastSyncedAt || Date.now()).toLocaleString()}
               </p>
             </div>
@@ -159,8 +159,8 @@ export default function TrackOrder() {
               const done = index <= currentStepIndex;
               return (
                 <div key={step} className="flex items-center gap-2">
-                  <span className={`h-2.5 w-2.5 rounded-full ${done ? "bg-[#69b317]" : "bg-[#e9eee6]"}`} />
-                  <span className={`text-xs ${done ? "text-[#57595d]" : "text-[#8d9197]"}`}>
+                  <span className={`h-2.5 w-2.5 rounded-full ${done ? "bg-[#287a55]" : "bg-[#edf2ee]"}`} />
+                  <span className={`text-xs ${done ? "text-[#202326]" : "text-[#8b9290]"}`}>
                     {step.replaceAll("_", " ")}
                   </span>
                 </div>
@@ -170,16 +170,16 @@ export default function TrackOrder() {
 
           <div className="space-y-2">
             {data.events?.map((event) => (
-              <div key={event.id} className="rounded-xl border border-[#d7dad7] bg-[#f3f5f3]/40 p-3">
+              <div key={event.id} className="rounded-lg border border-[#d9dfd8] bg-[#edf2ee]/40 p-3">
                 <div className="flex flex-wrap justify-between gap-2">
-                  <p className="text-sm font-semibold text-[#57595d]">{event.title}</p>
-                  <p className="text-xs text-[#6f7277]">{new Date(event.eventTime).toLocaleString()}</p>
+                  <p className="text-sm font-semibold text-[#202326]">{event.title}</p>
+                  <p className="text-xs text-[#5f6568]">{new Date(event.eventTime).toLocaleString()}</p>
                 </div>
-                <p className="text-xs text-[#6f7277]">
+                <p className="text-xs text-[#5f6568]">
                   {event.status}
                   {event.location ? ` | ${event.location}` : ""}
                 </p>
-                {event.description ? <p className="mt-1 text-sm text-[#57595d]">{event.description}</p> : null}
+                {event.description ? <p className="mt-1 text-sm text-[#202326]">{event.description}</p> : null}
               </div>
             ))}
           </div>

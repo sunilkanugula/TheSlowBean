@@ -529,6 +529,93 @@ export const shiprocketWebhook = async (req, res) => {
   }
 };
 
+/* ================= CREATE COD ORDER ================= */
+export const createCodOrder = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { address, couponCode } = req.body;
+
+    if (!address || !address.name || !address.phone || !address.line1 || !address.city || !address.state || !address.pincode) {
+      return res.status(400).json({ message: "Incomplete delivery address" });
+    }
+
+    const cart = await prisma.cart.findUnique({
+      where: { userId },
+      include: { items: { include: { product: true } } },
+    });
+
+    if (!cart || cart.items.length === 0) {
+      return res.status(400).json({ message: "Cart is empty" });
+    }
+
+    for (const item of cart.items) {
+      if (item.product.stock < item.quantity) {
+        return res.status(400).json({ message: `Insufficient stock for ${item.product.title}` });
+      }
+    }
+
+    let { subtotal, gstAmount, totalAmount } = getCartTotals(cart.items);
+    let couponDiscount = 0;
+    let appliedCoupon = null;
+
+    if (couponCode) {
+      const coupon = await prisma.coupon.findUnique({ where: { code: couponCode.trim().toUpperCase() } });
+      if (coupon && coupon.isActive && (!coupon.expiresAt || coupon.expiresAt > new Date()) && (coupon.maxUses === null || coupon.usedCount < coupon.maxUses) && totalAmount >= coupon.minOrderValue) {
+        couponDiscount = coupon.discountType === "PERCENT"
+          ? Number(((totalAmount * coupon.discountValue) / 100).toFixed(2))
+          : Math.min(coupon.discountValue, totalAmount);
+        totalAmount = Number((totalAmount - couponDiscount).toFixed(2));
+        appliedCoupon = coupon;
+      }
+    }
+
+    const order = await prisma.$transaction(async (tx) => {
+      const createdOrder = await tx.order.create({
+        data: {
+          userId,
+          totalAmount,
+          paymentStatus: "PENDING",
+          deliveryStatus: "CREATED",
+          address,
+        },
+      });
+
+      for (const item of cart.items) {
+        const price = item.product.discountPrice ?? item.product.price;
+        await tx.orderItem.create({
+          data: { orderId: createdOrder.id, productId: item.productId, quantity: item.quantity, price },
+        });
+        await tx.product.update({ where: { id: item.productId }, data: { stock: { decrement: item.quantity } } });
+      }
+
+      if (appliedCoupon) {
+        await tx.coupon.update({ where: { id: appliedCoupon.id }, data: { usedCount: { increment: 1 } } });
+      }
+
+      await tx.orderTrackingEvent.create({
+        data: { orderId: createdOrder.id, status: "CREATED", title: "COD Order created", description: "Cash on Delivery order placed.", source: "SHIPROCKET", eventTime: new Date() },
+      });
+
+      await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
+      return createdOrder;
+    });
+
+    Promise.allSettled([notifyOrderPlaced(order.id)]);
+
+    res.status(201).json({
+      message: "COD order placed successfully",
+      orderId: order.id,
+      subtotal,
+      gstAmount,
+      couponDiscount,
+      totalAmount,
+    });
+  } catch (err) {
+    console.error("COD ORDER ERROR:", err);
+    res.status(500).json({ message: "Failed to place COD order" });
+  }
+};
+
 export const razorpayWebhook = async (req, res) => {
   try {
     const signature = req.headers["x-razorpay-signature"];

@@ -16,7 +16,7 @@ import EditProduct from "./pages/EditProduct";
 import OwnerProducts from "./pages/OwnerProducts";
 import OwnerDashboard from "./pages/OwnerDashboard";
 import OwnerOrders from "./pages/OwnerOrders";
-import OwnerCollections from "./pages/OwnerCollections";
+import OwnerCoupons from "./pages/OwnerCoupons";
 
 import AdminRoute from "./components/AdminRoute";
 import VerifyEmail from "./pages/VerifyEmail";
@@ -74,16 +74,16 @@ export default function App() {
             element={<OwnerProducts />}
           />
           <Route
-            path="/owner/collections"
-            element={<OwnerCollections />}
-          />
-          <Route
             path="/owner/products/add"
             element={<CreateProduct />}
           />
           <Route
             path="/owner/products/edit/:id"
             element={<EditProduct />}
+          />
+          <Route
+            path="/owner/coupons"
+            element={<OwnerCoupons />}
           />
         </Route>
       </Route>

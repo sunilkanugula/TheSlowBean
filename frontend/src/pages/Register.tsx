@@ -47,9 +47,9 @@ export default function Register() {
         onChange={(e: any) => setForm({ ...form, password: e.target.value })}
       />
       <Button loading={loading} onClick={submit} text="Register" />
-      <p className="pt-1 text-center text-sm text-[#8d9197]">
+      <p className="pt-1 text-center text-sm text-[#8b9290]">
         Already have an account?{" "}
-        <button onClick={() => navigate("/login")} className="font-semibold text-[#69b317] underline">
+        <button onClick={() => navigate("/login")} className="font-semibold text-[#287a55] underline">
           Login
         </button>
       </p>

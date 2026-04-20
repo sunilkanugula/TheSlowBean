@@ -3,7 +3,7 @@ export function Button({ text, onClick, loading }: any) {
     <button
       onClick={onClick}
       disabled={loading}
-      className="w-full rounded-xl bg-[#57595d] py-2.5 text-sm font-semibold text-white transition hover:bg-[#5aa10f] disabled:cursor-not-allowed disabled:opacity-60"
+      className="premium-button w-full py-2.5"
     >
       {loading ? "Please wait..." : text}
     </button>

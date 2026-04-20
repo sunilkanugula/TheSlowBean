@@ -72,7 +72,7 @@ export default function VerifyEmail() {
   return (
     <AuthWrapper title="Verify Email" error={error}>
       {info && (
-        <div className="mb-4 text-sm text-[#6f7277] bg-[#f3f5f3] border border-[#d7dad7] rounded p-2">
+        <div className="mb-4 text-sm text-[#5f6568] bg-[#edf2ee] border border-[#d9dfd8] rounded p-2">
           {info}
         </div>
       )}
@@ -98,7 +98,7 @@ export default function VerifyEmail() {
       <button
         onClick={resendOTP}
         disabled={!email || loading}
-        className="text-sm text-[#69b317] hover:underline text-center w-full"
+        className="text-sm text-[#287a55] hover:underline text-center w-full"
       >
         Resend OTP
       </button>

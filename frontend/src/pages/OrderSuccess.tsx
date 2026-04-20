@@ -6,34 +6,33 @@ export default function OrderSuccess() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-[70vh] flex items-center justify-center p-6">
-      <div className="max-w-md w-full text-center border rounded-xl p-6 shadow-sm">
-        <CheckCircle size={64} className="mx-auto text-[#6f7277]" />
+    <div className="premium-page flex items-center justify-center">
+      <div className="premium-card w-full max-w-md p-8 text-center">
+        <CheckCircle size={64} className="mx-auto text-[#287a55]" />
 
-        <h1 className="text-2xl font-bold mt-4">
-          Order Placed Successfully 🎉
+        <h1 className="mt-4 text-3xl font-bold text-[#202326]">
+          Order Placed Successfully
         </h1>
 
-        <p className="text-[#6f7277] mt-2">
-          Thank you for shopping with us
+        <p className="mt-2 text-[#5f6568]">
+          Thank you for shopping with us.
         </p>
 
-        <p className="mt-4 font-semibold">
-          Order ID:{" "}
-          <span className="text-[#6f7277]">#{id}</span>
+        <p className="mt-4 font-semibold text-[#202326]">
+          Order ID: <span className="text-[#287a55]">#{id}</span>
         </p>
 
         <div className="mt-6 space-y-3">
           <button
             onClick={() => navigate("/orders")}
-            className="w-full bg-[#57595d] text-white py-2 rounded-lg font-semibold"
+            className="premium-button w-full py-2.5"
           >
             View My Orders
           </button>
 
           <button
             onClick={() => navigate("/products")}
-            className="w-full border py-2 rounded-lg font-semibold"
+            className="premium-button-secondary w-full py-2.5"
           >
             Continue Shopping
           </button>
@@ -42,5 +41,3 @@ export default function OrderSuccess() {
     </div>
   );
 }
-
-

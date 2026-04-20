@@ -9,15 +9,15 @@ const ADMIN_API = "http://localhost:5000/api/admin";
 const PAGE_SIZE = 20;
 
 const STATUS_COLORS: Record<string, string> = {
-  CREATED: "bg-[#f3f5f3] text-[#6f7277] border-[#d7dad7]",
-  CONFIRMED: "bg-[#f3f5f3] text-[#6f7277] border-[#d7dad7]",
-  PICKED_UP: "bg-[#f3f5f3] text-[#6f7277] border-[#d7dad7]",
-  IN_TRANSIT: "bg-[#f3f5f3] text-[#6f7277] border-[#d7dad7]",
-  OUT_FOR_DELIVERY: "bg-[#f3f5f3] text-[#6f7277] border-[#d7dad7]",
-  DELIVERED: "bg-[#eef2ed] text-[#69b317] border-[#d7dad7]",
-  FAILED: "bg-[#f3f5f3] text-[#6f7277] border-[#d7dad7]",
-  RETURN_REQUESTED: "bg-[#f3f5f3] text-[#6f7277] border-[#d7dad7]",
-  RETURNED: "bg-[#f3f5f3] text-[#6f7277] border-[#d7dad7]",
+  CREATED: "bg-[#edf2ee] text-[#5f6568] border-[#d9dfd8]",
+  CONFIRMED: "bg-[#edf2ee] text-[#5f6568] border-[#d9dfd8]",
+  PICKED_UP: "bg-[#edf2ee] text-[#5f6568] border-[#d9dfd8]",
+  IN_TRANSIT: "bg-[#edf2ee] text-[#5f6568] border-[#d9dfd8]",
+  OUT_FOR_DELIVERY: "bg-[#edf2ee] text-[#5f6568] border-[#d9dfd8]",
+  DELIVERED: "bg-[#edf2ee] text-[#287a55] border-[#d9dfd8]",
+  FAILED: "bg-[#edf2ee] text-[#5f6568] border-[#d9dfd8]",
+  RETURN_REQUESTED: "bg-[#edf2ee] text-[#5f6568] border-[#d9dfd8]",
+  RETURNED: "bg-[#edf2ee] text-[#5f6568] border-[#d9dfd8]",
 };
 
 const ALL_STATUSES = [
@@ -32,6 +32,8 @@ const ALL_STATUSES = [
   "RETURNED",
 ] as const;
 
+type StatusValue = (typeof ALL_STATUSES)[number];
+
 const getAllowedNextStatuses = (current: string): string[] => {
   switch (current) {
     case "CREATED":
@@ -44,7 +46,9 @@ const getAllowedNextStatuses = (current: string): string[] => {
 export default function OwnerOrders() {
   const navigate = useNavigate();
   const [orders, setOrders] = useState<any[]>([]);
-  const [statusFilter, setStatusFilter] = useState<"ALL" | (typeof ALL_STATUSES)[number]>("ALL");
+  const [statusFilter, setStatusFilter] = useState<"ALL" | StatusValue>("ALL");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [openStatusMenu, setOpenStatusMenu] = useState<number | null>(null);
@@ -54,8 +58,21 @@ export default function OwnerOrders() {
 
   const token = localStorage.getItem("token");
 
-  const fetchOrders = async (page = 1) => {
-    const res = await axios.get(`${ADMIN_API}/orders?page=${page}&limit=${PAGE_SIZE}`, {
+  const buildQuery = (page: number, status: "ALL" | StatusValue, from: string, to: string) => {
+    const params = new URLSearchParams({ page: String(page), limit: String(PAGE_SIZE) });
+    if (status !== "ALL") params.set("status", status);
+    if (from) params.set("from", from);
+    if (to) params.set("to", to);
+    return params.toString();
+  };
+
+  const fetchOrders = async (
+    page = 1,
+    status: "ALL" | StatusValue = statusFilter,
+    from = dateFrom,
+    to = dateTo,
+  ) => {
+    const res = await axios.get(`${ADMIN_API}/orders?${buildQuery(page, status, from, to)}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     setOrders(res.data.orders);
@@ -114,37 +131,89 @@ export default function OwnerOrders() {
     fetchOrders(1);
   }, []);
 
-  const filteredOrders = useMemo(() => {
-    if (statusFilter === "ALL") return orders;
-    return orders.filter((o) => o.deliveryStatus === statusFilter);
-  }, [orders, statusFilter]);
+  // When filters change, reset to page 1 and re-fetch
+  const applyStatusFilter = (status: "ALL" | StatusValue) => {
+    setStatusFilter(status);
+    setCurrentPage(1);
+    fetchOrders(1, status, dateFrom, dateTo);
+  };
+
+  const applyDateFilter = (from: string, to: string) => {
+    setDateFrom(from);
+    setDateTo(to);
+    setCurrentPage(1);
+    fetchOrders(1, statusFilter, from, to);
+  };
+
+  const clearFilters = () => {
+    setStatusFilter("ALL");
+    setDateFrom("");
+    setDateTo("");
+    setCurrentPage(1);
+    fetchOrders(1, "ALL", "", "");
+  };
+
+  const hasActiveFilters = statusFilter !== "ALL" || dateFrom !== "" || dateTo !== "";
+
+  const filteredOrders = useMemo(() => orders, [orders]);
 
   return (
-    <div className="mx-auto max-w-7xl p-6">
+    <div className="premium-page">
+      <div className="premium-shell">
       <AdminPanelNav />
 
-      <div className="mb-6 rounded-3xl border border-[#d7dad7] bg-gradient-to-r from-[#57595d] via-[#666970] to-[#8d9197] p-6 text-white">
-        <p className="text-xs uppercase tracking-[0.34em] text-[#d7dad7]">Admin Fulfillment</p>
+      <div className="mb-6 rounded-lg border border-[#d9dfd8] bg-gradient-to-r from-[#202326] via-[#666970] to-[#8b9290] p-6 text-white">
+        <p className="text-xs uppercase tracking-[0.34em] text-[#d9dfd8]">Admin Fulfillment</p>
         <h1 className="mt-2 text-3xl font-semibold text-white">Order Operations</h1>
       </div>
 
-      <div className="mb-6 flex flex-wrap gap-2">
+      {/* Status pill filters */}
+      <div className="mb-4 flex flex-wrap gap-2">
         {(["ALL", ...ALL_STATUSES] as const).map((status) => (
           <button
             key={status}
-            onClick={() => {
-              setStatusFilter(status);
-              setCurrentPage(1);
-            }}
+            type="button"
+            onClick={() => applyStatusFilter(status)}
             className={`rounded-full border px-3 py-1.5 text-xs font-semibold tracking-wide transition ${
               statusFilter === status
-                ? "border-[#57595d] bg-[#57595d] text-white"
-                : "border-[#d7dad7] bg-white text-[#6f7277] hover:bg-[#f3f5f3]"
+                ? "border-[#202326] bg-[#202326] text-white"
+                : "border-[#d9dfd8] bg-white text-[#5f6568] hover:bg-[#edf2ee]"
             }`}
           >
             {status}
           </button>
         ))}
+      </div>
+
+      {/* Date range + clear filters bar */}
+      <div className="mb-6 flex flex-wrap items-center gap-3 rounded-lg border border-[#d9dfd8] bg-white p-3">
+        <div className="flex items-center gap-2">
+          <label className="text-xs font-semibold text-[#5f6568]">From</label>
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => applyDateFilter(e.target.value, dateTo)}
+            className="rounded-lg border border-[#d9dfd8] bg-[#f6f7f4] px-3 py-1.5 text-xs text-[#202326] outline-none focus:ring-1 focus:ring-[#287a55]"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <label className="text-xs font-semibold text-[#5f6568]">To</label>
+          <input
+            type="date"
+            value={dateTo}
+            onChange={(e) => applyDateFilter(dateFrom, e.target.value)}
+            className="rounded-lg border border-[#d9dfd8] bg-[#f6f7f4] px-3 py-1.5 text-xs text-[#202326] outline-none focus:ring-1 focus:ring-[#287a55]"
+          />
+        </div>
+        {hasActiveFilters && (
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="rounded-lg border border-[#d9dfd8] px-3 py-1.5 text-xs font-semibold text-[#5f6568] transition hover:border-[#287a55] hover:text-[#287a55]"
+          >
+            Clear Filters
+          </button>
+        )}
       </div>
 
       <div className="space-y-5">
@@ -154,26 +223,27 @@ export default function OwnerOrders() {
           return (
             <article
               key={order.id}
-              className="rounded-3xl border border-[#d7dad7] bg-white p-6 shadow-[0_22px_55px_-35px_rgba(18,53,44,0.48)]"
+              className="rounded-lg border border-[#d9dfd8] bg-white p-4 shadow-[0_22px_55px_-35px_rgba(18,53,44,0.48)] sm:p-6"
             >
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <p className="text-xl font-semibold text-[#57595d]">Order #{order.id}</p>
-                  <p className="mt-1 text-xs text-[#8d9197]">{new Date(order.createdAt).toLocaleString()}</p>
-                  <p className="mt-2 text-sm text-[#6f7277]">
-                    {order.user.name} <span className="text-[#a5a8ad]">({order.user.email})</span>
+                  <p className="text-xl font-semibold text-[#202326]">Order #{order.id}</p>
+                  <p className="mt-1 text-xs text-[#8b9290]">{new Date(order.createdAt).toLocaleString()}</p>
+                  <p className="mt-2 text-sm text-[#5f6568]">
+                    {order.user.name} <span className="text-[#8b9290]">({order.user.email})</span>
                   </p>
                 </div>
 
                 <div className="relative">
                   <button
+                    type="button"
                     onClick={() =>
                       nextStatuses.length
                         ? setOpenStatusMenu(openStatusMenu === order.id ? null : order.id)
                         : null
                     }
                     className={`rounded-full border px-3 py-1 text-xs font-semibold ${
-                      STATUS_COLORS[order.deliveryStatus] || "bg-[#f3f5f3] text-[#6f7277] border-[#d7dad7]"
+                      STATUS_COLORS[order.deliveryStatus] || "bg-[#edf2ee] text-[#5f6568] border-[#d9dfd8]"
                     } ${nextStatuses.length ? "cursor-pointer" : "cursor-default"}`}
                   >
                     {order.deliveryStatus}
@@ -181,17 +251,18 @@ export default function OwnerOrders() {
                   </button>
 
                   {openStatusMenu === order.id ? (
-                    <div className="absolute right-0 z-20 mt-2 min-w-44 rounded-xl border border-[#d7dad7] bg-white p-1.5 shadow-xl">
+                    <div className="absolute right-0 z-20 mt-2 min-w-44 rounded-lg border border-[#d9dfd8] bg-white p-1.5 shadow-xl">
                       {nextStatuses.map((status) => (
                         <button
                           key={status}
+                          type="button"
                           onClick={() => {
                             setSelectedOrder(order);
                             setNewStatus(status);
                             setConfirmOpen(true);
                             setOpenStatusMenu(null);
                           }}
-                          className="block w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-[#6f7277] hover:bg-[#f3f5f3]"
+                          className="block w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-[#5f6568] hover:bg-[#edf2ee]"
                         >
                           {status}
                         </button>
@@ -202,65 +273,69 @@ export default function OwnerOrders() {
               </div>
 
               <div className="mt-5 grid gap-4 md:grid-cols-2">
-                <div className="rounded-2xl border border-[#d7dad7] bg-[#f5f6f5] p-4 text-sm text-[#6f7277]">
-                  <p className="text-xs uppercase tracking-[0.2em] text-[#8d9197]">Delivery Address</p>
-                  <p className="mt-2 font-semibold text-[#57595d]">{a.name}</p>
+                <div className="rounded-lg border border-[#d9dfd8] bg-[#f6f7f4] p-4 text-sm text-[#5f6568]">
+                  <p className="text-xs uppercase tracking-[0.2em] text-[#8b9290]">Delivery Address</p>
+                  <p className="mt-2 font-semibold text-[#202326]">{a.name}</p>
                   <p>{a.phone}{a.altPhone ? ` / ${a.altPhone}` : ""}</p>
                   <p>{a.line1}, {a.city}, {a.state} - {a.pincode}</p>
                 </div>
-                <div className="rounded-2xl border border-[#d7dad7] bg-[#f5f6f5] p-4 text-sm text-[#6f7277]">
-                  <p className="text-xs uppercase tracking-[0.2em] text-[#8d9197]">Payment</p>
-                  <p className="mt-2 font-semibold text-[#57595d]">{order.paymentStatus}</p>
+                <div className="rounded-lg border border-[#d9dfd8] bg-[#f6f7f4] p-4 text-sm text-[#5f6568]">
+                  <p className="text-xs uppercase tracking-[0.2em] text-[#8b9290]">Payment</p>
+                  <p className="mt-2 font-semibold text-[#202326]">{order.paymentStatus}</p>
                   {order.razorpayPaymentId ? (
-                    <p className="mt-1 break-all text-xs text-[#8d9197]">Payment ID: {order.razorpayPaymentId}</p>
+                    <p className="mt-1 break-all text-xs text-[#8b9290]">Payment ID: {order.razorpayPaymentId}</p>
                   ) : null}
                 </div>
               </div>
 
-              <div className="mt-5 space-y-3 border-t border-[#d7dad7] pt-4">
+              <div className="mt-5 space-y-3 border-t border-[#d9dfd8] pt-4">
                 {order.items.map((item: any) => (
-                  <div key={item.id} className="flex items-center gap-3 rounded-xl border border-[#d7dad7] p-3">
+                  <div key={item.id} className="flex items-center gap-3 rounded-lg border border-[#d9dfd8] p-3">
                     <img
                       src={item.product.images[0]}
-                      className="h-14 w-14 rounded-lg border border-[#d7dad7] object-cover"
+                      className="h-14 w-14 rounded-lg border border-[#d9dfd8] object-cover"
                       alt={item.product.title}
                     />
                     <div className="flex-1">
-                      <p className="font-medium text-[#57595d]">{item.product.title}</p>
-                      <p className="text-xs text-[#8d9197]">Qty {item.quantity}</p>
+                      <p className="font-medium text-[#202326]">{item.product.title}</p>
+                      <p className="text-xs text-[#8b9290]">Qty {item.quantity}</p>
                     </div>
-                    <p className="text-sm font-semibold text-[#57595d]">Rs {item.quantity * item.price}</p>
+                    <p className="text-sm font-semibold text-[#202326]">Rs {item.quantity * item.price}</p>
                   </div>
                 ))}
               </div>
 
-              <div className="mt-5 flex items-center justify-between border-t border-[#d7dad7] pt-4">
+              <div className="mt-5 flex flex-col gap-4 border-t border-[#d9dfd8] pt-4 lg:flex-row lg:items-center lg:justify-between">
                 <ReceiptButton order={order} />
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                   <button
+                    type="button"
                     onClick={() => navigate(`/track-order?orderId=${order.id}&scope=admin`)}
-                    className="rounded-lg border border-[#69b317] px-3 py-2 text-xs font-semibold text-[#6f7277] hover:bg-[#f3f5f3]"
+                    className="rounded-lg border border-[#287a55] px-3 py-2 text-xs font-semibold text-[#5f6568] hover:bg-[#edf2ee]"
                   >
                     Track Timeline
                   </button>
                   <button
+                    type="button"
                     onClick={() => downloadShiprocketInvoice(order.id)}
                     disabled={!order.shipment}
-                    className="rounded-lg border border-[#69b317] px-3 py-2 text-xs font-semibold text-[#6f7277] hover:bg-[#f3f5f3] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded-lg border border-[#287a55] px-3 py-2 text-xs font-semibold text-[#5f6568] hover:bg-[#edf2ee] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Download Shiprocket Invoice
                   </button>
                   {order.deliveryStatus === "RETURN_REQUESTED" ? (
                     <>
                       <button
+                        type="button"
                         onClick={() => decideReturn(order.id, "ACCEPT")}
-                        className="rounded-lg bg-[#69b317] px-3 py-2 text-xs font-semibold text-white"
+                        className="rounded-lg bg-[#287a55] px-3 py-2 text-xs font-semibold text-white"
                       >
                         Accept Return
                       </button>
                       <button
+                        type="button"
                         onClick={() => decideReturn(order.id, "REJECT")}
-                        className="rounded-lg border border-[#d7dad7] px-3 py-2 text-xs font-semibold text-[#6f7277]"
+                        className="rounded-lg border border-[#d9dfd8] px-3 py-2 text-xs font-semibold text-[#5f6568]"
                       >
                         Reject Return
                       </button>
@@ -271,12 +346,12 @@ export default function OwnerOrders() {
                       href={order.shipment.trackingUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-xs font-semibold text-[#6f7277] underline"
+                      className="text-xs font-semibold text-[#5f6568] underline"
                     >
                       Track on Shiprocket
                     </a>
                   ) : null}
-                  <p className="text-lg font-semibold text-[#57595d]">Total Rs {order.totalAmount}/-</p>
+                  <p className="text-lg font-semibold text-[#202326]">Total Rs {order.totalAmount}/-</p>
                 </div>
               </div>
             </article>
@@ -286,41 +361,45 @@ export default function OwnerOrders() {
 
       <div className="mt-8 flex items-center justify-center gap-4">
         <button
+          type="button"
           disabled={currentPage === 1}
           onClick={() => fetchOrders(currentPage - 1)}
-          className="rounded-lg border border-[#d7dad7] px-3 py-1 text-sm font-medium text-[#6f7277] disabled:opacity-40"
+          className="rounded-lg border border-[#d9dfd8] px-3 py-1 text-sm font-medium text-[#5f6568] disabled:opacity-40"
         >
           Prev
         </button>
-        <span className="text-sm text-[#8d9197]">
+        <span className="text-sm text-[#8b9290]">
           Page {currentPage} of {totalPages}
         </span>
         <button
+          type="button"
           disabled={currentPage === totalPages}
           onClick={() => fetchOrders(currentPage + 1)}
-          className="rounded-lg border border-[#d7dad7] px-3 py-1 text-sm font-medium text-[#6f7277] disabled:opacity-40"
+          className="rounded-lg border border-[#d9dfd8] px-3 py-1 text-sm font-medium text-[#5f6568] disabled:opacity-40"
         >
           Next
         </button>
       </div>
 
       {confirmOpen && selectedOrder ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#57595d]/45 px-4">
-          <div className="w-full max-w-md rounded-2xl border border-[#d7dad7] bg-white p-6">
-            <h2 className="text-xl font-semibold text-[#57595d]">Update Delivery Status</h2>
-            <p className="mt-2 text-sm text-[#8d9197]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#202326]/45 px-4">
+          <div className="w-full max-w-md rounded-lg border border-[#d9dfd8] bg-white p-6">
+            <h2 className="text-xl font-semibold text-[#202326]">Update Delivery Status</h2>
+            <p className="mt-2 text-sm text-[#8b9290]">
               Change order #{selectedOrder.id} to <strong>{newStatus}</strong>?
             </p>
             <div className="mt-6 flex justify-end gap-3">
               <button
+                type="button"
                 onClick={() => setConfirmOpen(false)}
-                className="rounded-lg border border-[#d7dad7] px-4 py-2 text-sm text-[#6f7277]"
+                className="rounded-lg border border-[#d9dfd8] px-4 py-2 text-sm text-[#5f6568]"
               >
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={updateStatus}
-                className="rounded-lg bg-[#57595d] px-4 py-2 text-sm font-semibold text-white"
+                className="rounded-lg bg-[#202326] px-4 py-2 text-sm font-semibold text-white"
               >
                 Confirm
               </button>
@@ -328,10 +407,7 @@ export default function OwnerOrders() {
           </div>
         </div>
       ) : null}
+      </div>
     </div>
   );
 }
-
-
-
-

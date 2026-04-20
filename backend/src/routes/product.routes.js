@@ -10,17 +10,13 @@ import {
   getProductCatalog,
   getProductById,
   getBestSellingProducts,
-  getRelatedProducts,
 } from "../controllers/product.controller.js";
-import { getCollections } from "../controllers/collection.controller.js";
 
 const router = express.Router();
 
 /* ---------- PUBLIC ---------- */
 router.get("/best-selling", getBestSellingProducts);
 router.get("/catalog", getProductCatalog);
-router.get("/collections", getCollections);
-router.get("/related/:collection", getRelatedProducts);
 router.get("/", getAllProducts);
 router.get("/:id", getProductById);
 

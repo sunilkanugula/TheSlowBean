@@ -1,0 +1,366 @@
+{
+  "createdAt": "2026-04-19T11:11:37.801Z",
+  "products": [
+    {
+      "id": 28,
+      "title": "Aster 3-Seater Fabric Sofa",
+      "images": [
+        "https://images.unsplash.com/photo-1772143535046-99a2bb734a3d?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722668102-0d43a5696411?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1772143535046-99a2bb734a3d?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80"
+      ]
+    },
+    {
+      "id": 29,
+      "title": "Nexa L-Shape Sectional Sofa",
+      "images": [
+        "https://images.unsplash.com/photo-1772143535046-99a2bb734a3d?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722668102-0d43a5696411?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1772143535046-99a2bb734a3d?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80"
+      ]
+    },
+    {
+      "id": 30,
+      "title": "Mira Accent Chair",
+      "images": [
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1772143535046-99a2bb734a3d?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1772143535046-99a2bb734a3d?auto=format&fit=crop&w=1800&q=80"
+      ]
+    },
+    {
+      "id": 31,
+      "title": "Luma Marble Coffee Table",
+      "images": [
+        "https://images.unsplash.com/photo-1657524398377-567034729507?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1657524398377-567034729507?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80"
+      ]
+    },
+    {
+      "id": 32,
+      "title": "Arco TV Console Unit",
+      "images": [
+        "https://images.unsplash.com/photo-1772143535046-99a2bb734a3d?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722668102-0d43a5696411?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1772143535046-99a2bb734a3d?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80"
+      ]
+    },
+    {
+      "id": 33,
+      "title": "Verve Queen Storage Bed",
+      "images": [
+        "https://images.unsplash.com/photo-1651766231012-8d8a4b2e20dc?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1662986788594-01dcf0af44bd?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1651766231012-8d8a4b2e20dc?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1662986788594-01dcf0af44bd?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1651766231012-8d8a4b2e20dc?auto=format&fit=crop&w=1800&q=80"
+      ]
+    },
+    {
+      "id": 34,
+      "title": "Orion King Platform Bed",
+      "images": [
+        "https://images.unsplash.com/photo-1651766231012-8d8a4b2e20dc?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1662986788594-01dcf0af44bd?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1651766231012-8d8a4b2e20dc?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1662986788594-01dcf0af44bd?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1651766231012-8d8a4b2e20dc?auto=format&fit=crop&w=1800&q=80"
+      ]
+    },
+    {
+      "id": 35,
+      "title": "Nova 4-Door Wardrobe",
+      "images": [
+        "https://images.unsplash.com/photo-1662986788594-01dcf0af44bd?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1767277680055-34f1eeec0c26?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1662986788594-01dcf0af44bd?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1767277680055-34f1eeec0c26?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80"
+      ]
+    },
+    {
+      "id": 36,
+      "title": "Elm Bedside Table Pair",
+      "images": [
+        "https://images.unsplash.com/photo-1651766231012-8d8a4b2e20dc?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1662986788594-01dcf0af44bd?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1651766231012-8d8a4b2e20dc?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1662986788594-01dcf0af44bd?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1651766231012-8d8a4b2e20dc?auto=format&fit=crop&w=1800&q=80"
+      ]
+    },
+    {
+      "id": 37,
+      "title": "Harbor 6-Seater Dining Set",
+      "images": [
+        "https://images.unsplash.com/photo-1657524398377-567034729507?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1657524398377-567034729507?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80"
+      ]
+    },
+    {
+      "id": 38,
+      "title": "Linea 4-Seater Dining Set",
+      "images": [
+        "https://images.unsplash.com/photo-1657524398377-567034729507?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1657524398377-567034729507?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80"
+      ]
+    },
+    {
+      "id": 39,
+      "title": "Cove Upholstered Dining Chair",
+      "images": [
+        "https://images.unsplash.com/photo-1657524398377-567034729507?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1657524398377-567034729507?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80"
+      ]
+    },
+    {
+      "id": 40,
+      "title": "Axis Executive Work Desk",
+      "images": [
+        "https://images.unsplash.com/photo-1715593949273-09009558300a?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1767277680055-34f1eeec0c26?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1715593949273-09009558300a?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1767277680055-34f1eeec0c26?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1715593949273-09009558300a?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1767277680055-34f1eeec0c26?auto=format&fit=crop&w=1800&q=80"
+      ]
+    },
+    {
+      "id": 41,
+      "title": "Pivot Ergonomic Office Chair",
+      "images": [
+        "https://images.unsplash.com/photo-1715593949273-09009558300a?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1767277680055-34f1eeec0c26?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1715593949273-09009558300a?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1767277680055-34f1eeec0c26?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1715593949273-09009558300a?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1767277680055-34f1eeec0c26?auto=format&fit=crop&w=1800&q=80"
+      ]
+    },
+    {
+      "id": 42,
+      "title": "Stack Tall Bookshelf",
+      "images": [
+        "https://images.unsplash.com/photo-1662986788594-01dcf0af44bd?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1767277680055-34f1eeec0c26?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1662986788594-01dcf0af44bd?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1767277680055-34f1eeec0c26?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80"
+      ]
+    },
+    {
+      "id": 43,
+      "title": "Haven Multi-Use Cabinet",
+      "images": [
+        "https://images.unsplash.com/photo-1662986788594-01dcf0af44bd?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1767277680055-34f1eeec0c26?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1662986788594-01dcf0af44bd?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1767277680055-34f1eeec0c26?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80"
+      ]
+    },
+    {
+      "id": 44,
+      "title": "Atria Console Table",
+      "images": [
+        "https://images.unsplash.com/photo-1657524398377-567034729507?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1657524398377-567034729507?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80"
+      ]
+    },
+    {
+      "id": 45,
+      "title": "Drift Recliner Chair",
+      "images": [
+        "https://images.unsplash.com/photo-1772143535046-99a2bb734a3d?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722668102-0d43a5696411?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1772143535046-99a2bb734a3d?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80"
+      ]
+    },
+    {
+      "id": 46,
+      "title": "Breeze Patio Sofa Set",
+      "images": [
+        "https://images.unsplash.com/photo-1766603636810-65b088018169?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1766603636810-65b088018169?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1657524398377-567034729507?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1766603636810-65b088018169?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80"
+      ]
+    },
+    {
+      "id": 47,
+      "title": "Terra Outdoor Dining Set",
+      "images": [
+        "https://images.unsplash.com/photo-1766603636810-65b088018169?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1766603636810-65b088018169?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1657524398377-567034729507?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1766603636810-65b088018169?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80"
+      ]
+    },
+    {
+      "id": 48,
+      "title": "Vault Shoe Storage Bench",
+      "images": [
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1772143535046-99a2bb734a3d?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1772143535046-99a2bb734a3d?auto=format&fit=crop&w=1800&q=80"
+      ]
+    },
+    {
+      "id": 49,
+      "title": "Mason Bar Stool Set",
+      "images": [
+        "https://images.unsplash.com/photo-1657524398377-567034729507?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1657524398377-567034729507?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80"
+      ]
+    },
+    {
+      "id": 50,
+      "title": "Ledge Wall-Mount Study Desk",
+      "images": [
+        "https://images.unsplash.com/photo-1715593949273-09009558300a?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1767277680055-34f1eeec0c26?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1715593949273-09009558300a?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1767277680055-34f1eeec0c26?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1715593949273-09009558300a?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1767277680055-34f1eeec0c26?auto=format&fit=crop&w=1800&q=80"
+      ]
+    },
+    {
+      "id": 51,
+      "title": "Aurora Vanity Dresser",
+      "images": [
+        "https://images.unsplash.com/photo-1651766231012-8d8a4b2e20dc?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1662986788594-01dcf0af44bd?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1651766231012-8d8a4b2e20dc?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1662986788594-01dcf0af44bd?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1651766231012-8d8a4b2e20dc?auto=format&fit=crop&w=1800&q=80"
+      ]
+    },
+    {
+      "id": 52,
+      "title": "Form Nesting Table Set",
+      "images": [
+        "https://images.unsplash.com/photo-1657524398377-567034729507?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1657524398377-567034729507?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80"
+      ]
+    },
+    {
+      "id": 53,
+      "title": "Summit Modular Bookshelf",
+      "images": [
+        "https://images.unsplash.com/photo-1662986788594-01dcf0af44bd?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1767277680055-34f1eeec0c26?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1662986788594-01dcf0af44bd?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1767277680055-34f1eeec0c26?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80"
+      ]
+    },
+    {
+      "id": 54,
+      "title": "Crest Upholstered Bench",
+      "images": [
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1772143535046-99a2bb734a3d?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80",
+        "https://images.unsplash.com/photo-1772143535046-99a2bb734a3d?auto=format&fit=crop&w=1800&q=80"
+      ]
+    }
+  ],
+  "collections": [
+    {
+      "id": 17,
+      "name": "Living Room",
+      "imageUrl": "https://images.unsplash.com/photo-1618222155830-fcacd23874e2?auto=format&fit=crop&w=1800&q=80"
+    },
+    {
+      "id": 18,
+      "name": "Bedroom",
+      "imageUrl": "https://images.unsplash.com/photo-1651766231012-8d8a4b2e20dc?auto=format&fit=crop&w=1800&q=80"
+    },
+    {
+      "id": 19,
+      "name": "Dining Room",
+      "imageUrl": "https://images.unsplash.com/photo-1657524398377-567034729507?auto=format&fit=crop&w=1800&q=80"
+    },
+    {
+      "id": 20,
+      "name": "Office Furniture",
+      "imageUrl": "https://images.unsplash.com/photo-1715593949273-09009558300a?auto=format&fit=crop&w=1800&q=80"
+    },
+    {
+      "id": 22,
+      "name": "Accent Furniture",
+      "imageUrl": "https://images.unsplash.com/photo-1759722665606-3be48960d3a3?auto=format&fit=crop&w=1800&q=80"
+    },
+    {
+      "id": 24,
+      "name": "Luxury Collection",
+      "imageUrl": "https://images.unsplash.com/photo-1772143535046-99a2bb734a3d?auto=format&fit=crop&w=1800&q=80"
+    },
+    {
+      "id": 25,
+      "name": "OUT DOOR",
+      "imageUrl": "https://res.cloudinary.com/di1e0mwbu/image/upload/v1774247443/collections/zamey8fzubzwxq42h3q0.avif"
+    }
+  ]
+}

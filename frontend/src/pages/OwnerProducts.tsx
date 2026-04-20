@@ -10,7 +10,6 @@ const API_URL = "http://localhost:5000/api/products";
 type Product = {
   id: number;
   title: string;
-  collection: string;
   price: number;
   discountPrice?: number;
   stock: number;
@@ -46,28 +45,29 @@ export default function OwnerProducts() {
     const q = query.trim().toLowerCase();
     if (!q) return products;
     return products.filter((p) =>
-      [p.title, p.collection, String(p.id)].join(" ").toLowerCase().includes(q)
+      [p.title, String(p.id)].join(" ").toLowerCase().includes(q)
     );
   }, [products, query]);
 
   const lowStockCount = products.filter((p) => p.stock < 10).length;
 
   return (
-    <div className="mx-auto max-w-7xl p-6">
+    <div className="premium-page">
+      <div className="premium-shell">
       <AdminPanelNav />
 
-      <section className="mb-6 rounded-3xl border border-[#d7dad7] bg-gradient-to-r from-[#57595d] via-[#666970] to-[#8d9197] p-6 text-white md:p-8">
-        <p className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#eef2ed]">
+      <section className="mb-6 rounded-lg border border-[#d9dfd8] bg-gradient-to-r from-[#202326] via-[#666970] to-[#8b9290] p-6 text-white md:p-8">
+        <p className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#edf2ee]">
           <Sparkles size={14} /> Catalog Manager
         </p>
         <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-semibold text-white md:text-4xl">Premium Product Operations</h1>
-            <p className="mt-2 text-sm text-[#eef2ed] md:text-base">Control pricing, stock, and product content from one elevated workspace.</p>
+            <p className="mt-2 text-sm text-[#edf2ee] md:text-base">Control pricing, stock, and product content from one elevated workspace.</p>
           </div>
           <button
             onClick={() => navigate("/owner/products/add")}
-            className="inline-flex items-center gap-2 rounded-2xl bg-white px-4 py-2.5 text-sm font-semibold text-[#57595d] transition hover:bg-[#f3f5f3]"
+            className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-[#202326] transition hover:bg-[#edf2ee]"
           >
             <Plus size={16} /> Add Product
           </button>
@@ -80,14 +80,14 @@ export default function OwnerProducts() {
         <StatCard label="Visible Rows" value={String(filteredProducts.length)} />
       </div>
 
-      <div className="mb-4 rounded-2xl border border-[#d7dad7] bg-white p-3 shadow-sm">
-        <label className="flex items-center gap-2 rounded-xl border border-[#d1dfd8] bg-[#f3f5f3] px-3 py-2">
-          <Search size={15} className="text-[#8d9197]" />
+      <div className="mb-4 rounded-lg border border-[#d9dfd8] bg-white p-3 shadow-sm">
+        <label className="flex items-center gap-2 rounded-lg border border-[#d9dfd8] bg-[#edf2ee] px-3 py-2">
+          <Search size={15} className="text-[#8b9290]" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by title, collection, ID"
-            className="w-full bg-transparent text-sm text-[#57595d] outline-none"
+            placeholder="Search by title or ID"
+            className="w-full bg-transparent text-sm text-[#202326] outline-none"
           />
         </label>
       </div>
@@ -96,26 +96,21 @@ export default function OwnerProducts() {
         {filteredProducts.map((p) => (
           <article
             key={p.id}
-            className="grid grid-cols-1 items-center gap-4 rounded-2xl border border-[#d7dad7] bg-white p-4 shadow-[0_14px_30px_-24px_rgba(18,53,44,0.5)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_-24px_rgba(18,53,44,0.6)] md:grid-cols-[72px_1.6fr_1fr_1fr_auto]"
+            className="grid grid-cols-1 items-center gap-4 rounded-lg border border-[#d9dfd8] bg-white p-4 shadow-[0_14px_30px_-24px_rgba(18,53,44,0.5)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_-24px_rgba(18,53,44,0.6)] md:grid-cols-[72px_1.8fr_1fr_auto]"
           >
-            <img src={p.images[0]} className="h-[72px] w-[72px] rounded-xl border border-[#d7dad7] object-cover" alt={p.title} />
+            <img src={p.images[0]} className="h-[72px] w-[72px] rounded-lg border border-[#d9dfd8] object-cover" alt={p.title} />
 
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#8d9197]">ID #{p.id}</p>
-              <p className="mt-1 text-sm font-semibold text-[#57595d]">{p.title}</p>
-            </div>
-
-            <div>
-              <p className="text-[11px] uppercase tracking-[0.12em] text-[#8d9197]">Collection</p>
-              <p className="mt-1 text-sm text-[#6f7277]">{p.collection}</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#8b9290]">ID #{p.id}</p>
+              <p className="mt-1 text-sm font-semibold text-[#202326]">{p.title}</p>
             </div>
 
             <div className="flex items-center justify-between gap-4 md:block">
               <div>
-                <p className="text-[11px] uppercase tracking-[0.12em] text-[#8d9197]">Price</p>
-                <p className="mt-1 text-sm font-semibold text-[#57595d]">Rs {p.discountPrice ?? p.price}</p>
+                <p className="text-[11px] uppercase tracking-[0.12em] text-[#8b9290]">Price</p>
+                <p className="mt-1 text-sm font-semibold text-[#202326]">Rs {p.discountPrice ?? p.price}</p>
               </div>
-              <span className={`rounded-full px-3 py-1 text-xs font-semibold ${p.stock < 10 ? "bg-[#f3f5f3] text-[#6f7277]" : "bg-[#f1f3f2] text-[#69b317]"}`}>
+              <span className={`rounded-full px-3 py-1 text-xs font-semibold ${p.stock < 10 ? "bg-[#edf2ee] text-[#5f6568]" : "bg-[#f6f7f4] text-[#287a55]"}`}>
                 Stock {p.stock}
               </span>
             </div>
@@ -123,13 +118,13 @@ export default function OwnerProducts() {
             <div className="flex items-center justify-end gap-2">
               <button
                 onClick={() => navigate(`/owner/products/edit/${p.id}`)}
-                className="inline-flex items-center gap-1 rounded-xl border border-[#d7dad7] px-3 py-2 text-xs font-semibold text-[#6f7277] transition hover:bg-[#f3f5f3]"
+                className="inline-flex items-center gap-1 rounded-lg border border-[#d9dfd8] px-3 py-2 text-xs font-semibold text-[#5f6568] transition hover:bg-[#edf2ee]"
               >
                 <PencilLine size={14} /> Edit
               </button>
               <button
                 onClick={() => deleteProduct(p.id)}
-                className="inline-flex items-center gap-1 rounded-xl border border-[#d7dad7] px-3 py-2 text-xs font-semibold text-[#6f7277] transition hover:bg-[#f3f5f3]"
+                className="inline-flex items-center gap-1 rounded-lg border border-[#d9dfd8] px-3 py-2 text-xs font-semibold text-[#5f6568] transition hover:bg-[#edf2ee]"
               >
                 <Trash2 size={14} /> Delete
               </button>
@@ -138,8 +133,9 @@ export default function OwnerProducts() {
         ))}
 
         {filteredProducts.length === 0 ? (
-          <div className="rounded-2xl border border-[#d7dad7] bg-white p-8 text-center text-[#8d9197]">No products found for this search.</div>
+          <div className="rounded-lg border border-[#d9dfd8] bg-white p-8 text-center text-[#8b9290]">No products found for this search.</div>
         ) : null}
+      </div>
       </div>
     </div>
   );
@@ -147,9 +143,9 @@ export default function OwnerProducts() {
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-[#d7dad7] bg-white p-4 shadow-sm">
-      <p className="text-xs uppercase tracking-[0.12em] text-[#8d9197]">{label}</p>
-      <p className="mt-2 text-2xl font-semibold text-[#57595d]">{value}</p>
+    <div className="rounded-lg border border-[#d9dfd8] bg-white p-4 shadow-sm">
+      <p className="text-xs uppercase tracking-[0.12em] text-[#8b9290]">{label}</p>
+      <p className="mt-2 text-2xl font-semibold text-[#202326]">{value}</p>
     </div>
   );
 }

@@ -1,0 +1,221 @@
+{
+  "createdAt": "2026-04-19T11:19:10.425Z",
+  "products": [
+    {
+      "id": 28,
+      "title": "Aster 3-Seater Fabric Sofa",
+      "images": [
+        "/assets/sku/2qJi8.jpg",
+        "/assets/sku/40GOi.jpg"
+      ]
+    },
+    {
+      "id": 29,
+      "title": "Nexa L-Shape Sectional Sofa",
+      "images": [
+        "/assets/sku/40GOi.jpg",
+        "/assets/sku/cUGiV.jpg"
+      ]
+    },
+    {
+      "id": 30,
+      "title": "Mira Accent Chair",
+      "images": [
+        "/assets/sku/cUGiV.jpg",
+        "/assets/sku/HRijd.jpg"
+      ]
+    },
+    {
+      "id": 31,
+      "title": "Luma Marble Coffee Table",
+      "images": [
+        "/assets/sku/HRijd.jpg",
+        "/assets/sku/lJviR.jpg"
+      ]
+    },
+    {
+      "id": 32,
+      "title": "Arco TV Console Unit",
+      "images": [
+        "/assets/sku/lJviR.jpg",
+        "/assets/sku/s7d8w.jpg"
+      ]
+    },
+    {
+      "id": 33,
+      "title": "Verve Queen Storage Bed",
+      "images": [
+        "/assets/sku/s7d8w.jpg",
+        "/assets/sku/XxbyD.jpg"
+      ]
+    },
+    {
+      "id": 34,
+      "title": "Orion King Platform Bed",
+      "images": [
+        "/assets/sku/XxbyD.jpg",
+        "/assets/sku/y9Qqp.jpg"
+      ]
+    },
+    {
+      "id": 35,
+      "title": "Nova 4-Door Wardrobe",
+      "images": [
+        "/assets/sku/y9Qqp.jpg",
+        "/assets/sku/Yg6Bn.jpg"
+      ]
+    },
+    {
+      "id": 36,
+      "title": "Elm Bedside Table Pair",
+      "images": [
+        "/assets/sku/Yg6Bn.jpg",
+        "/assets/sku/yli1I.jpg"
+      ]
+    },
+    {
+      "id": 37,
+      "title": "Harbor 6-Seater Dining Set",
+      "images": [
+        "/assets/sku/yli1I.jpg",
+        "/assets/sku/2qJi8.jpg"
+      ]
+    },
+    {
+      "id": 38,
+      "title": "Linea 4-Seater Dining Set",
+      "images": [
+        "/assets/sku/2qJi8.jpg",
+        "/assets/sku/40GOi.jpg"
+      ]
+    },
+    {
+      "id": 39,
+      "title": "Cove Upholstered Dining Chair",
+      "images": [
+        "/assets/sku/40GOi.jpg",
+        "/assets/sku/cUGiV.jpg"
+      ]
+    },
+    {
+      "id": 40,
+      "title": "Axis Executive Work Desk",
+      "images": [
+        "/assets/sku/cUGiV.jpg",
+        "/assets/sku/HRijd.jpg"
+      ]
+    },
+    {
+      "id": 41,
+      "title": "Pivot Ergonomic Office Chair",
+      "images": [
+        "/assets/sku/HRijd.jpg",
+        "/assets/sku/lJviR.jpg"
+      ]
+    },
+    {
+      "id": 42,
+      "title": "Stack Tall Bookshelf",
+      "images": [
+        "/assets/sku/lJviR.jpg",
+        "/assets/sku/s7d8w.jpg"
+      ]
+    },
+    {
+      "id": 43,
+      "title": "Haven Multi-Use Cabinet",
+      "images": [
+        "/assets/sku/s7d8w.jpg",
+        "/assets/sku/XxbyD.jpg"
+      ]
+    },
+    {
+      "id": 44,
+      "title": "Atria Console Table",
+      "images": [
+        "/assets/sku/XxbyD.jpg",
+        "/assets/sku/y9Qqp.jpg"
+      ]
+    },
+    {
+      "id": 45,
+      "title": "Drift Recliner Chair",
+      "images": [
+        "/assets/sku/y9Qqp.jpg",
+        "/assets/sku/Yg6Bn.jpg"
+      ]
+    },
+    {
+      "id": 46,
+      "title": "Breeze Patio Sofa Set",
+      "images": [
+        "/assets/sku/Yg6Bn.jpg",
+        "/assets/sku/yli1I.jpg"
+      ]
+    },
+    {
+      "id": 47,
+      "title": "Terra Outdoor Dining Set",
+      "images": [
+        "/assets/sku/yli1I.jpg",
+        "/assets/sku/2qJi8.jpg"
+      ]
+    },
+    {
+      "id": 48,
+      "title": "Vault Shoe Storage Bench",
+      "images": [
+        "/assets/sku/2qJi8.jpg",
+        "/assets/sku/40GOi.jpg"
+      ]
+    },
+    {
+      "id": 49,
+      "title": "Mason Bar Stool Set",
+      "images": [
+        "/assets/sku/40GOi.jpg",
+        "/assets/sku/cUGiV.jpg"
+      ]
+    },
+    {
+      "id": 50,
+      "title": "Ledge Wall-Mount Study Desk",
+      "images": [
+        "/assets/sku/cUGiV.jpg",
+        "/assets/sku/HRijd.jpg"
+      ]
+    },
+    {
+      "id": 51,
+      "title": "Aurora Vanity Dresser",
+      "images": [
+        "/assets/sku/HRijd.jpg",
+        "/assets/sku/lJviR.jpg"
+      ]
+    },
+    {
+      "id": 52,
+      "title": "Form Nesting Table Set",
+      "images": [
+        "/assets/sku/lJviR.jpg",
+        "/assets/sku/s7d8w.jpg"
+      ]
+    },
+    {
+      "id": 53,
+      "title": "Summit Modular Bookshelf",
+      "images": [
+        "/assets/sku/s7d8w.jpg",
+        "/assets/sku/XxbyD.jpg"
+      ]
+    },
+    {
+      "id": 54,
+      "title": "Crest Upholstered Bench",
+      "images": [
+        "/assets/sku/XxbyD.jpg",
+        "/assets/sku/y9Qqp.jpg"
+      ]
+    }
+  ]
+}

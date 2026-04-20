@@ -67,35 +67,47 @@ export default function Cart() {
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto p-6">
-        <p>Loading cart...</p>
+      <div className="premium-page">
+        <div className="premium-shell text-[#5f6568]">Loading cart...</div>
       </div>
     );
   }
 
   if (items.length === 0) {
     return (
-      <div className="max-w-4xl mx-auto p-6">
-        <h1 className="text-2xl font-bold mb-4">My Cart</h1>
-        <p className="text-[#8d9197]">Your cart is empty.</p>
+      <div className="premium-page">
+        <div className="premium-shell">
+          <div className="premium-card mx-auto max-w-xl p-8 text-center">
+            <p className="premium-kicker">Cart</p>
+            <h1 className="mt-2 text-3xl font-semibold text-[#202326]">My Cart</h1>
+            <p className="mt-3 text-[#8b9290]">Your cart is empty.</p>
+            <button onClick={() => navigate("/products")} className="premium-button mt-6">
+              Explore Products
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">My Cart</h1>
+    <div className="premium-page">
+      <div className="premium-shell max-w-5xl">
+      <div className="mb-6">
+        <p className="premium-kicker">Checkout Ready</p>
+        <h1 className="mt-2 text-4xl font-semibold text-[#202326]">My Cart</h1>
+      </div>
 
       <div className="space-y-4">
         {items.map((item) => {
           const price = item.product.discountPrice ?? item.product.price;
 
           return (
-            <div key={item.id} className="flex gap-4 border rounded-lg p-4">
-              <img src={item.product.images[0]} className="w-24 h-24 object-cover rounded" alt={item.product.title} />
+            <div key={item.id} className="premium-card flex flex-col gap-4 p-4 sm:flex-row">
+              <img src={item.product.images[0]} className="h-28 w-28 rounded-lg border border-black/10 object-cover" alt={item.product.title} />
 
               <div className="flex-1">
-                <h2 className="font-semibold">{item.product.title}</h2>
+                <h2 className="font-semibold text-[#202326]">{item.product.title}</h2>
 
                 <QuantityControl
                   quantity={item.quantity}
@@ -103,10 +115,10 @@ export default function Cart() {
                   onDecrease={() => updateQuantity(item.product.id, item.quantity - 1)}
                 />
 
-                <p className="font-bold text-[#6f7277] mt-2">Rs {price * item.quantity}</p>
+                <p className="mt-2 font-bold text-[#287a55]">Rs {price * item.quantity}</p>
               </div>
 
-              <button onClick={() => removeItem(item.product.id)} className="text-[#6f7277] font-semibold">
+              <button onClick={() => removeItem(item.product.id)} className="self-start rounded-lg border border-black/10 px-4 py-2 text-sm font-semibold text-[#5f6568] transition hover:bg-[#edf2ee] sm:self-center">
                 Remove
               </button>
             </div>
@@ -114,18 +126,19 @@ export default function Cart() {
         })}
       </div>
 
-      <div className="mt-6 border-t pt-4 space-y-4">
+      <div className="premium-card mt-6 space-y-4 p-5">
         <div className="flex justify-between items-center">
-          <h2 className="text-xl font-bold">Total</h2>
-          <h2 className="text-xl font-bold text-[#6f7277]">Rs {total}</h2>
+          <h2 className="text-xl font-bold text-[#202326]">Total</h2>
+          <h2 className="text-xl font-bold text-[#287a55]">Rs {total}</h2>
         </div>
 
         <button
           onClick={() => navigate("/checkout")}
-          className="w-full bg-[#57595d] text-white py-3 rounded-lg font-semibold hover:bg-[#57595d]"
+          className="premium-button w-full"
         >
           Proceed to Checkout
         </button>
+      </div>
       </div>
     </div>
   );

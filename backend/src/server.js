@@ -9,6 +9,9 @@ import wishlistRoutes from "./routes/wishlist.routes.js";
 import cartRoutes from "./routes/cart.routes.js"
 import orderRoutes from "./routes/order.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
+import reviewRoutes from "./routes/review.routes.js";
+import couponRoutes from "./routes/coupon.routes.js";
+import addressRoutes from "./routes/address.routes.js";
 import { logger } from "./utils/logger.js";
 import { requestId } from "./middlewares/requestid.middleware.js";
 import {
@@ -20,7 +23,9 @@ import {
 
 const app = express();
 
-const corsAllowlist = (process.env.CORS_ORIGINS || "http://localhost:5173")
+const corsAllowlist = (
+  process.env.CORS_ORIGINS || "http://localhost:5173,http://127.0.0.1:5173"
+)
   .split(",")
   .map((origin) => origin.trim())
   .filter(Boolean);
@@ -62,6 +67,9 @@ app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/coupons", couponRoutes);
+app.use("/api/addresses", addressRoutes);
 
 app.get("/", (req, res) => {
   res.send("API running");

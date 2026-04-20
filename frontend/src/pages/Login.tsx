@@ -57,7 +57,7 @@ export default function Login() {
   };
 
   useEffect(() => {
-    if (!googleClientId || !googleBtnRef.current || !window.google?.accounts?.id) return;
+    if (!googleClientId || !googleBtnRef.current) return;
 
     const handleGoogleCredential = async (response: { credential: string }) => {
       try {
@@ -72,19 +72,29 @@ export default function Login() {
       }
     };
 
-    window.google.accounts.id.initialize({
-      client_id: googleClientId,
-      callback: handleGoogleCredential,
-    });
+    const initGoogle = () => {
+      if (!window.google?.accounts?.id || !googleBtnRef.current) return false;
+      window.google.accounts.id.initialize({
+        client_id: googleClientId,
+        callback: handleGoogleCredential,
+      });
+      googleBtnRef.current.innerHTML = "";
+      window.google.accounts.id.renderButton(googleBtnRef.current, {
+        theme: "outline",
+        size: "large",
+        shape: "pill",
+        text: "continue_with",
+        width: 320,
+      });
+      return true;
+    };
 
-    googleBtnRef.current.innerHTML = "";
-    window.google.accounts.id.renderButton(googleBtnRef.current, {
-      theme: "outline",
-      size: "large",
-      shape: "pill",
-      text: "continue_with",
-      width: 320,
-    });
+    if (!initGoogle()) {
+      const interval = setInterval(() => {
+        if (initGoogle()) clearInterval(interval);
+      }, 100);
+      return () => clearInterval(interval);
+    }
   }, [googleClientId]);
 
   const handleVerifyEmail = async () => {
@@ -101,43 +111,40 @@ export default function Login() {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#f2f3f2] px-4 py-10">
-      <div className="pointer-events-none absolute -left-20 top-8 h-64 w-64 rounded-full bg-[#6f7277]/20 blur-3xl" />
-      <div className="pointer-events-none absolute -right-12 bottom-0 h-72 w-72 rounded-full bg-[#a5a8ad]/20 blur-3xl" />
-
+    <div className="premium-page flex items-center justify-center">
       {loading ? (
         <div className="absolute inset-0 z-40 flex items-center justify-center bg-white/65 backdrop-blur-sm">
-          <div className="h-11 w-11 animate-spin rounded-full border-4 border-[#69b317] border-t-transparent" />
+          <div className="h-11 w-11 animate-spin rounded-full border-4 border-[#287a55] border-t-transparent" />
         </div>
       ) : null}
 
-      <div className="relative z-10 w-full max-w-4xl overflow-hidden rounded-[28px] border border-[#d7dad7] bg-white/95 shadow-[0_35px_90px_-40px_rgba(18,53,44,0.5)]">
+      <div className="premium-card relative z-10 w-full max-w-4xl overflow-hidden">
         <div className="grid md:grid-cols-2">
-          <section className="bg-[#57595d] p-8 text-white md:p-10">
-            <p className="text-xs uppercase tracking-[0.34em] text-[#d7dad7]">Welcome Back</p>
+          <section className="premium-hero p-8 text-white md:p-10">
+            <p className="text-xs uppercase tracking-[0.34em] text-[#d9dfd8]">Welcome Back</p>
             <h1 className="mt-3 text-4xl font-semibold leading-tight">Crafted chocolate, tracked beautifully.</h1>
-            <p className="mt-4 text-sm leading-relaxed text-[#e9eee6]">
+            <p className="mt-4 text-sm leading-relaxed text-white/82">
               Access your account, check active orders, and manage your profile in a premium storefront experience.
             </p>
           </section>
 
           <section className="p-8 md:p-10">
-            <p className="text-xs uppercase tracking-[0.22em] text-[#8d9197]">The Slow Bean</p>
-            <h2 className="mt-2 text-3xl font-semibold text-[#57595d]">Login</h2>
+            <p className="text-xs uppercase tracking-[0.22em] text-[#8b9290]">The Slow Bean</p>
+            <h2 className="mt-2 text-3xl font-semibold text-[#202326]">Login</h2>
 
             {error ? (
-              <div className="mt-4 rounded-xl border border-[#d7dad7] bg-[#f3f5f3] px-3 py-2 text-sm text-[#6f7277]">
+              <div className="mt-4 rounded-lg border border-[#d9dfd8] bg-[#edf2ee] px-3 py-2 text-sm text-[#5f6568]">
                 {error}
               </div>
             ) : null}
 
             {emailNotVerified ? (
-              <div className="mt-4 rounded-xl border border-[#d7dad7] bg-[#f3f5f3] px-3 py-2 text-sm text-[#57595d]">
+              <div className="mt-4 rounded-lg border border-[#d9dfd8] bg-[#edf2ee] px-3 py-2 text-sm text-[#202326]">
                 Your email is not verified.
                 <button
                   onClick={handleVerifyEmail}
                   disabled={!email || loading}
-                  className="ml-2 font-semibold text-[#57595d] underline decoration-[#69b317] underline-offset-2 disabled:opacity-50"
+                  className="ml-2 font-semibold text-[#202326] underline decoration-[#287a55] underline-offset-2 disabled:opacity-50"
                 >
                   Verify Email
                 </button>
@@ -151,7 +158,7 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
-                className="w-full rounded-xl border border-[#d7dad7] bg-[#f5f6f5] px-4 py-2.5 text-sm text-[#57595d] transition focus:border-[#69b317] focus:bg-white focus:outline-none"
+                className="premium-input py-2.5"
               />
               <input
                 type="password"
@@ -159,18 +166,18 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
-                className="w-full rounded-xl border border-[#d7dad7] bg-[#f5f6f5] px-4 py-2.5 text-sm text-[#57595d] transition focus:border-[#69b317] focus:bg-white focus:outline-none"
+                className="premium-input py-2.5"
               />
             </div>
 
             <div className="mt-4 flex items-center justify-between text-sm">
-              <button onClick={() => navigate("/forgot-password")} className="font-medium text-[#69b317] underline">
+              <button onClick={() => navigate("/forgot-password")} className="font-medium text-[#287a55] underline">
                 Forgot password?
               </button>
               <button
                 onClick={handleVerifyEmail}
                 disabled={!email || loading}
-                className="font-medium text-[#69b317] underline disabled:opacity-50"
+                className="font-medium text-[#287a55] underline disabled:opacity-50"
               >
                 Verify email
               </button>
@@ -179,15 +186,15 @@ export default function Login() {
             <button
               onClick={submit}
               disabled={loading}
-              className="mt-5 w-full rounded-xl bg-[#57595d] py-2.5 text-sm font-semibold text-white transition hover:bg-[#5aa10f] disabled:opacity-60"
+              className="premium-button mt-5 w-full py-2.5 disabled:opacity-60"
             >
               Login
             </button>
 
-            <div className="my-4 flex items-center gap-3 text-xs text-[#8d9197]">
-              <div className="h-px flex-1 bg-[#d7dad7]" />
+            <div className="my-4 flex items-center gap-3 text-xs text-[#8b9290]">
+              <div className="h-px flex-1 bg-[#d9dfd8]" />
               <span>OR</span>
-              <div className="h-px flex-1 bg-[#d7dad7]" />
+              <div className="h-px flex-1 bg-[#d9dfd8]" />
             </div>
 
             {googleClientId ? (
@@ -195,14 +202,14 @@ export default function Login() {
                 <div ref={googleBtnRef} />
               </div>
             ) : (
-              <p className="text-center text-xs text-[#a5a8ad]">
+              <p className="text-center text-xs text-[#8b9290]">
                 Google login is not configured. Set `VITE_GOOGLE_CLIENT_ID`.
               </p>
             )}
 
-            <p className="mt-4 text-center text-sm text-[#8d9197]">
+            <p className="mt-4 text-center text-sm text-[#8b9290]">
               New here?{" "}
-              <button onClick={() => navigate("/register")} className="font-semibold text-[#69b317] underline">
+              <button onClick={() => navigate("/register")} className="font-semibold text-[#287a55] underline">
                 Create account
               </button>
             </p>

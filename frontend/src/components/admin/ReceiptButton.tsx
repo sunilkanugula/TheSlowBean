@@ -204,7 +204,7 @@ export default function ReceiptButton({ order }: ReceiptButtonProps) {
   return (
     <button
       onClick={downloadReceipt}
-      className="px-4 py-2 text-sm bg-[#84c83a] text-white rounded-xl shadow-md hover:bg-[#69b317] hover:scale-105 transition-all duration-200"
+      className="px-4 py-2 text-sm bg-[#7abf36] text-white rounded-lg shadow-md hover:bg-[#287a55] hover:scale-105 transition-all duration-200"
     >
       Download Receipt
     </button>

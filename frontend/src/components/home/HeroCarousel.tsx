@@ -22,7 +22,7 @@ const slides: Slide[] = [
       "Ethically sourced cacao. Crafted in small batches for unmatched taste and texture.",
     ctaText: "Shop Now",
     secondaryCta: "Learn More",
-    ctaLink: "/shop",
+    ctaLink: "/products",
     image: slowWorldImg,
   },
   {
@@ -31,7 +31,7 @@ const slides: Slide[] = [
       "From fermentation to roasting, every step is carefully controlled in-house.",
     ctaText: "Explore Process",
     secondaryCta: "Our Story",
-    ctaLink: "/process",
+    ctaLink: "/products",
     image: craftImg,
   },
   {
@@ -40,7 +40,7 @@ const slides: Slide[] = [
       "No shortcuts. No additives. Just pure cocoa transformed with precision.",
     ctaText: "What is Bean-to-Bar",
     secondaryCta: "Why It Matters",
-    ctaLink: "/bean-to-bar",
+    ctaLink: "/products",
     image: beanToBarImg,
   },
   {
@@ -49,7 +49,7 @@ const slides: Slide[] = [
       "For a smoother melt, cleaner snap, and refined chocolate finish.",
     ctaText: "Discover Craft",
     secondaryCta: "View Products",
-    ctaLink: "/craft",
+    ctaLink: "/products",
     image: cocoaButterImg,
   },
 ];
@@ -99,7 +99,7 @@ export default function HeroCarousel() {
 
   return (
     <section
-      className="relative h-[60vh] md:h-[70vh] w-full overflow-hidden bg-[#57595d]"
+      className="relative h-[74vh] min-h-[560px] w-full overflow-hidden bg-[#202326] sm:h-[68vh] md:h-[76vh]"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -121,24 +121,25 @@ export default function HeroCarousel() {
             />
 
             {/* Clean dark overlay */}
-            <div className="absolute inset-0 bg-[#57595d]/50" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#202326]/78 via-[#202326]/38 to-[#287a55]/22" />
+            <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#fbfcf9] to-transparent" />
 
             {/* Content */}
             <div className="relative z-20 flex h-full items-center">
-              <div className="mx-auto w-full max-w-7xl px-6">
+              <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
                 <div className="max-w-xl text-white">
-                  <h1 className="mb-4 text-3xl font-bold tracking-tight md:text-5xl">
+                  <h1 className="mb-4 text-3xl font-bold leading-tight md:text-5xl">
                     {slide.headline}
                   </h1>
 
-                  <p className="mb-8 text-sm leading-relaxed text-white/90 md:text-lg">
+                  <p className="mb-6 max-w-[34rem] text-sm leading-relaxed text-white/90 sm:mb-8 md:text-lg">
                     {slide.subtext}
                   </p>
 
-                  <div className="flex flex-wrap gap-4">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
                     <a
                       href={slide.ctaLink}
-                      className="rounded-md bg-white px-7 py-3 text-sm font-semibold text-[#57595d] transition hover:bg-[#eef2ed]"
+                      className="inline-flex justify-center rounded-lg bg-white px-7 py-3 text-sm font-semibold text-[#202326] transition hover:bg-[#edf2ee]"
                     >
                       {slide.ctaText}
                     </a>
@@ -146,7 +147,7 @@ export default function HeroCarousel() {
                     {slide.secondaryCta && (
                       <a
                         href={slide.ctaLink}
-                        className="rounded-md border border-white/60 px-7 py-3 text-sm font-medium text-white transition hover:bg-white hover:text-[#57595d]"
+                        className="inline-flex justify-center rounded-lg border border-white/60 px-7 py-3 text-sm font-medium text-white transition hover:bg-white hover:text-[#202326]"
                       >
                         {slide.secondaryCta}
                       </a>

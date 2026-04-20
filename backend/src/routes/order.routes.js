@@ -13,6 +13,7 @@ import {
   razorpayWebhook,
   cancelMyOrder,
   addOrderNote,
+  createCodOrder,
 } from "../controllers/order.controller.js";
 import {
   orderIdParamSchema,
@@ -24,6 +25,7 @@ import {
 
 const router = express.Router();
 
+router.post("/cod", protect, createCodOrder);
 router.post("/razorpay/create", protect, createRazorpayOrder);
 router.post("/razorpay/verify", protect, validate(razorpayVerifySchema), verifyRazorpayPayment);
 router.post("/razorpay/webhook", express.raw({ type: "application/json" }), razorpayWebhook);

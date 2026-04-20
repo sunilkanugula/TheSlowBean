@@ -38,11 +38,11 @@ export function Testimonials() {
 
   return (
     <section className="overflow-hidden bg-[#eff2ef] py-16 md:py-20">
-      <div className="mx-auto max-w-6xl px-6 text-[#57595d]">
+      <div className="mx-auto max-w-6xl px-6 text-[#202326]">
 
         {/* Header */}
         <div className="mx-auto mb-10 max-w-3xl text-center md:mb-12">
-          <p className="mb-4 text-xs uppercase tracking-[0.35em] text-[#6f7277]">
+          <p className="mb-4 text-xs uppercase tracking-[0.35em] text-[#5f6568]">
             Words from our community
           </p>
           <h2 className="text-3xl font-serif font-semibold md:text-4xl">
@@ -56,7 +56,7 @@ export function Testimonials() {
             type="button"
             onClick={handlePrev}
             aria-label="Previous testimonial"
-            className="absolute left-0 top-1/2 z-10 -translate-y-1/2 rounded-full border border-[#d7dad7] bg-white/90 px-3 py-2 text-[#57595d] shadow-sm transition hover:bg-white"
+            className="absolute left-0 top-1/2 z-10 -translate-y-1/2 rounded-full border border-[#d9dfd8] bg-white/90 px-3 py-2 text-[#202326] shadow-sm transition hover:bg-white"
           >
             &#8592;
           </button>
@@ -79,7 +79,7 @@ export function Testimonials() {
             type="button"
             onClick={handleNext}
             aria-label="Next testimonial"
-            className="absolute right-0 top-1/2 z-10 -translate-y-1/2 rounded-full border border-[#d7dad7] bg-white/90 px-3 py-2 text-[#57595d] shadow-sm transition hover:bg-white"
+            className="absolute right-0 top-1/2 z-10 -translate-y-1/2 rounded-full border border-[#d9dfd8] bg-white/90 px-3 py-2 text-[#202326] shadow-sm transition hover:bg-white"
           >
             &#8594;
           </button>
@@ -93,7 +93,7 @@ export function Testimonials() {
               onClick={() => setCurrentIndex(index)}
               aria-label={`Go to testimonial ${index + 1}`}
               className={`h-2.5 w-2.5 rounded-full transition ${
-                currentIndex === index ? "bg-[#69b317]" : "bg-[#dfe7d7]"
+                currentIndex === index ? "bg-[#287a55]" : "bg-[#dfe7d7]"
               }`}
             />
           ))}
@@ -124,12 +124,12 @@ function Slide({
       />
 
       {/* Quote */}
-      <p className="max-w-2xl text-lg font-light italic leading-relaxed text-[#57595d] md:text-xl">
+      <p className="max-w-2xl text-lg font-light italic leading-relaxed text-[#202326] md:text-xl">
         &ldquo;{text}&rdquo;
       </p>
 
       {/* Name */}
-      <p className="mt-4 text-sm tracking-wide text-[#6f7277]">
+      <p className="mt-4 text-sm tracking-wide text-[#5f6568]">
         &mdash; {name}
       </p>
     </div>

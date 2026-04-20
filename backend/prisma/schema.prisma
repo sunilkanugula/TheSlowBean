@@ -44,13 +44,14 @@ model User {
   cart            Cart?
   orders          Order[]
   wishlist        Wishlist[]
+  reviews         Review[]
+  addresses       Address[]
 }
 
 model Product {
   id            Int      @id @default(autoincrement())
   title         String
   description   String?
-  collection    String
   price         Float
   discountPrice Float?
   stock         Int
@@ -59,28 +60,10 @@ model Product {
   isBestSelling Boolean  @default(false)
   createdById   Int
   createdAt     DateTime @default(now())
-  collections   ProductCollection[]
   cartItems     CartItem[]
   orderItems    OrderItem[]
   wishlistedBy  Wishlist[]
-}
-
-model Collection {
-  id        Int                 @id @default(autoincrement())
-  name      String              @unique
-  imageUrl  String
-  createdAt DateTime            @default(now())
-  products  ProductCollection[]
-}
-
-model ProductCollection {
-  productId    Int
-  collectionId Int
-  product      Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
-  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
-
-  @@id([productId, collectionId])
-  @@index([collectionId])
+  reviews       Review[]
 }
 
 model Wishlist {
@@ -172,4 +155,46 @@ model OrderTrackingEvent {
   createdAt   DateTime       @default(now())
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  userId    Int
+  rating    Int      // 1-5
+  comment   String?
+  createdAt DateTime @default(now())
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+}
+
+model Coupon {
+  id            Int      @id @default(autoincrement())
+  code          String   @unique
+  discountType  String   // "PERCENT" or "FLAT"
+  discountValue Float
+  minOrderValue Float    @default(0)
+  maxUses       Int?
+  usedCount     Int      @default(0)
+  expiresAt     DateTime?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+}
+
+model Address {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  label     String   @default("Home")
+  name      String
+  phone     String
+  altPhone  String?
+  line1     String
+  city      String
+  state     String
+  pincode   String
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

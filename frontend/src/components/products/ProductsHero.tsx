@@ -2,7 +2,7 @@ import heroBg from "../../assets/chocoBean.webp"; // change filename
 
 export default function ProductsHero() {
   return (
-    <section className="relative min-h-[36vh] flex items-center overflow-hidden">
+    <section className="premium-hero flex min-h-[440px] items-center md:min-h-[42vh]">
       
       {/* Background Image */}
       <div
@@ -11,21 +11,21 @@ export default function ProductsHero() {
       />
 
       {/* Logo Palette Overlay */}
-      <div className="absolute inset-0 bg-[#eef2ed]/68" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#202326]/82 via-[#202326]/54 to-[#287a55]/24" />
 
       {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 text-center py-16">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 py-14 text-center sm:px-6 md:py-16">
         
-        <span className="inline-block mb-6 rounded-full bg-[#e9efe2] px-5 py-2 text-sm font-medium tracking-wide text-[#69b317]">
-          Explore Our Collection
+        <span className="mb-6 inline-block rounded-full border border-white/20 bg-white/12 px-5 py-2 text-sm font-semibold tracking-wide text-white backdrop-blur">
+          Explore Our Products
         </span>
 
-        <h1 className="text-4xl font-serif font-semibold leading-tight text-[#57595d] md:text-6xl">
+        <h1 className="text-4xl font-serif font-semibold leading-tight text-white sm:text-5xl md:text-6xl">
           Crafted with Care. <br />
-          <span className="text-[#69b317]">Loved by Many.</span>
+          <span className="text-[#b6e27c]">Loved by Many.</span>
         </h1>
 
-        <p className="mx-auto mt-6 max-w-2xl text-lg text-[#6f7277]">
+        <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/82 md:text-lg">
           Discover our thoughtfully curated range of premium, handcrafted
           products designed to bring quality and sustainability together.
         </p>

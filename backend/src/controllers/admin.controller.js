@@ -18,18 +18,41 @@ export const getAllOrders = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
     const skip = (page - 1) * limit;
+    const { status, from, to, search } = req.query;
 
-    const { orders, total } = await AdminModel.getAllOrders(
-      skip,
-      limit
-    );
+    const where = {
+      ...(status ? { deliveryStatus: status } : {}),
+      ...(from || to ? {
+        createdAt: {
+          ...(from ? { gte: new Date(from) } : {}),
+          ...(to ? { lte: new Date(new Date(to).setHours(23, 59, 59, 999)) } : {}),
+        },
+      } : {}),
+      ...(search ? {
+        OR: [
+          { id: isNaN(Number(search)) ? undefined : Number(search) },
+          { address: { path: ["name"], string_contains: search } },
+          { address: { path: ["phone"], string_contains: search } },
+        ].filter(Boolean),
+      } : {}),
+    };
 
-    res.json({
-      orders,
-      total,
-      currentPage: page,
-      totalPages: Math.ceil(total / limit),
-    });
+    const [orders, total] = await Promise.all([
+      prisma.order.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+        include: {
+          user: { select: { id: true, name: true, email: true } },
+          items: { include: { product: { select: { id: true, title: true, images: true } } } },
+          shipment: true,
+        },
+      }),
+      prisma.order.count({ where }),
+    ]);
+
+    res.json({ orders, total, currentPage: page, totalPages: Math.ceil(total / limit) });
   } catch (err) {
     console.error("GET ALL ORDERS ERROR:", err);
     res.status(500).json({ message: "Failed to fetch orders" });

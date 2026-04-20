@@ -2,7 +2,6 @@ import express from "express";
 import { protect } from "../middlewares/auth.middleware.js";
 import { ownerOnly } from "../middlewares/owner.middleware.js";
 import { validate } from "../middlewares/validate.middleware.js";
-import upload from "../middlewares/upload.middleware.js";
 import {
   getAllOrders,
   updateOrderStatus,
@@ -13,11 +12,6 @@ import {
   getAdminOrderTracking,
   getShiprocketDocument,
 } from "../controllers/admin.controller.js";
-import {
-  createCollection,
-  deleteCollection,
-  getCollections,
-} from "../controllers/collection.controller.js";
 import {
   adminOrderNoteSchema,
   returnDecisionSchema,
@@ -34,8 +28,5 @@ router.post("/orders/:orderId/return-decision", protect, ownerOnly, validate(ret
 router.post("/orders/:orderId/notes", protect, ownerOnly, validate(adminOrderNoteSchema), addAdminOrderNote);
 router.get("/dashboard", protect, ownerOnly, getDashboardStats);
 router.get("/overview", protect, ownerOnly, getDashboardOverview);
-router.get("/collections", protect, ownerOnly, getCollections);
-router.post("/collections", protect, ownerOnly, upload.single("image"), createCollection);
-router.delete("/collections/:id", protect, ownerOnly, deleteCollection);
 
 export default router;

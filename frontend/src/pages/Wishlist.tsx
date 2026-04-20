@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Heart, ShoppingCart, Check } from "lucide-react";
+import { Heart, ShoppingCart, Check, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -85,28 +85,28 @@ export default function Wishlist() {
   };
 
   return (
-    <section className="bg-[radial-gradient(circle_at_20%_10%,#f3f4f3_0%,#eceeed_45%,#e5e7e6_100%)] py-14 md:py-20">
+    <section className="bg-[radial-gradient(circle_at_20%_10%,#f6f7f4_0%,#eceeed_45%,#e7eeeb_100%)] py-14 md:py-20">
       <div className="mx-auto max-w-7xl px-4 md:px-6">
         <div className="mb-10 text-center md:mb-14">
           <h1 className="text-4xl font-serif font-medium tracking-tight md:text-5xl">My Wishlist</h1>
-          <div className="mx-auto mt-5 h-[2px] w-16 bg-[#d7dad7]" />
-          <p className="mx-auto mt-4 max-w-2xl text-sm text-[#6f7277] md:text-base">
+          <div className="mx-auto mt-5 h-[2px] w-16 bg-[#d9dfd8]" />
+          <p className="mx-auto mt-4 max-w-2xl text-sm text-[#5f6568] md:text-base">
             Saved favorites ready for checkout whenever you are.
           </p>
         </div>
 
         {products.length === 0 ? (
-          <div className="mx-auto max-w-xl rounded-2xl border border-[#d7dad7] bg-white p-8 text-center shadow-sm">
-            <p className="text-[#8d9197]">Your wishlist is empty</p>
+          <div className="mx-auto max-w-xl rounded-lg border border-[#d9dfd8] bg-white p-8 text-center shadow-sm">
+            <p className="text-[#8b9290]">Your wishlist is empty</p>
             <Link
               to="/products"
-              className="mt-5 inline-flex rounded-xl bg-[#69b317] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#5aa10f]"
+              className="mt-5 inline-flex rounded-lg bg-[#287a55] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#319164]"
             >
               Explore Products
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 min-[420px]:grid-cols-2 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
             {products.map((product) => {
               const isAdded = addedToCart === product.id;
               const salePrice = product.discountPrice ?? product.price;
@@ -125,9 +125,9 @@ export default function Wishlist() {
                 >
                   <Link
                     to={`/products/${product.id}`}
-                    className="relative block overflow-hidden rounded-2xl border border-white/80 bg-white/70 shadow-[0_14px_32px_rgba(16,56,38,0.14)]"
+                    className="relative block overflow-hidden rounded-lg border border-white/80 bg-white/70 shadow-[0_14px_32px_rgba(16,56,38,0.14)]"
                   >
-                    <div className="relative aspect-[1/1] w-full overflow-hidden bg-[#f1f3f2] md:aspect-[4/5]">
+                    <div className="relative aspect-[1/1] w-full overflow-hidden bg-[#f6f7f4] md:aspect-[4/5]">
                       <img
                         src={product.images?.[0] || "/placeholder.png"}
                         alt={product.title}
@@ -139,28 +139,28 @@ export default function Wishlist() {
                       type="button"
                       aria-label="Remove from wishlist"
                       onClick={() => handleRemoveWishlist(product.id)}
-                      className="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#57595d]/35 text-white backdrop-blur transition hover:bg-[#57595d]/50"
+                      className="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#202326]/35 text-white backdrop-blur transition hover:bg-[#202326]/50"
                     >
-                      <Heart size={14} className="fill-[#69b317] text-[#69b317]" />
+                      <Heart size={14} className="fill-[#287a55] text-[#287a55]" />
                     </button>
 
-                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#57595d]/40 via-[#57595d]/5 to-transparent" />
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#202326]/40 via-[#202326]/5 to-transparent" />
 
                     {discountPercent ? (
-                      <span className="absolute bottom-3 left-3 rounded-full bg-[#69b317] px-2 py-1 text-[9px] font-semibold text-white">
+                      <span className="absolute bottom-3 left-3 rounded-full bg-[#287a55] px-2 py-1 text-[9px] font-semibold text-white">
                         Save {discountPercent}%
                       </span>
                     ) : null}
                   </Link>
 
                   <div className="min-w-0 px-1 pb-1 pt-3 text-center md:px-0 md:pt-3">
-                    <p className="text-[9px] uppercase tracking-[0.15em] text-[#69b317] md:text-[10px]">
+                    <p className="text-[9px] uppercase tracking-[0.15em] text-[#287a55] md:text-[10px]">
                       Wishlist Pick
                     </p>
 
                     <Link to={`/products/${product.id}`} className="block">
                       <h3
-                        className="mt-1 h-[2.6em] overflow-hidden text-[13px] font-semibold leading-[1.3] text-[#57595d] md:text-[15px]"
+                        className="mt-1 h-[2.6em] overflow-hidden text-[13px] font-semibold leading-[1.3] text-[#202326] md:text-[15px]"
                         style={{
                           display: "-webkit-box",
                           WebkitLineClamp: 2,
@@ -172,11 +172,11 @@ export default function Wishlist() {
                     </Link>
 
                     <div className="mt-2.5 flex items-end justify-center gap-1">
-                      <span className="text-[20px] font-extrabold leading-none text-[#57595d] md:text-[24px]">
+                      <span className="text-[20px] font-extrabold leading-none text-[#202326] md:text-[24px]">
                         Rs {salePrice}
                       </span>
                       {hasDiscount ? (
-                        <span className="mb-0.5 text-[11px] text-[#9fa3a8] line-through">
+                        <span className="mb-0.5 text-[11px] text-[#8b9290] line-through">
                           Rs {product.price}
                         </span>
                       ) : null}
@@ -184,10 +184,10 @@ export default function Wishlist() {
 
                     <button
                       onClick={() => handleAddToCart(product.id)}
-                      className={`mt-3 inline-flex h-10 w-[88%] items-center justify-center gap-1.5 whitespace-nowrap rounded-xl px-3 text-[11px] font-semibold transition md:h-9 md:w-[75%] md:text-[12px] ${
+                      className={`mt-3 inline-flex h-10 w-[88%] items-center justify-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-[11px] font-semibold transition md:h-9 md:w-[75%] md:text-[12px] ${
                         isAdded
-                          ? "bg-[#84c83a] text-white"
-                          : "bg-[#69b317] text-white hover:bg-[#5aa10f]"
+                          ? "bg-[#7abf36] text-white"
+                          : "bg-[#287a55] text-white hover:bg-[#319164]"
                       }`}
                     >
                       {isAdded ? (
@@ -203,20 +203,23 @@ export default function Wishlist() {
                       )}
                     </button>
 
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveWishlist(product.id)}
-                      className="mt-2 inline-flex text-[10px] uppercase tracking-[0.14em] text-[#8d9197] transition hover:text-[#57595d]"
-                    >
-                      Remove
-                    </button>
+                    <div className="mt-3 flex items-center justify-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveWishlist(product.id)}
+                        className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 text-[11px] font-medium text-red-500 transition hover:border-red-300 hover:bg-red-100"
+                      >
+                        <Trash2 size={12} />
+                        Remove
+                      </button>
 
-                    <Link
-                      to={`/products/${product.id}`}
-                      className="mt-2 block text-[10px] uppercase tracking-[0.14em] text-[#8d9197] transition hover:text-[#57595d]"
-                    >
-                      View Details
-                    </Link>
+                      <Link
+                        to={`/products/${product.id}`}
+                        className="inline-flex h-8 items-center rounded-lg border border-[#d9dfd8] bg-[#f6f7f4] px-3 text-[11px] font-medium text-[#5f6568] transition hover:border-[#287a55] hover:text-[#287a55]"
+                      >
+                        View Details
+                      </Link>
+                    </div>
                   </div>
                 </article>
               );

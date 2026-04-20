@@ -155,7 +155,6 @@ export const AdminModel = {
           title: true,
           stock: true,
           images: true,
-          collection: true,
         },
       }),
       prisma.order.findMany({
@@ -229,7 +228,6 @@ export const AdminModel = {
             title: true,
             images: true,
             stock: true,
-            collection: true,
           },
         })
       ).map((product) => [product.id, product])

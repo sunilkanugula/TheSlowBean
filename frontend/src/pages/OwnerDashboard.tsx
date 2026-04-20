@@ -45,14 +45,12 @@ type DashboardOverview = {
     title: string;
     stock: number;
     images: string[];
-    collection: string;
   }>;
   topProducts: Array<{
     id: number;
     title: string;
     stock: number;
     images: string[];
-    collection: string;
     unitsSold: number;
   }>;
   recentOrders: Array<{
@@ -78,9 +76,9 @@ const currency = (value: number) =>
   }).format(value);
 
 const ORDER_HEALTH_COLORS: Record<string, string> = {
-  Paid: "#69b317",
-  Pending: "#84c83a",
-  "Return Requested": "#6f7277",
+  Paid: "#287a55",
+  Pending: "#7abf36",
+  "Return Requested": "#5f6568",
 };
 
 export default function OwnerDashboard() {
@@ -121,15 +119,17 @@ export default function OwnerDashboard() {
   }, [overview]);
 
   if (loading) {
-    return <div className="mx-auto max-w-7xl p-6">Loading advanced dashboard...</div>;
+    return <div className="premium-page"><div className="premium-shell">Loading advanced dashboard...</div></div>;
   }
 
   if (error || !overview) {
     return (
-      <div className="mx-auto max-w-7xl p-6">
+      <div className="premium-page">
+        <div className="premium-shell">
         <AdminPanelNav />
-        <div className="rounded-2xl border border-[#d7dad7] bg-[#f3f5f3] p-5 text-[#6f7277]">
+        <div className="rounded-lg border border-[#d9dfd8] bg-[#edf2ee] p-5 text-[#5f6568]">
           {error || "Unable to load dashboard"}
+        </div>
         </div>
       </div>
     );
@@ -138,15 +138,16 @@ export default function OwnerDashboard() {
   const { kpis, salesTrend, lowStockProducts, topProducts, recentOrders } = overview;
 
   return (
-    <div className="mx-auto max-w-7xl p-6">
+    <div className="premium-page">
+      <div className="premium-shell">
       <AdminPanelNav />
 
-      <div className="relative mb-6 overflow-hidden rounded-3xl bg-gradient-to-r from-[#57595d] via-[#666970] to-[#6f7277] p-6 text-white md:p-8">
-        <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#84c83a]/15 blur-2xl" />
+      <div className="relative mb-6 overflow-hidden rounded-lg bg-gradient-to-r from-[#202326] via-[#666970] to-[#5f6568] p-6 text-white md:p-8">
+        <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#7abf36]/15 blur-2xl" />
         <div className="pointer-events-none absolute -left-14 bottom-0 h-36 w-36 rounded-full bg-white/10 blur-2xl" />
-        <p className="text-xs uppercase tracking-[0.3em] text-[#eef2ed]">Admin Control Center</p>
+        <p className="text-xs uppercase tracking-[0.3em] text-[#edf2ee]">Admin Control Center</p>
         <h1 className="mt-2 text-2xl font-semibold text-white md:text-3xl">Advanced Commerce Command Panel</h1>
-        <p className="mt-2 text-sm text-[#eef2ed] md:text-base">
+        <p className="mt-2 text-sm text-[#edf2ee] md:text-base">
           Monitor revenue, orders, stock risk, and fulfillment from one place.
         </p>
       </div>
@@ -159,15 +160,15 @@ export default function OwnerDashboard() {
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
-        <div className="rounded-3xl border border-[#d7dad7] bg-white p-5 shadow-sm lg:col-span-2">
-          <h2 className="text-lg font-semibold text-[#57595d]">Revenue Trend (Last 7 Days)</h2>
+        <div className="rounded-lg border border-[#d9dfd8] bg-white p-5 shadow-sm lg:col-span-2">
+          <h2 className="text-lg font-semibold text-[#202326]">Revenue Trend (Last 7 Days)</h2>
           <div className="mt-4 h-[280px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={salesTrend}>
                 <defs>
                   <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#69b317" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#69b317" stopOpacity={0.02} />
+                    <stop offset="5%" stopColor="#287a55" stopOpacity={0.4} />
+                    <stop offset="95%" stopColor="#287a55" stopOpacity={0.02} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="4 4" />
@@ -177,7 +178,7 @@ export default function OwnerDashboard() {
                 <Area
                   type="monotone"
                   dataKey="revenue"
-                  stroke="#69b317"
+                  stroke="#287a55"
                   fill="url(#trendFill)"
                   strokeWidth={2}
                 />
@@ -186,8 +187,8 @@ export default function OwnerDashboard() {
           </div>
         </div>
 
-        <div className="rounded-3xl border border-[#d7dad7] bg-white p-5 shadow-sm">
-          <h2 className="text-lg font-semibold text-[#57595d]">Order Health</h2>
+        <div className="rounded-lg border border-[#d9dfd8] bg-white p-5 shadow-sm">
+          <h2 className="text-lg font-semibold text-[#202326]">Order Health</h2>
           <div className="mt-4 h-[240px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -202,7 +203,7 @@ export default function OwnerDashboard() {
                   {statusPieData.map((entry) => (
                     <Cell
                       key={entry.name}
-                      fill={ORDER_HEALTH_COLORS[entry.name] || "#69b317"}
+                      fill={ORDER_HEALTH_COLORS[entry.name] || "#287a55"}
                     />
                   ))}
                 </Pie>
@@ -211,14 +212,14 @@ export default function OwnerDashboard() {
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <div className="mt-4 flex flex-wrap gap-2 rounded-xl bg-[#f3f5f3] p-3 text-xs font-semibold">
-            <span className="rounded-full bg-[#69b317] px-3 py-1 text-white">
+          <div className="mt-4 flex flex-wrap gap-2 rounded-lg bg-[#edf2ee] p-3 text-xs font-semibold">
+            <span className="rounded-full bg-[#287a55] px-3 py-1 text-white">
               Paid: {kpis.paidOrders}
             </span>
-            <span className="rounded-full bg-[#dfe7d7] px-3 py-1 text-[#57595d]">
+            <span className="rounded-full bg-[#dfe7d7] px-3 py-1 text-[#202326]">
               Pending: {kpis.pendingOrders}
             </span>
-            <span className="rounded-full bg-[#f3f5f3] px-3 py-1 text-[#57595d]">
+            <span className="rounded-full bg-[#edf2ee] px-3 py-1 text-[#202326]">
               Return Requested: {kpis.returnRequestedOrders}
             </span>
           </div>
@@ -226,28 +227,28 @@ export default function OwnerDashboard() {
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <div className="rounded-3xl border border-[#d7dad7] bg-white p-5 shadow-sm">
+        <div className="rounded-lg border border-[#d9dfd8] bg-white p-5 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-[#57595d]">Low Stock Alerts</h2>
-            <AlertTriangle className="text-[#69b317]" size={18} />
+            <h2 className="text-lg font-semibold text-[#202326]">Low Stock Alerts</h2>
+            <AlertTriangle className="text-[#287a55]" size={18} />
           </div>
 
           {lowStockProducts.length === 0 ? (
-            <p className="text-sm text-[#6f7277]">No low stock products right now.</p>
+            <p className="text-sm text-[#5f6568]">No low stock products right now.</p>
           ) : (
             <div className="space-y-3">
               {lowStockProducts.map((product) => (
-                <div key={product.id} className="flex items-center gap-3 rounded-xl border border-[#d7dad7] p-3">
+                <div key={product.id} className="flex items-center gap-3 rounded-lg border border-[#d9dfd8] p-3">
                   <img
                     src={product.images[0]}
                     alt={product.title}
                     className="h-12 w-12 rounded-lg object-cover"
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-[#57595d]">{product.title}</p>
-                    <p className="text-xs text-[#6f7277]">{product.collection}</p>
+                    <p className="truncate text-sm font-medium text-[#202326]">{product.title}</p>
+                    <p className="text-xs text-[#5f6568]">Stock watch</p>
                   </div>
-                  <span className="rounded-full bg-[#eef2ed] px-3 py-1 text-xs font-semibold text-[#57595d]">
+                  <span className="rounded-full bg-[#edf2ee] px-3 py-1 text-xs font-semibold text-[#202326]">
                     {product.stock} left
                   </span>
                 </div>
@@ -256,28 +257,28 @@ export default function OwnerDashboard() {
           )}
         </div>
 
-        <div className="rounded-3xl border border-[#d7dad7] bg-white p-5 shadow-sm">
+        <div className="rounded-lg border border-[#d9dfd8] bg-white p-5 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-[#57595d]">Top Products</h2>
-            <PackageSearch className="text-[#6f7277]" size={18} />
+            <h2 className="text-lg font-semibold text-[#202326]">Top Products</h2>
+            <PackageSearch className="text-[#5f6568]" size={18} />
           </div>
 
           {topProducts.length === 0 ? (
-            <p className="text-sm text-[#6f7277]">Not enough order data yet.</p>
+            <p className="text-sm text-[#5f6568]">Not enough order data yet.</p>
           ) : (
             <div className="space-y-3">
               {topProducts.map((product) => (
-                <div key={product.id} className="flex items-center gap-3 rounded-xl border border-[#d7dad7] p-3">
+                <div key={product.id} className="flex items-center gap-3 rounded-lg border border-[#d9dfd8] p-3">
                   <img
                     src={product.images[0]}
                     alt={product.title}
                     className="h-12 w-12 rounded-lg object-cover"
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-[#57595d]">{product.title}</p>
-                    <p className="text-xs text-[#6f7277]">Stock: {product.stock}</p>
+                    <p className="truncate text-sm font-medium text-[#202326]">{product.title}</p>
+                    <p className="text-xs text-[#5f6568]">Stock: {product.stock}</p>
                   </div>
-                  <span className="rounded-full bg-[#f3f5f3] px-3 py-1 text-xs font-semibold text-[#57595d]">
+                  <span className="rounded-full bg-[#edf2ee] px-3 py-1 text-xs font-semibold text-[#202326]">
                     {product.unitsSold} sold
                   </span>
                 </div>
@@ -287,21 +288,21 @@ export default function OwnerDashboard() {
         </div>
       </div>
 
-      <div className="mt-6 rounded-3xl border border-[#d7dad7] bg-white p-5 shadow-sm">
+      <div className="mt-6 rounded-lg border border-[#d9dfd8] bg-white p-5 shadow-sm">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-[#57595d]">Recent Orders</h2>
+          <h2 className="text-lg font-semibold text-[#202326]">Recent Orders</h2>
           <Link
             to="/owner/orders"
-            className="inline-flex items-center gap-1 text-sm font-medium text-[#6f7277] hover:text-[#57595d]"
+            className="inline-flex items-center gap-1 text-sm font-medium text-[#5f6568] hover:text-[#202326]"
           >
             View all <ArrowUpRight size={14} />
           </Link>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="responsive-table-wrap">
           <table className="min-w-full text-sm">
             <thead>
-              <tr className="border-b border-[#d7dad7] text-left text-xs uppercase tracking-wide text-[#6f7277]">
+              <tr className="border-b border-[#d9dfd8] text-left text-xs uppercase tracking-wide text-[#5f6568]">
                 <th className="py-2 pr-3">Order</th>
                 <th className="py-2 pr-3">Customer</th>
                 <th className="py-2 pr-3">Items</th>
@@ -312,14 +313,14 @@ export default function OwnerDashboard() {
             </thead>
             <tbody>
               {recentOrders.map((order) => (
-                <tr key={order.id} className="border-b border-[#eef2ed] text-[#57595d]">
+                <tr key={order.id} className="border-b border-[#edf2ee] text-[#202326]">
                   <td className="py-3 pr-3 font-medium">#{order.id}</td>
                   <td className="py-3 pr-3">{order.user.name}</td>
                   <td className="py-3 pr-3">{order.itemsCount}</td>
                   <td className="py-3 pr-3">{currency(order.totalAmount)}</td>
                   <td className="py-3 pr-3">{order.paymentStatus}</td>
                   <td className="py-3">
-                    <span className="rounded-full bg-[#f3f5f3] px-2.5 py-1 text-xs font-medium text-[#57595d]">
+                    <span className="rounded-full bg-[#edf2ee] px-2.5 py-1 text-xs font-medium text-[#202326]">
                       {order.deliveryStatus}
                     </span>
                   </td>
@@ -335,6 +336,7 @@ export default function OwnerDashboard() {
         <QuickAction title="Manage Products" to="/owner/products" icon={<Box size={16} />} />
         <QuickAction title="Add New Product" to="/owner/products/add" icon={<ArrowUpRight size={16} />} />
       </div>
+      </div>
     </div>
   );
 }
@@ -349,10 +351,10 @@ function KpiCard({
   icon: ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-[#d7dad7] bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-[0_14px_26px_-20px_rgba(87,89,93,0.5)]">
-      <div className="mb-3 inline-flex rounded-lg bg-[#eef2ed] p-2 text-[#69b317]">{icon}</div>
-      <p className="text-sm text-[#6f7277]">{title}</p>
-      <p className="mt-1 text-2xl font-semibold text-[#57595d]">{value}</p>
+    <div className="rounded-lg border border-[#d9dfd8] bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-[0_14px_26px_-20px_rgba(87,89,93,0.5)]">
+      <div className="mb-3 inline-flex rounded-lg bg-[#edf2ee] p-2 text-[#287a55]">{icon}</div>
+      <p className="text-sm text-[#5f6568]">{title}</p>
+      <p className="mt-1 text-2xl font-semibold text-[#202326]">{value}</p>
     </div>
   );
 }
@@ -369,7 +371,7 @@ function QuickAction({
   return (
     <Link
       to={to}
-      className="inline-flex items-center justify-between rounded-2xl border border-[#d7dad7] bg-white px-4 py-3 text-sm font-medium text-[#57595d] shadow-sm transition hover:bg-[#f3f5f3]"
+      className="inline-flex items-center justify-between rounded-lg border border-[#d9dfd8] bg-white px-4 py-3 text-sm font-medium text-[#202326] shadow-sm transition hover:bg-[#edf2ee]"
     >
       {title}
       {icon}
