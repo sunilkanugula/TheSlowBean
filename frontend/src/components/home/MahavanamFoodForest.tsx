@@ -1,4 +1,4 @@
-import chocolateImg from "../../assets/chocolatetree.jpg";
+import chocolateImg from "../../assets/cocobean.jpg";
 
 export default function MahavanamFoodForest() {
   return (
@@ -23,7 +23,7 @@ export default function MahavanamFoodForest() {
             Our Impact
           </p>
 
-          <h2 className="text-3xl font-serif font-semibold leading-snug md:text-4xl">
+          <h2 className="text-3xl font-serif font-semibold leading-snug text-white md:text-4xl">
             Mahavanam Food Forest
           </h2>
 

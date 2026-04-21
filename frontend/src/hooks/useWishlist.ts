@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { api } from "../services/api";
+import { notifyWishlistUpdated } from "../services/cartEvents";
 
 const GUEST_KEY = "guest_wishlist";
 
@@ -43,6 +44,7 @@ export function useWishlist() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setWishlist((prev) => (prev.includes(id) ? prev : [...prev, id]));
+      notifyWishlistUpdated();
       return;
     }
 
@@ -51,6 +53,7 @@ export function useWishlist() {
       localStorage.setItem(GUEST_KEY, JSON.stringify(updated));
       return updated;
     });
+    notifyWishlistUpdated();
   };
 
   const remove = async (productId: number) => {
@@ -66,6 +69,7 @@ export function useWishlist() {
         // Keep UI idempotent.
       }
       setWishlist((prev) => prev.filter((x) => x !== id));
+      notifyWishlistUpdated();
       return;
     }
 
@@ -74,6 +78,7 @@ export function useWishlist() {
       localStorage.setItem(GUEST_KEY, JSON.stringify(updated));
       return updated;
     });
+    notifyWishlistUpdated();
   };
 
   const isInWishlist = (productId: number): boolean => wishlist.includes(Number(productId));

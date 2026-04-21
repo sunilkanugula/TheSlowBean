@@ -5,7 +5,9 @@ import "react-toastify/dist/ReactToastify.css";
 import App from "./App";
 import "./index.css";
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
+const root = ReactDOM.createRoot(document.getElementById("root")!);
+
+root.render(
   <>
     <BrowserRouter>
       <App />
@@ -13,3 +15,10 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <ToastContainer position="top-right" autoClose={3000} />
   </>
 );
+
+// Hide splash once React has painted the first frame
+requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
+    document.getElementById("splash")?.classList.add("hide");
+  });
+});

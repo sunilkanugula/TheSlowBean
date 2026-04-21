@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { Heart, ShoppingCart, Check, Loader2, Star, X } from "lucide-react";
+import { Heart, ShoppingCart, Check, Loader2, Star, X, ShoppingBag } from "lucide-react";
 
 import { useWishlist } from "../hooks/useWishlist";
 import ProductFeatures from "../components/ProductFeatures";
@@ -21,9 +21,10 @@ type RelatedProduct = {
   id: number;
   title: string;
   price: number;
-  discountPrice?: number;
+  discountPrice?: number | null;
   images: string[];
   stock: number;
+  isBestSelling?: boolean;
 };
 
 type Review = {
@@ -51,7 +52,6 @@ function StarRow({ value, onChange, size = 20 }: { value: number; onChange?: (v:
 
 export default function ProductDetail() {
   const { id } = useParams();
-  const navigate = useNavigate();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [related, setRelated] = useState<RelatedProduct[]>([]);
@@ -68,8 +68,22 @@ export default function ProductDetail() {
   const [myComment, setMyComment] = useState("");
   const [submittingReview, setSubmittingReview] = useState(false);
 
+  const [addedToCartRelated, setAddedToCartRelated] = useState<number | null>(null);
+
   const { add, remove, isInWishlist } = useWishlist();
   const isLoggedIn = Boolean(localStorage.getItem("token"));
+
+  const addRelatedToCart = async (productId: number) => {
+    if (!isLoggedIn) { toast.info("Please login to add items to cart"); return; }
+    try {
+      await api.post("/cart", { productId, quantity: 1 });
+      setAddedToCartRelated(productId);
+      setTimeout(() => setAddedToCartRelated(null), 1200);
+      toast.success("Added to cart");
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Failed to add to cart");
+    }
+  };
 
   const fetchReviews = async (productId: string) => {
     try {
@@ -93,9 +107,9 @@ export default function ProductDetail() {
     if (id) {
       fetchReviews(id);
       api
-        .get(`/products/catalog?limit=4&sort=newest`)
+        .get(`/products/catalog?limit=5&sort=newest`)
         .then((res) => {
-          const all: RelatedProduct[] = res.data.products ?? res.data ?? [];
+          const all: RelatedProduct[] = res.data.items ?? res.data.products ?? [];
           setRelated(all.filter((p) => String(p.id) !== id).slice(0, 4));
         })
         .catch(() => {});
@@ -344,42 +358,100 @@ export default function ProductDetail() {
           )}
         </div>
 
-        {/* Related Products */}
+        {/* Latest Products */}
         {related.length > 0 && (
           <div className="mt-20">
-            <h2 className="text-2xl font-serif font-medium text-[#202326]">You May Also Like</h2>
-            <div className="mx-auto mt-3 h-[2px] w-12 bg-gray-300" />
-            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {related.map((p) => (
-                <button
-                  key={p.id}
-                  type="button"
-                  onClick={() => navigate(`/products/${p.id}`)}
-                  className="group rounded-xl border border-[#d9dfd8] bg-white text-left shadow-sm transition hover:shadow-md"
-                >
-                  <div className="overflow-hidden rounded-t-xl">
-                    <img
-                      src={p.images[0]}
-                      alt={p.title}
-                      className="h-48 w-full object-cover transition duration-300 group-hover:scale-105"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <p className="font-medium text-[#202326] line-clamp-2 leading-snug">{p.title}</p>
-                    <div className="mt-2 flex items-center gap-2">
-                      <span className="text-base font-semibold text-[#202326]">
-                        Rs {p.discountPrice ?? p.price}
-                      </span>
-                      {p.discountPrice && p.discountPrice < p.price && (
-                        <span className="text-sm text-[#8b9290] line-through">Rs {p.price}</span>
+            <p className="premium-kicker">Just Arrived</p>
+            <h2 className="mt-1 text-2xl font-serif font-medium text-[#202326]">Latest Products</h2>
+            <div className="mt-3 h-[2px] w-12 bg-[#287a55]/40" />
+
+            <div className="mt-8 grid grid-cols-1 gap-5 min-[420px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {related.map((p) => {
+                const liked = isInWishlist(p.id);
+                const isAdded = addedToCartRelated === p.id;
+                const salePrice = p.discountPrice ?? p.price;
+                const hasDiscount = p.discountPrice != null && p.discountPrice < p.price;
+                const discountPercent = hasDiscount
+                  ? Math.round(((p.price - (p.discountPrice as number)) / p.price) * 100)
+                  : null;
+
+                return (
+                  <article key={p.id} className="group min-w-0 transition duration-300 hover:-translate-y-1.5">
+                    <Link
+                      to={`/products/${p.id}`}
+                      className="relative block overflow-hidden rounded-lg border border-white/80 bg-white/70 shadow-[0_14px_32px_rgba(16,56,38,0.14)]"
+                    >
+                      <div className="relative aspect-square w-full overflow-hidden bg-[#f6f7f4] md:aspect-[4/5]">
+                        <img
+                          src={p.images?.[0] || "/placeholder.png"}
+                          alt={p.title}
+                          className={`h-full w-full object-cover transition-all duration-500 ${p.images?.[1] ? "opacity-100 group-hover:opacity-0" : "group-hover:scale-105"}`}
+                        />
+                        {p.images?.[1] && (
+                          <img
+                            src={p.images[1]}
+                            alt={`${p.title} alternate`}
+                            className="absolute inset-0 h-full w-full object-cover opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:scale-105"
+                          />
+                        )}
+                      </div>
+                      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#202326]/40 via-[#202326]/5 to-transparent" />
+
+                      {p.isBestSelling && (
+                        <span className="absolute left-3 top-3 rounded-full border border-white/50 bg-white/90 px-2.5 py-1 text-[9px] uppercase tracking-[0.14em] text-[#202326] backdrop-blur">
+                          Best Seller
+                        </span>
                       )}
+                      {discountPercent && (
+                        <span className="absolute bottom-3 left-3 rounded-full bg-[#287a55] px-2 py-1 text-[9px] font-semibold text-white">
+                          Save {discountPercent}%
+                        </span>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={async (e) => {
+                          e.preventDefault();
+                          try {
+                            if (liked) { await remove(p.id); toast.info("Removed from wishlist"); }
+                            else { await add(p.id); toast.success("Added to wishlist"); }
+                          } catch { toast.error("Wishlist action failed"); }
+                        }}
+                        title={liked ? "Remove from wishlist" : "Add to wishlist"}
+                        className="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#202326]/35 text-white backdrop-blur transition hover:bg-[#202326]/50"
+                      >
+                        <Heart size={14} strokeWidth={2} className={liked ? "fill-[#287a55] text-[#287a55]" : "text-white"} />
+                      </button>
+                    </Link>
+
+                    <div className="px-1 pb-1 pt-3 text-center md:px-0 md:pt-3">
+                      <p className="text-[9px] uppercase tracking-[0.15em] text-[#287a55] md:text-[10px]">Signature Craft</p>
+                      <Link to={`/products/${p.id}`} className="block">
+                        <h3 className="mt-1 line-clamp-2 h-[2.6em] overflow-hidden text-[13px] font-semibold leading-[1.3] text-[#202326] md:text-[15px]">
+                          {p.title}
+                        </h3>
+                      </Link>
+                      <div className="mt-2.5 flex items-end justify-center gap-1">
+                        <span className="text-[20px] font-extrabold leading-none text-[#202326] md:text-[24px]">Rs {salePrice}</span>
+                        {hasDiscount && <span className="mb-0.5 text-[11px] text-[#8b9290] line-through">Rs {p.price}</span>}
+                      </div>
+                      <div className="mt-3 flex justify-center">
+                        <button
+                          type="button"
+                          onClick={() => addRelatedToCart(p.id)}
+                          disabled={p.stock === 0}
+                          className={`inline-flex h-10 w-full items-center justify-center gap-1.5 whitespace-nowrap px-3 text-[11px] font-semibold transition disabled:opacity-50 sm:w-[75%] md:h-9 md:w-[60%] md:text-[12px] ${isAdded ? "bg-[#7abf36] text-white" : "bg-[#287a55] text-white hover:bg-[#319164]"}`}
+                        >
+                          {isAdded ? <><Check size={13} />Added</> : <><ShoppingBag size={13} />{p.stock === 0 ? "Out of Stock" : "Add to Cart"}</>}
+                        </button>
+                      </div>
+                      <Link to={`/products/${p.id}`} className="mt-2 hidden text-[10px] uppercase tracking-[0.14em] text-[#8b9290] transition hover:text-[#202326] md:block">
+                        View Details
+                      </Link>
                     </div>
-                    {p.stock === 0 && (
-                      <span className="mt-1 inline-block text-xs text-red-400">Out of stock</span>
-                    )}
-                  </div>
-                </button>
-              ))}
+                  </article>
+                );
+              })}
             </div>
           </div>
         )}

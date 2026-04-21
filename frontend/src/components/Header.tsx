@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import logo from "../assets/logo1.jpg";
 import { api } from "../services/api";
-import { CART_UPDATED_EVENT } from "../services/cartEvents";
+import { CART_UPDATED_EVENT, WISHLIST_UPDATED_EVENT } from "../services/cartEvents";
 
 type CartResponse = {
   items?: Array<{ quantity?: number }>;
@@ -36,6 +36,7 @@ export default function Header() {
   const [search, setSearch] = useState(initialProductsSearch);
   const [debouncedSearch, setDebouncedSearch] = useState(initialProductsSearch);
   const [cartCount, setCartCount] = useState(0);
+  const [wishlistCount, setWishlistCount] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   /* ---------- LOGOUT ---------- */
@@ -77,6 +78,28 @@ export default function Header() {
     window.addEventListener(CART_UPDATED_EVENT, syncCartCount);
     return () => {
       window.removeEventListener(CART_UPDATED_EVENT, syncCartCount);
+    };
+  }, [token]);
+
+  useEffect(() => {
+    if (!token) {
+      setWishlistCount(0);
+      return;
+    }
+
+    const syncWishlistCount = async () => {
+      try {
+        const res = await api.get<unknown[]>("/wishlist");
+        setWishlistCount((res.data || []).length);
+      } catch {
+        setWishlistCount(0);
+      }
+    };
+
+    syncWishlistCount();
+    window.addEventListener(WISHLIST_UPDATED_EVENT, syncWishlistCount);
+    return () => {
+      window.removeEventListener(WISHLIST_UPDATED_EVENT, syncWishlistCount);
     };
   }, [token]);
 
@@ -202,10 +225,15 @@ export default function Header() {
             <>
               <button
                 onClick={() => navigate("/wishlist")}
-                className="hidden h-10 w-10 items-center justify-center border border-black/10 bg-white text-[#5f6568] transition hover:border-[#287a55]/40 hover:text-[#287a55] sm:inline-flex"
+                className="relative hidden h-10 w-10 items-center justify-center border border-black/10 bg-white text-[#5f6568] transition hover:border-[#287a55]/40 hover:text-[#287a55] sm:inline-flex"
                 title="Wishlist"
               >
                 <Heart size={22} />
+                {wishlistCount > 0 ? (
+                  <span className="absolute -right-2 -top-2 inline-flex min-h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#287a55] px-1 text-[10px] font-semibold leading-none text-white">
+                    {wishlistCount > 99 ? "99+" : wishlistCount}
+                  </span>
+                ) : null}
               </button>
 
               <button
@@ -322,7 +350,7 @@ export default function Header() {
             {token ? (
               <>
                 <button type="button" onClick={() => goTo("/wishlist")} className="inline-flex items-center justify-center gap-2 rounded-lg border border-black/10 bg-[#f6f7f4] px-3 py-3 text-sm font-semibold text-[#202326]">
-                  <Heart size={17} /> Wishlist
+                  <Heart size={17} /> Wishlist {wishlistCount > 0 ? `(${wishlistCount > 99 ? "99+" : wishlistCount})` : ""}
                 </button>
                 <button type="button" onClick={() => goTo("/cart")} className="inline-flex items-center justify-center gap-2 rounded-lg border border-black/10 bg-[#f6f7f4] px-3 py-3 text-sm font-semibold text-[#202326]">
                   <ShoppingCart size={17} /> Cart {cartCount > 0 ? `(${cartCount > 99 ? "99+" : cartCount})` : ""}

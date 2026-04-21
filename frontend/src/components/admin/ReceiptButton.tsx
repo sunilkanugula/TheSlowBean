@@ -16,8 +16,7 @@ export default function ReceiptButton({ order }: ReceiptButtonProps) {
       (sum: number, item: any) => sum + Number(item.quantity) * Number(item.price),
       0
     );
-    const gstAmount = Number((subtotal * 0.05).toFixed(2));
-    const grandTotal = Number(order.totalAmount ?? subtotal + gstAmount);
+    const grandTotal = Number(order.totalAmount ?? subtotal);
 
     const primaryColor: [number, number, number] = [22, 101, 52];
 
@@ -118,26 +117,7 @@ export default function ReceiptButton({ order }: ReceiptButtonProps) {
         ],
         [
           {
-            content: "GST (5%)",
-            colSpan: 3,
-            styles: {
-              halign: "right",
-              fontStyle: "bold",
-              fontSize: 10,
-            },
-          },
-          {
-            content: formatCurrency(gstAmount),
-            styles: {
-              halign: "right",
-              fontStyle: "bold",
-              fontSize: 10,
-            },
-          },
-        ],
-        [
-          {
-            content: "Grand Total (Incl. GST)",
+            content: "Grand Total",
             colSpan: 3,
             styles: {
               halign: "right",

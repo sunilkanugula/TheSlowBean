@@ -13,7 +13,6 @@ import {
 
 const toNumber = (value) => Number(value);
 const idempotencyCache = new Map();
-const GST_RATE = 0.05;
 
 const getCartTotals = (items = []) => {
   const subtotal = items.reduce((sum, item) => {
@@ -21,10 +20,8 @@ const getCartTotals = (items = []) => {
     return sum + price * item.quantity;
   }, 0);
 
-  const gstAmount = Number((subtotal * GST_RATE).toFixed(2));
-  const totalAmount = Number((subtotal + gstAmount).toFixed(2));
-
-  return { subtotal, gstAmount, totalAmount };
+  const totalAmount = Number(subtotal.toFixed(2));
+  return { subtotal, totalAmount };
 };
 
 const parseWebhookOrderId = (payload) => {
@@ -57,7 +54,7 @@ export const createRazorpayOrder = async (req, res) => {
       return res.status(400).json({ message: "Cart is empty" });
     }
 
-    const { subtotal, gstAmount, totalAmount } = getCartTotals(cart.items);
+    const { subtotal, totalAmount } = getCartTotals(cart.items);
     if (totalAmount <= 0) {
       return res.status(400).json({ message: "Invalid cart total" });
     }
@@ -72,9 +69,7 @@ export const createRazorpayOrder = async (req, res) => {
       orderId: razorpayOrder.id,
       amount: razorpayOrder.amount,
       subtotal,
-      gstAmount,
       totalAmount,
-      gstRate: GST_RATE,
       key: process.env.RAZORPAY_KEY_ID,
     });
   } catch (err) {
@@ -148,7 +143,7 @@ export const verifyRazorpayPayment = async (req, res) => {
       }
     }
 
-    const { subtotal, gstAmount, totalAmount } = getCartTotals(cart.items);
+    const { subtotal, totalAmount } = getCartTotals(cart.items);
 
     const order = await prisma.$transaction(async (tx) => {
       const createdOrder = await tx.order.create({
@@ -216,9 +211,7 @@ export const verifyRazorpayPayment = async (req, res) => {
       message: "Payment successful, order placed",
       orderId: order.id,
       subtotal,
-      gstAmount,
       totalAmount,
-      gstRate: GST_RATE,
     };
 
     if (idempotencyKey) {
@@ -554,7 +547,7 @@ export const createCodOrder = async (req, res) => {
       }
     }
 
-    let { subtotal, gstAmount, totalAmount } = getCartTotals(cart.items);
+    let { subtotal, totalAmount } = getCartTotals(cart.items);
     let couponDiscount = 0;
     let appliedCoupon = null;
 
@@ -606,7 +599,6 @@ export const createCodOrder = async (req, res) => {
       message: "COD order placed successfully",
       orderId: order.id,
       subtotal,
-      gstAmount,
       couponDiscount,
       totalAmount,
     });

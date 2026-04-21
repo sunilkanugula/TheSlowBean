@@ -93,10 +93,8 @@ export default function Checkout() {
     const price = item.product.discountPrice ?? item.product.price;
     return sum + price * item.quantity;
   }, 0);
-  const gstAmount = Number((subtotal * 0.05).toFixed(2));
-  const baseTotal = Number((subtotal + gstAmount).toFixed(2));
   const discount = couponApplied?.discount || 0;
-  const grandTotal = Number((baseTotal - discount).toFixed(2));
+  const grandTotal = Number((subtotal - discount).toFixed(2));
 
   const fetchCityState = async (pin: string) => {
     if (pin.length !== 6) return;
@@ -117,7 +115,7 @@ export default function Checkout() {
     if (!couponCode.trim()) return;
     try {
       setCouponLoading(true);
-      const res = await api.post("/coupons/validate", { code: couponCode.trim(), orderTotal: baseTotal });
+      const res = await api.post("/coupons/validate", { code: couponCode.trim(), orderTotal: subtotal });
       setCouponApplied({ code: res.data.code, discount: res.data.discount });
       toast.success(`Coupon applied! You save Rs ${res.data.discount}`);
     } catch (err: any) {
@@ -301,7 +299,6 @@ export default function Checkout() {
         {/* Order Summary */}
         <div className="premium-card p-5 text-sm">
           <div className="flex justify-between py-1"><span>Subtotal</span><span>Rs {subtotal.toFixed(2)}</span></div>
-          <div className="flex justify-between py-1"><span>GST (5%)</span><span>Rs {gstAmount.toFixed(2)}</span></div>
           {discount > 0 && (
             <div className="flex justify-between py-1 text-[#287a55]">
               <span>Coupon Discount ({couponApplied?.code})</span>

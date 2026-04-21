@@ -122,7 +122,7 @@ export default function Login() {
         <div className="grid md:grid-cols-2">
           <section className="premium-hero p-8 text-white md:p-10">
             <p className="text-xs uppercase tracking-[0.34em] text-[#d9dfd8]">Welcome Back</p>
-            <h1 className="mt-3 text-4xl font-semibold leading-tight">Crafted chocolate, tracked beautifully.</h1>
+            <h1 className="mt-3 text-4xl font-semibold leading-tight text-white">Crafted chocolate, tracked beautifully.</h1>
             <p className="mt-4 text-sm leading-relaxed text-white/82">
               Access your account, check active orders, and manage your profile in a premium storefront experience.
             </p>

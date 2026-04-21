@@ -33,21 +33,12 @@ const buildPackageDimensionsByWeight = (totalWeightKg) => {
 const buildShiprocketOrderPayload = (order) => {
   const address = order.address || {};
   const pickupLocation = process.env.SHIPROCKET_PICKUP_LOCATION || "Primary";
-  const configuredGstRate = Number(process.env.GST_RATE || 0.05);
-  const configuredGstPercent = Number((configuredGstRate * 100).toFixed(2));
-  const shiprocketPricesIncludeGst =
-    String(process.env.SHIPROCKET_PRICES_INCLUDE_GST || "true").toLowerCase() === "true";
   const subTotal = Number(
     order.items
       .reduce((sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 0), 0)
       .toFixed(2)
   );
-  const totalFromOrder = Number(order.totalAmount || 0);
-  const inferredTax =
-    totalFromOrder > subTotal
-      ? Number((totalFromOrder - subTotal).toFixed(2))
-      : Number((subTotal * configuredGstRate).toFixed(2));
-  const grandTotal = Number((subTotal + inferredTax).toFixed(2));
+  const grandTotal = Number(order.totalAmount || subTotal);
   const invoiceDate = new Date(order.createdAt).toISOString().slice(0, 10);
 
   const totalWeightGrams = order.items.reduce((sum, item) => {
@@ -61,25 +52,16 @@ const buildShiprocketOrderPayload = (order) => {
   const totalWeightKg = Number((totalWeightGrams / 1000).toFixed(3));
   const dimensions = buildPackageDimensionsByWeight(totalWeightKg);
 
-  const orderItems = order.items.map((item) => {
-    const basePrice = Number(item.price || 0);
-    const gstInclusivePrice = Number((basePrice * (1 + configuredGstRate)).toFixed(2));
-    const sellingPrice = shiprocketPricesIncludeGst ? gstInclusivePrice : basePrice;
-    const lineSubtotal = basePrice * Number(item.quantity || 0);
-    const lineTax =
-      subTotal > 0 ? Number(((lineSubtotal / subTotal) * inferredTax).toFixed(2)) : 0;
+  const orderItems = order.items.map((item) => ({
+    name: item.product.title,
+    sku: `SKU-${item.product.id}`,
+    units: item.quantity,
+    selling_price: Number(item.price || 0),
+    tax: 0,
+  }));
 
-      return {
-        name: item.product.title,
-        sku: `SKU-${item.product.id}`,
-        units: item.quantity,
-        selling_price: sellingPrice,
-        tax: configuredGstPercent,
-      };
-    });
-
-  const shiprocketSubTotal = shiprocketPricesIncludeGst ? grandTotal : subTotal;
-  const shiprocketTax = shiprocketPricesIncludeGst ? 0 : inferredTax;
+  const shiprocketSubTotal = grandTotal;
+  const shiprocketTax = 0;
 
   return {
     order_id: String(order.id),

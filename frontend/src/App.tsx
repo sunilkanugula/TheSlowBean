@@ -19,6 +19,8 @@ import OwnerOrders from "./pages/OwnerOrders";
 import OwnerCoupons from "./pages/OwnerCoupons";
 
 import AdminRoute from "./components/AdminRoute";
+import ScrollToTop from "./components/ScrollToTop";
+import PageLoader from "./components/PageLoader";
 import VerifyEmail from "./pages/VerifyEmail";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
@@ -31,6 +33,9 @@ import OrderDetail from "./pages/OrderDetail";
 import TrackOrder from "./pages/TrackOrder";
 export default function App() {
   return (
+    <>
+    <ScrollToTop />
+    <PageLoader />
     <Routes>
       {/* ---------- PUBLIC ROUTES ---------- */}
       <Route path="/login" element={<Login />} />
@@ -88,5 +93,6 @@ export default function App() {
         </Route>
       </Route>
     </Routes>
+    </>
   );
 }

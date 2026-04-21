@@ -1,9 +1,11 @@
+import { Link } from "react-router-dom";
+
 export function FinalCTA() {
   return (
     <section className="bg-[#0F2E1F] py-28 text-[#edf2ee]">
       <div className="mx-auto max-w-4xl px-6 text-center">
 
-        <h2 className="text-3xl font-serif font-semibold md:text-4xl">
+        <h2 className="text-3xl font-serif font-semibold text-white md:text-4xl">
           Chocolate, made with intention
         </h2>
 
@@ -14,9 +16,9 @@ export function FinalCTA() {
         </p>
 
         <div className="mt-12">
-          <button className="rounded-full bg-[#edf2ee] px-10 py-4 text-sm font-medium text-[#202326] transition hover:bg-white">
+          <Link to="/products" className="rounded-full bg-[#edf2ee] px-10 py-4 text-sm font-medium text-[#202326] transition hover:bg-white">
             Explore Our Bars
-          </button>
+          </Link>
         </div>
 
       </div>

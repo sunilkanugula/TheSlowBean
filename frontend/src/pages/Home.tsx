@@ -7,8 +7,6 @@ import MahavanamFoodForest from "../components/home/MahavanamFoodForest";
 import { FinalCTA } from "../components/home/FinalCTA";
 import { Testimonials } from "../components/home/Testimonials";
 import { CraftDeepDive } from "../components/home/CraftDeepDive";
-import Newsletter from "../components/home/Newsletter";
-
 export default function Home() {
   return (
     <div className="bg-[linear-gradient(180deg,#fbfcf9_0%,#f1f5f1_42%,#e7eeeb_100%)]">
@@ -20,7 +18,6 @@ export default function Home() {
       <MahavanamFoodForest />
       <CraftDeepDive />
       <Testimonials />
-      <Newsletter />
       <FinalCTA />
     </div>
   );

@@ -127,7 +127,6 @@ export default function OrderDetail() {
   }
 
   const subtotal = order.items.reduce((sum, item) => sum + item.quantity * item.price, 0);
-  const gstAmount = Number((subtotal * 0.05).toFixed(2));
 
   return (
     <div className="premium-page">
@@ -153,10 +152,9 @@ export default function OrderDetail() {
         </div>
 
         <div className="sm:col-span-2 lg:col-span-1 lg:text-right">
-          <p className="text-sm text-[#5f6568]">Order Total (Incl. GST)</p>
+          <p className="text-sm text-[#5f6568]">Order Total</p>
           <p className="text-xl font-bold text-[#202326]">Rs {order.totalAmount.toFixed(2)}</p>
           <p className="text-xs text-[#5f6568]">Subtotal: Rs {subtotal.toFixed(2)}</p>
-          <p className="text-xs text-[#5f6568]">GST (5%): Rs {gstAmount.toFixed(2)}</p>
         </div>
       </div>
 
