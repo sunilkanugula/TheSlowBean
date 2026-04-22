@@ -1,6 +1,7 @@
 import express from "express";
 import { protect } from "../middlewares/auth.middleware.js";
 import { ownerOnly } from "../middlewares/owner.middleware.js";
+import { sendTelegram } from "../utils/sendTelegram.js";
 import { validate } from "../middlewares/validate.middleware.js";
 import {
   getAllOrders,
@@ -28,5 +29,22 @@ router.post("/orders/:orderId/return-decision", protect, ownerOnly, validate(ret
 router.post("/orders/:orderId/notes", protect, ownerOnly, validate(adminOrderNoteSchema), addAdminOrderNote);
 router.get("/dashboard", protect, ownerOnly, getDashboardStats);
 router.get("/overview", protect, ownerOnly, getDashboardOverview);
+
+router.post("/test-telegram", protect, ownerOnly, async (req, res) => {
+  const result = await sendTelegram("✅ Telegram test from TheSlowBean admin panel");
+  res.json(result);
+});
+
+router.post("/test-email", protect, ownerOnly, async (req, res) => {
+  try {
+    const { sendEmail } = await import("../utils/sendEmail.js");
+    const to = req.body?.to;
+    if (!to) return res.status(400).json({ message: "Provide 'to' email in body" });
+    await sendEmail(to, "Test Email", "This is a test email from TheSlowBean.");
+    res.json({ sent: true });
+  } catch (err) {
+    res.status(500).json({ sent: false, error: err.message });
+  }
+});
 
 export default router;
