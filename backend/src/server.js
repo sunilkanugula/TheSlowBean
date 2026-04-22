@@ -37,7 +37,7 @@ app.use(
     autoLogging: true,
   })
 );
-app.use(helmet());
+app.use(helmet({ crossOriginOpenerPolicy: false }));
 app.use(
   cors({
     origin(origin, callback) {
