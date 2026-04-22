@@ -15,7 +15,7 @@ import Insulated from "../../assets/InsulatedShipping.avif";
 import { useWishlist } from "../../hooks/useWishlist";
 import { api } from "../../services/api";
 
-const API_URL = "http://localhost:5000/api/products/best-selling";
+const API_URL = `${import.meta.env.VITE_API_URL}/api/products/best-selling`;
 const TOKEN_KEY = "token";
 
 type Product = {

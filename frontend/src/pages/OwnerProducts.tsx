@@ -5,7 +5,7 @@ import { Plus, PencilLine, Trash2, Sparkles, Search } from "lucide-react";
 
 import AdminPanelNav from "../components/admin/AdminPanelNav";
 
-const API_URL = "http://localhost:5000/api/products";
+const API_URL = `${import.meta.env.VITE_API_URL}/api/products`;
 
 type Product = {
   id: number;

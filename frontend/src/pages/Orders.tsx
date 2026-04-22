@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-const ORDER_API = "http://localhost:5000/api/orders/my";
+const ORDER_API = `${import.meta.env.VITE_API_URL}/api/orders/my`;
 
 export default function Orders() {
   const [orders, setOrders] = useState([]);

@@ -5,7 +5,7 @@ import { ImagePlus, Loader2, Sparkles, UploadCloud } from "lucide-react";
 
 import AdminPanelNav from "../components/admin/AdminPanelNav";
 
-const API_URL = "http://localhost:5000/api/products";
+const API_URL = `${import.meta.env.VITE_API_URL}/api/products`;
 const MAX_IMAGES = 4;
 
 export default function CreateProduct() {

@@ -27,7 +27,7 @@ import {
 
 import AdminPanelNav from "../components/admin/AdminPanelNav";
 
-const ADMIN_API = "http://localhost:5000/api/admin";
+const ADMIN_API = `${import.meta.env.VITE_API_URL}/api/admin`;
 
 type DashboardOverview = {
   kpis: {
